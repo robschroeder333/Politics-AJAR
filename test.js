@@ -2,10 +2,11 @@
 
 const axios = require('axios');
 const queryString = require('querystring');
+const keys = require('./keys');
 
 //KEYS
-const MAPLIGHTapikey = ''; //remove before pushing to gitgub
-const PROPUBLICAapikey = ''; //remove before pushing to gitgub
+const MAPLIGHTapikey = keys.mapLight; //remove before pushing to gitgub
+const PROPUBLICAapikey = keys.proPub; //remove before pushing to gitgub
 
 
 //shared variables
