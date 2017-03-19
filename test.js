@@ -4,7 +4,7 @@ const axios = require('axios');
 const queryString = require('querystring');
 
 //KEYS
-const MAPLIGHTapikey = '210435039597e7fad7e5daa5c3b81068'; //remove before pushing to gitgub
+const MAPLIGHTapikey = ''; //remove before pushing to gitgub
 const PROPUBLICAapikey = ''; //remove before pushing to gitgub
 
 
