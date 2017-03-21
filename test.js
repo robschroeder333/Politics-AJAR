@@ -2,12 +2,11 @@
 
 const axios = require('axios');
 const queryString = require('querystring');
-const keys = require('./keys.js');//add this file (have it export the api keys) and add to gitignore
-
+const keys = require('./keys');
 
 //KEYS
-const MAPLIGHTapikey = keys.mapLight;
-const PROPUBLICAapikey = keys.proPub;
+const MAPLIGHTapikey = keys.mapLight; //remove before pushing to gitgub
+const PROPUBLICAapikey = keys.proPub; //remove before pushing to gitgub
 
 
 //shared variables
@@ -33,18 +32,19 @@ const getAllBills = () => {
 };
 
 //For getting list of all organizations (support/opposition) relating to one bill
-const getAllOrganizationsForBill = (billType, billNum) => {
-  // const billType = 'hj';/*  'h' House Bill (i.e. H.R.)
-  //                           'hr' House Resolution (i.e. H.Res.)
-  //                           'hj' House Joint Resolution (i.e. H.J.Res.)
-  //                           'hc' House Concurrent Resolution (i.e. H.Con.Res.)
-  //                           's' Senate Bill (i.e. S.)
-  //                           'sr' Senate Resolution (i.e. S.Res.)
-  //                           'sj' Senate Joint Resolution (i.e. S.J.Res.)
-  //                           'sc' Senate Concurrent Resolution (i.e. S.Con.Res.) */
-  // const billNum = 38;//130;
+const getAllOrganizationsForBill = () => {
+  const billType = 's'; /*  'h' House Bill (i.e. H.R.)
+                          'hr' House Resolution (i.e. H.Res.)
+                          'hj' House Joint Resolution (i.e. H.J.Res.)
+                          'hc' House Concurrent Resolution (i.e. H.Con.Res.)
+                          's' Senate Bill (i.e. S.)
+                          'sr' Senate Resolution (i.e. S.Res.)
+                          'sj' Senate Joint Resolution (i.e. S.J.Res.)
+                          'sc' Senate Concurrent Resolution (i.e. S.Con.Res.)
+                        */
+  const billNum = 130;
 
-  return axios.get(
+  axios.get(
     `http://maplight.org/services_open_api/map.bill_positions_v1.json/?apikey=${MAPLIGHTapikey}&jurisdiction=${jurisdiction}&session=${congressNum}&prefix=${billType}&number=${billNum}`)
   .then((response) => {
     const organizations = response.data.bill.organizations.map(organization => ({
@@ -53,8 +53,7 @@ const getAllOrganizationsForBill = (billType, billNum) => {
         organizationType: organization.catcode //this can be used to determine the stance of the bill itself (i think) site: http://www.opensecrets.org/downloads/crp/CRP_Categories.txt
       })
     );
-    return organizations;
-    // console.log(organizations);
+    console.log(organizations);
   })
   .catch(err => console.log(err));
 };
@@ -81,15 +80,16 @@ const getMembers = () => {
         party: member.party
       });
     });
-    console.log(officials);
+    // console.log(officials);
+    console.log(response.data.results[0].members);
   })
   .catch(err => console.log(err));
 };
 
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
 const getMembersPositions = () => {
-  const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
-                             //'S000033'//Senator Sanders [D] Vermont
+  const memberId = 'C000984'; //Representative Cummings [D] Maryland, district 7
+                // 'S000033'; //Senator Sanders [D] Vermont
 
   axios.get(
     `https://api.propublica.org/congress/v1/members/${memberId}/votes.json`,{
@@ -98,83 +98,26 @@ const getMembersPositions = () => {
     }
   })
   .then((response) => {
-    let positions = response.data.results[0].votes.map(vote => {
-          if (vote.bill.title !== undefined
-              && vote.question.toLowerCase().includes('passage')) {
-            const billObj = billNumberFormatter(vote.bill.number);
-            return ({
-              type: billObj.billType,
-              number: billObj.billNum,
-              bill: vote.bill.title,
-              question: vote.question,
-              position: vote.position,
-              orgs: null
-            });
-          }
+    const positions = response.data.results[0].votes.map(vote => {
+        // if (vote.congress === 115) {
+          return ({
+            number: vote.bill.number,
+            bill: vote.bill.title,
+            question: vote.question,
+            position: vote.position
+          });
+        // }
       });
-      positions = positions.filter(ele => ele !== undefined);
-
-      //below is how we tie in the organizations that are involved with a bill
-      const positionsWithOrgs = positions.map(bill => {
-        return getAllOrganizationsForBill(bill.type, bill.number)
-        .then(orgsArray => {
-          bill.orgs = orgsArray;
-          return bill;
-        })
-        .catch(err => console.log(err));
-      })
-      Promise.all(positionsWithOrgs)
-      .then((newposwithorgs) => console.log(newposwithorgs[2].orgs));//this is just an example to show how to get the data within the bill object
+    console.log(positions);
   })
   .catch(err => console.log(err));
 };
-
-//converts the bills measure info from propublica to maplight
-const billNumberFormatter = (billNumberString) => {
-  const splitBill = billNumberString.split(' ');
-  const number = splitBill.pop();
-  const tempType = splitBill.join('').toUpperCase();
-  let newType;
-
-  if (tempType === "HR"){
-    newType= "h"
-  }
-  if (tempType === "HRES"){
-    newType= "hr"
-  }
-  if (tempType === "HJRES"){
-    newType= "hj"
-  }
-  if (tempType === "HCONRES"){
-    newType= "hc"
-  }
-  if (tempType === "S"){
-    newType= "s"
-  }
-  if (tempType === "SRES"){
-    newType= "sr"
-  }
-  if (tempType === "SJRES"){
-    newType= "sj"
-  }
-  if (tempType === "SCONRES"){
-    newType= "sc"
-  }
-
-  return ({
-    billType: newType,
-    billNum: parseInt(number, 10)
-  })
-}
-
-
-
 
 ////////////////////////
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-// getMembers();
-getMembersPositions();// this now uses getAllOrganizationsForBill within
-// getAllOrganizationsForBill("h", 7);
 // getAllBills();
+// getAllOrganizationsForBill();
+// getMembers();
+getMembersPositions();
