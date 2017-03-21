@@ -5,8 +5,8 @@ const webpack = require('webpack');
 module.exports = {
   entry: './app/origin.jsx',
   output: {
-    path: __dirname + '/public',
-    filename: 'bundle.js'
+    path: __dirname,
+    filename: './public/bundle.js'
   },
   context: __dirname,
   devtool: 'source-map',
