@@ -27,9 +27,9 @@ const getAllBills = () => {
 
   axios.get(
     `http://maplight.org/services_open_api/map.bill_list_v1.json/?apikey=${MAPLIGHTapikey}&jurisdiction=${jurisdiction}&session=${congressNum}&include_organizations=${include_organizations}&has_organizations=${has_organizations}`)
-  .then((response) =>
-    console.log(response.data)
-  )
+  .then((response) => {
+    // console.log(response.data)
+  })
   .catch(err => console.log(err));
 };
 
@@ -84,7 +84,12 @@ const getMembers = () => {
         chamber: chamber,
         election_year: member.next_election,
         district: null,
-        state: member.state
+        state: member.state,
+        twitter: member.twitter_account,
+        facebook: member.facebook_account,
+        website: member.url,
+        office: member.office,
+        phone: member.phone
       });
     });
     allMembers = officialsS;
@@ -94,7 +99,7 @@ const getMembers = () => {
     // find out if distrit is only in house
   })
   .then(() => {
-    chamber = 'house'
+    chamber = 'house';
     return axios.get(
         `https://api.propublica.org/congress/v1/${congressNum}/${chamber}/members.json`,{
         headers: {
@@ -113,14 +118,16 @@ const getMembers = () => {
             election_year: member.next_election,
             district: null,
             state: member.state,
+            twitter: member.twitter_account,
+            facebook: member.facebook_account,
+            website: member.url,
+            office: member.office,
+            phone: member.phone
           });
         });
-        allMembers = allMembers.concat(officialsH)
+        allMembers = allMembers.concat(officialsH);
         return allMembers;
-      })
-
-   console.log('final', allMembers)
-   // return allMembers;
+      });
   })
   .catch(err => console.log(err));
 };
@@ -135,25 +142,27 @@ const getMembersDistrict = (memberId) => {
     }
   })
   .then((response) => {
-    // console.log('wtf', response)
-    // if (response.results[0].roles[0].chamber === "House") {
-    //     return response.results[0].roles[0].district;
-    // }
-    // else {
-    //   return null;
-    // }
+    console.log(response.data.results[0].roles[0])
+    if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House" && response.data.results[0].roles[0].district) {
+    // console.log(response.data.results[0].roles[0].district);
+      return response.data.results[0].roles[0].district;
+    }
+    else {
+      return null;
+    }
   })
 }
 
+//only adds district right now
 const combineMembersToVotes = (arrayOfMembers) => {
-// console.log('hi', arrayOfMembers)
- return arrayOfMembers.map((member) => {
-    // console.log(member)
-
-    member.district = getMembersDistrict(member.ppid)
-  })
-}
-
+// console.log(arrayOfMembers);
+  let membersWithDistrict = arrayOfMembers.map((member) => {
+    getMembersDistrict(member.ppid)
+    .then((district) => member.district = district)
+    // console.log(member.district)
+  });
+    // console.log(membersWithDistrict);
+};
 
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
 const getMembersPositions = (memberId) => {
@@ -244,7 +253,15 @@ const billNumberFormatter = (billNumberString) => {
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-getMembers().then((members) => combineMembersToVotes(members))
+getMembers()
+.then((members) => {
+  combineMembersToVotes(members)
+  // .then(finalMembers => console.log(finalMembers));
+})
+.catch(err => console.log(err));
+// .then(membersWithDistrict => {
+//   // console.log(membersWithDistrict)
+// })
 // getMembersPositions();// this now uses getAllOrganizationsForBill within
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
