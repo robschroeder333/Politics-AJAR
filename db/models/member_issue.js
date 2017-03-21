@@ -31,10 +31,10 @@ function setTotalScore(memberIssue){
   })
   .then(bills => {
     const billIds = bills.map(bill => bill.id);
-    return billIds.map(bId => Vote.findOne({where: {billId: bId, memberId: mId}}));
+    return Promise.all(billIds.map(bId => Vote.findOne({where: {billId: bId, memberId: mId}})));
   })
   .then(votes => {
-    return votes.map(vote => Score.findOne({where: {voteId: vote.id, issueId: iId}}))
+    return Promise.all(votes.map(vote => Score.findOne({where: {voteId: vote.id, issueId: iId}})));
   })
   .catch(err => console.error(err));
 }

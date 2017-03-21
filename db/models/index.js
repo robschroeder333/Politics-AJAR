@@ -7,6 +7,7 @@ const Vote = require('./vote.js');
 const Issue = require('./issue.js');
 const Score = require('./score.js');
 const MemberIssue = require('./member_issue.js');
+const IssueBill = require('./issue_bill.js');
 
 Member.hasOne(MemberInfo);
 MemberInfo.belongsTo(Member);
@@ -31,9 +32,13 @@ Bill.hasMany(Vote);
 Vote.belongsTo(Bill);
 
 Bill.belongsToMany(Issue, {
+	// as: 'issue_bills',
+	// through: IssueBill
 	through: 'issue_bills'
 });
 Issue.belongsToMany(Bill, {
+	// as: 'issue_bills',
+	// through: IssueBill
 	through: 'issue_bills'
 });
 
