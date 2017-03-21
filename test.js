@@ -117,7 +117,7 @@ const getMembersPositions = () => {
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-getAllBills();
+// getAllBills();
 // getAllOrganizationsForBill();
 // getMembers();
-// getMembersPositions();
+getMembersPositions();

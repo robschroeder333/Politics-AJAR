@@ -8,8 +8,8 @@ const db = require('../_db.js');
 const Member = db.define('members', {
   firstName: {
     type: Sequelize.STRING,
+    allowNull: false,
     validate: {
-      allowNull: false,
       notEmpty: true
     }
   },
@@ -18,15 +18,15 @@ const Member = db.define('members', {
   },
   lastName: {
     type: Sequelize.STRING,
+    allowNull: false,
     validate: {
-      allowNull: false,
       notEmpty: true
     }
   },
   ppid: {
     type: Sequelize.STRING,
+    allowNull: false,
     validate: {
-      allowNull: false,
       notEmpty: true
     }
   },
@@ -35,6 +35,13 @@ const Member = db.define('members', {
   },
   chamber: {
     type: Sequelize.ENUM('senate', 'house')
+  },
+  state: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
   district: {
     type: Sequelize.STRING
@@ -55,7 +62,13 @@ const Member = db.define('members', {
         ? 'Senate'
         : 'House of Representatives';
     }
-  }
+  },
+  hooks: {
+    beforeCreate: function(member) {
+      if (member.chamber === 'senate'){
+        member.district = null;
+      }
+    }}
 });
 
 module.exports = Member;
