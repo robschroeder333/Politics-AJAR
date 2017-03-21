@@ -12,6 +12,7 @@ const PROPUBLICAapikey = keys.proPub;
 
 //shared variables
 const congressNum = 115; //115 is the current congress
+let allMembers;
 
 
 //MAPLIGHT//
@@ -64,31 +65,99 @@ const getAllOrganizationsForBill = (billType, billNum) => {
 
 //For getting list of members
 const getMembers = () => {
-  const chamber = 'senate'; // 'house' or 'senate'
+  let chamber = 'senate'; // 'house' or 'senate'
 
-  axios.get(
+  return axios.get(
     `https://api.propublica.org/congress/v1/${congressNum}/${chamber}/members.json`,{
     headers: {
       'X-API-Key': PROPUBLICAapikey
     }
   })
   .then((response) => {
-    const officials = response.data.results[0].members.map(member => {
+    const officialsS = response.data.results[0].members.map(member => {
       return ({
-        id: member.id,
+        ppid: member.id,
         first_name: member.first_name,
+        middle_name: member.middle_name,
         last_name: member.last_name,
-        party: member.party
+        party: member.party,
+        chamber: chamber,
+        election_year: member.next_election,
+        district: null,
+        state: member.state
       });
     });
-    console.log(officials);
+    allMembers = officialsS;
+    // console.log(response.data.results[0].members);
+    // console.log(officials)
+    // roles does not exist. election year is available under next_election
+    // find out if distrit is only in house
+  })
+  .then(() => {
+    chamber = 'house'
+    return axios.get(
+        `https://api.propublica.org/congress/v1/${congressNum}/${chamber}/members.json`,{
+        headers: {
+          'X-API-Key': PROPUBLICAapikey
+        }
+      })
+      .then((response) => {
+        const officialsH = response.data.results[0].members.map(member => {
+          return ({
+            ppid: member.id,
+            first_name: member.first_name,
+            middle_name: member.middle_name,
+            last_name: member.last_name,
+            party: member.party,
+            chamber: chamber,
+            election_year: member.next_election,
+            district: null,
+            state: member.state,
+          });
+        });
+        allMembers = allMembers.concat(officialsH)
+        return allMembers;
+      })
+
+   console.log('final', allMembers)
+   // return allMembers;
   })
   .catch(err => console.log(err));
 };
 
+
+const getMembersDistrict = (memberId) => {
+
+ return axios.get(
+    `https://api.propublica.org/congress/v1/members/${memberId}.json`,{
+    headers: {
+      'X-API-Key': PROPUBLICAapikey
+    }
+  })
+  .then((response) => {
+    // console.log('wtf', response)
+    // if (response.results[0].roles[0].chamber === "House") {
+    //     return response.results[0].roles[0].district;
+    // }
+    // else {
+    //   return null;
+    // }
+  })
+}
+
+const combineMembersToVotes = (arrayOfMembers) => {
+// console.log('hi', arrayOfMembers)
+ return arrayOfMembers.map((member) => {
+    // console.log(member)
+
+    member.district = getMembersDistrict(member.ppid)
+  })
+}
+
+
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
-const getMembersPositions = () => {
-  const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
+const getMembersPositions = (memberId) => {
+  // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
                              //'S000033'//Senator Sanders [D] Vermont
 
   axios.get(
@@ -103,12 +172,13 @@ const getMembersPositions = () => {
               && vote.question.toLowerCase().includes('passage')) {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
-              type: billObj.billType,
+              prefix: billObj.billType,
               number: billObj.billNum,
-              bill: vote.bill.title,
+              name: vote.bill.title,
               question: vote.question,
               position: vote.position,
-              orgs: null
+              orgs: null,
+              year: vote.date.split('-')[0]
             });
           }
       });
@@ -116,7 +186,7 @@ const getMembersPositions = () => {
 
       //below is how we tie in the organizations that are involved with a bill
       const positionsWithOrgs = positions.map(bill => {
-        return getAllOrganizationsForBill(bill.type, bill.number)
+        return getAllOrganizationsForBill(bill.prefix, bill.number)
         .then(orgsArray => {
           bill.orgs = orgsArray;
           return bill;
@@ -124,7 +194,7 @@ const getMembersPositions = () => {
         .catch(err => console.log(err));
       })
       Promise.all(positionsWithOrgs)
-      .then((newposwithorgs) => console.log(newposwithorgs[2].orgs));//this is just an example to show how to get the data within the bill object
+      .then((newposwithorgs) => console.log(newposwithorgs));//this is just an example to show how to get the data within the bill object
   })
   .catch(err => console.log(err));
 };
@@ -174,7 +244,7 @@ const billNumberFormatter = (billNumberString) => {
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-// getMembers();
-getMembersPositions();// this now uses getAllOrganizationsForBill within
+getMembers().then((members) => combineMembersToVotes(members))
+// getMembersPositions();// this now uses getAllOrganizationsForBill within
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
