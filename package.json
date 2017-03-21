@@ -5,12 +5,13 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "mocha ./tests/**/*.js --compilers js:babel-register",
-    "start": "webpack -w --progress & nodemon server.js",
+    "start": "webpack -w --progress & nodemon app.js",
     "build-css": "node-sass -w public/sass/layout.scss -o public/style"
   },
   "author": "Team AJAR",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.15.3",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
     "babel-preset-es2015": "^6.16.0",
@@ -19,6 +20,8 @@
     "morgan": "^1.3.0",
     "node-sass": "^4.5.0",
     "nodemon": "^1.11.0",
+    "pg": "^6.1.4",
+    "pg-hstore": "^2.3.2",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
@@ -26,6 +29,7 @@
     "redux": "^3.6.0",
     "redux-logger": "^2.7.0",
     "redux-thunk": "^2.1.0",
+    "sequelize": "^3.30.2",
     "webpack": "^1.13.2"
   },
   "devDependencies": {

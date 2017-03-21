@@ -81,7 +81,8 @@ const getMembers = () => {
         party: member.party
       });
     });
-    console.log(officials);
+    // console.log(officials);
+    console.log(response.data.results[0].members);
   })
   .catch(err => console.log(err));
 };
