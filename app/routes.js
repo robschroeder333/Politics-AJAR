@@ -2,14 +2,18 @@ import React from 'react';
 import { Router, Route, browserHistory, IndexRedirect } from 'react-router';
 
 import App from './components/App'
-import Home from './components/Home'
+import Politicians from './containers/Politicians'
+import Politician from './components/Politician';
+import DisplayAndPoliticians from './containers/DisplayAndPoliticians'
 
 
 export default () => (
   <Router history={browserHistory}>
     <Route path="/" component={App}>
-      <IndexRedirect to="/home" />
-      <Route path="/home" component={Home} />
+      <IndexRedirect to="/displayPoliticians" />
+      <Route path="/displayPoliticians" component={DisplayAndPoliticians} />
+      <Route path="/politicians" component={Politicians} />
+      <Route path="/politician" component={Politician} />
     </Route>
   </Router>
 );
