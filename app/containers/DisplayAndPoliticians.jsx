@@ -3,9 +3,16 @@ import {connect} from 'react-redux';
 import Politicians from './Politicians'
 // import Sidebar from 'react-sidebar';
 
+import {Drawer, MenuItem, FlatButton, DropDownMenu} from 'material-ui'
 
-import {Drawer, MenuItem, FlatButton} from 'material-ui'
+const buttonStyle = {
+	textAlign: 'center',
+	paddingTop: 200
+}
 
+const navbarStyle = {
+	backgroundColor: '#a52a2a'
+}
 
 class DisplayAndPoliticians extends Component {
 
@@ -23,7 +30,6 @@ class DisplayAndPoliticians extends Component {
 		}
 		this.handleToggle = this.handleToggle.bind(this)
 	}
-
 
 	handleToggle(){
 		this.setState({open: !this.state.open})
@@ -63,9 +69,11 @@ class DisplayAndPoliticians extends Component {
 		return(
 			<div>
 			<Politicians handleToggle={this.handleToggle} politicians={politicians} />
-			<Drawer open={this.state.open} docked={true} > 
+			<Drawer open={this.state.open} docked={true} containerStyle={navbarStyle} > 
+			<div style={buttonStyle} >
 			   <FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
 			   <FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
+			</div>
         	</Drawer>
         	</div>
 		)

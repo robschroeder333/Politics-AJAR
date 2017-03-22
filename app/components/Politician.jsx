@@ -12,7 +12,7 @@ const Politician = (props) => {
     <Link to="#">
       <div className="row well" style={style}>
         <div className="col-sm-2">
-          <img src="http://static.tvgcdn.net/mediabin/galleries/shows/s_z/si_sp/spongebob_squarepants/season1/sponge-bob-square-pants11.jpg"
+          <img src="https://i.ytimg.com/vi/jkZf_J3wqYc/maxresdefault.jpg"
           style={{height: '50px', width: '100px'}}
           />
         </div>
