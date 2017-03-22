@@ -7,7 +7,6 @@ const db = require('../_db.js');
 const Issue = require('./issue.js');
 const Vote = require('./vote.js');
 
-
 const Member = db.define('members', {
   firstName: {
     type: Sequelize.STRING,

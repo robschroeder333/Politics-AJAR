@@ -6,8 +6,8 @@ const Member = db.model('members');
 const Vote = db.model('votes');
 
 const seedIssues = () => db.Promise.map([
-	{catCode: 'J6100', name: 'Anti-Guns', plusOrMinus: '+'},
-	{catCode: 'J6200', name: 'Pro-Guns', plusOrMinus: '-'},
+	{catCode: 'J6100', name: 'Anti-Guns'},
+	{catCode: 'J6200', name: 'Pro-Guns'}
 ], issue => db.model('issues').create(issue))
 
 const seedBills = () => db.Promise.map([
@@ -84,7 +84,6 @@ db.sync({force: true})
   .then(() => Member.findById(1))
   .then(member => member.getIssueScore(2, 2012, 2015))
   .then(score => console.log('Lloyd pre-2016 anti-gun score is: ', score))
-  // .then(() => Vote.findById(1))
-  // .then((vote) => vote.addScore(1, {score: 1}))
+ 
   .catch(error => console.error(error))
   .finally(() => db.close());
