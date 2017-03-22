@@ -2,18 +2,20 @@
 
 const db = require('./models');
 const Issue = db.model('issues');
+const Member = db.model('members');
+const Vote = db.model('votes');
 
 const seedIssues = () => db.Promise.map([
-	{catCode: 'J6100', name: 'Anti-Guns'},
-	{catCode: 'J6200', name: 'Pro-Guns'},
+	{catCode: 'J6100', name: 'Anti-Guns', plusOrMinus: '+'},
+	{catCode: 'J6200', name: 'Pro-Guns', plusOrMinus: '-'},
 ], issue => db.model('issues').create(issue))
 
 const seedBills = () => db.Promise.map([
-	{prefix: 'H', number: '101', session: '115', measure: 'H.R. 101 (115<sup>th</sup>)', name: 'Pro-Gun Bill of 2016'},
-	{prefix: 'H', number: '102', session: '115', measure: 'H.R. 102 (115<sup>th</sup>)', name: 'Another Pro-Gun Bill of 2016'},
-	{prefix: 'H', number: '103', session: '115', measure: 'H.R. 103 (115<sup>th</sup>)', name: 'A third Pro-Gun Bill of 2016'},
-	{prefix: 'H', number: '104', session: '115', measure: 'H.R. 104 (115<sup>th</sup>)', name: 'An Anti-Gun Bill of 2016'},
-	{prefix: 'H', number: '105', session: '115', measure: 'H.R. 105 (115<sup>th</sup>)', name: 'A second Anti-Gun Bill of 2016'}
+	{prefix: 'H', number: '101', session: '115', measure: 'H.R. 101 (115<sup>th</sup>)', name: 'Pro-Gun Bill of 2016', year: 2016},
+	{prefix: 'H', number: '102', session: '115', measure: 'H.R. 102 (115<sup>th</sup>)', name: 'Another Pro-Gun Bill of 2016', year: 2016},
+	{prefix: 'H', number: '103', session: '115', measure: 'H.R. 103 (115<sup>th</sup>)', name: 'A third Pro-Gun Bill of 2016', year: 2015},
+	{prefix: 'H', number: '104', session: '115', measure: 'H.R. 104 (115<sup>th</sup>)', name: 'An Anti-Gun Bill of 2016', year: 2016},
+	{prefix: 'H', number: '105', session: '115', measure: 'H.R. 105 (115<sup>th</sup>)', name: 'A second Anti-Gun Bill of 2016', year: 2016}
 ], bill => db.model('bills').create(bill))
 
 const seedMembers = () => db.Promise.map([
@@ -26,14 +28,6 @@ const seedMembersInfo = () => db.Promise.map([
 	{twitter: 'RepLloydDoggett', facebook: 'lloyddoggett', website: 'https://doggett.house.gov', phone: '202-225-4865', office: '', memberId: 2}
 ], memberInfo => db.model('member_info').create(memberInfo))
 
-
-// const seedUsers = () => db.Promise.map([
-//   {firstName: 'Gabe', lastName: 'Lebec', email: 'ILikeSwords@aol.com', isAdmin: false, streetAddress: '3 Javascript Lane', city: 'New York', state: 'NY', zipCode: 10001, creditCard: 1234567890123456, cvc: 123, password: "1234"},
-//   {firstName: 'Hubert', lastName: 'Hansen', email: 'ImTheRealMonster@yahoo.com', isAdmin: false, streetAddress: '14-14 Hazen Street', city: 'New York', state: 'NY', zipCode: 11370, creditCard: 4321567890123456, cvc: 456, password: "1234"},
-//   {firstName: 'Cookie', lastName: 'Monster', email: 'ImUsingThisSiteLikeTinder@hotmail.com', isAdmin: false, streetAddress: '123 Sesame Street', city: 'New York', state: 'NY', zipCode: 10002, creditCard: 4321567890123458, cvc: 789, password: "1234"},
-//   {firstName: 'Professional', lastName: 'Man', email: 'admin@hotmail.com', isAdmin: true, streetAddress: '13 fake Street', city: 'New Bork', state: 'AA', zipCode: 12345, creditCard: 4321567390123458, cvc: 719, password: "1234"}
-// ], user => db.model('users').create(user))
-
 db.sync({force: true})
   .then(seedIssues)
   .then(issues => console.log(`Seeded ${issues.length} issues OK`))
@@ -44,30 +38,53 @@ db.sync({force: true})
   .then(seedMembersInfo)
   .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
   .then(() => Issue.findById(1))
-  .then((issue) => issue.addBills([4, 5]))
+  .then((issue) => issue.addIssue_bills([4, 5]))
   .then(() => Issue.findById(2))
-  .then((issue) => issue.addBills([1, 2, 3]))
-  // .then(seedTransactions)
-  // .then(transactions => console.log(`Seeded ${transactions.length} transactions OK`))
-  // .then(seedCategories)
-  // .then(categories => console.log(`Seeded ${categories.length} categories OK`))
-  // .then(() => Product.findById(1))
-  // .then((product) => product.addCategories([1, 2, 7]))
-  // .then(() => Product.findById(2))
-  // .then((product) => product.addCategories([1, 2, 7]))
-  // .then(() => Product.findById(3))
-  // .then((product) => product.addCategories([7]))
-  // .then(() => Product.findById(4))
-  // .then((product) => product.addCategories([6, 7]))
-  // .then(() => Product.findById(5))
-  // .then((product) => product.addCategories([4, 7]))
-  // .then(() => Product.findById(6))
-  // .then((product) => product.addCategories([3, 7]))
-  // .then(() => Product.findById(7))
-  // .then((product) => product.addCategories([1, 7]))
-  // .then(() => Product.findById(8))
-  // .then((product) => product.addCategories([6, 7]))
-  // .then(() => Product.findById(25))
-  // .then((product) => product.addCategories([8]))
+  .then((issue) => issue.addIssue_bills([1, 2, 3]))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(1, {position: 'yes'}))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(2, {position: 'no'}))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(3, {position: 'yes'}))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(4, {position: 'yes'}))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(5, {position: 'no'}))
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(1, {position: 'no'}))
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(2, {position: 'no'}))
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(3, {position: 'no'}))
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(4, {position: 'no'}))
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(5, {position: 'no'}))
+
+  // .then(() => Issue.findById(1))
+  // .then((issue) => issue.getIssue_bills())
+  // .then(billArr => {billArr.forEach(bill => console.log(bill.id));})
+
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(1))
+  .then(score => console.log('Lloyd pro-gun score is: ', score))
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(2))
+  .then(score => console.log('Lloyd anti-gun score is: ', score))
+  .then(() => Member.findById(2))
+  .then(member => member.getIssueScore(1))
+  .then(score => console.log('Rosa pro-gun score is: ', score))
+  .then(() => Member.findById(2))
+  .then(member => member.getIssueScore(2))
+  .then(score => console.log('Rosa anti-gun score is: ', score))
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(1, 2012, 2015))
+  .then(score => console.log('Lloyd pre-2016 pro-gun score is: ', score))
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(2, 2012, 2015))
+  .then(score => console.log('Lloyd pre-2016 anti-gun score is: ', score))
+  // .then(() => Vote.findById(1))
+  // .then((vote) => vote.addScore(1, {score: 1}))
   .catch(error => console.error(error))
   .finally(() => db.close());

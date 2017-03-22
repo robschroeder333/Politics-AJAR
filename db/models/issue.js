@@ -22,6 +22,11 @@ const Issue = db.define('issues', {
     }
     // 'name' is the common English name of category. Comes in through the 'Catname' key. Ex: "Anti-Guns", "Labor, anti-union"
     // also taken from http://www.opensecrets.org/downloads/crp/CRP_Categories.txt
+  },
+  plusOrMinus: {
+    type: Sequelize.ENUM('+', '-')
+    // 'plusOrMinus' lets score table know whether a 'yes' vote should be counted as a plus or minus
+    // when calculating total score for an issue
   }
 },
 {

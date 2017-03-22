@@ -41,6 +41,10 @@ const Bill = db.define('bills', {
   name: {
     type: Sequelize.STRING
     // 'name' is the common English title. Comes in through the 'topic' key. ex: 'Seniors Have Eyes, Ears, and Teeth Act of 2017'
+  },
+  year: {
+    type: Sequelize.INTEGER
+    // 'year' is the year the bill was voted on
   }
 },
 {
