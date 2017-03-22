@@ -142,26 +142,41 @@ const getMembersDistrict = (memberId) => {
     }
   })
   .then((response) => {
-    console.log(response.data.results[0].roles[0])
-    if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House" && response.data.results[0].roles[0].district) {
-    // console.log(response.data.results[0].roles[0].district);
+    // console.log(response.data.results[0] && response.data.results[0].roles[0].chamber === "House");
+    if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House") {
+      // console.log(response.data.results[0].roles[0].district)
       return response.data.results[0].roles[0].district;
-    }
-    else {
+    } else {
       return null;
     }
   })
-}
+  .catch(err => console.log(err));
+};
 
 //only adds district right now
 const combineMembersToVotes = (arrayOfMembers) => {
 // console.log(arrayOfMembers);
   let membersWithDistrict = arrayOfMembers.map((member) => {
-    getMembersDistrict(member.ppid)
-    .then((district) => member.district = district)
-    // console.log(member.district)
+
+    return getMembersDistrict(member.ppid)
+    .then((district) => {
+      member.district = district;
+    })
+    .then(() => {
+      return getMembersPositions(member.ppid)
+      .then((positions) => {
+        member.positions = positions;
+        // console.log(member);
+        return member;//this is correct!!!!!!!!!!!!!!!
+      })
+      .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
   });
-    // console.log(membersWithDistrict);
+
+    // console.log("testing ",membersWithDistrict[0]);
+  return Promise.all(membersWithDistrict);
+
 };
 
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
@@ -169,7 +184,7 @@ const getMembersPositions = (memberId) => {
   // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
                              //'S000033'//Senator Sanders [D] Vermont
 
-  axios.get(
+  return axios.get(
     `https://api.propublica.org/congress/v1/members/${memberId}/votes.json`,{
     headers: {
       'X-API-Key': PROPUBLICAapikey
@@ -187,7 +202,7 @@ const getMembersPositions = (memberId) => {
               question: vote.question,
               position: vote.position,
               orgs: null,
-              year: vote.date.split('-')[0]
+              year: parseInt(vote.date.split('-')[0], 10)
             });
           }
       });
@@ -202,8 +217,8 @@ const getMembersPositions = (memberId) => {
         })
         .catch(err => console.log(err));
       })
-      Promise.all(positionsWithOrgs)
-      .then((newposwithorgs) => console.log(newposwithorgs));//this is just an example to show how to get the data within the bill object
+      return Promise.all(positionsWithOrgs)
+      // .then((newposwithorgs) => console.log(newposwithorgs));
   })
   .catch(err => console.log(err));
 };
@@ -253,15 +268,42 @@ const billNumberFormatter = (billNumberString) => {
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
+let AllInformation = [];
+
 getMembers()
 .then((members) => {
-  combineMembersToVotes(members)
-  // .then(finalMembers => console.log(finalMembers));
+  //cannot run on all members at once. set up multiple calls.
+  // console.log(members);
+  const members1 = members.slice(0, 100);
+  const members2 = members.slice(100, 200);
+  const members3 = members.slice(200, 300);
+  const members4 = members.slice(300, 400);
+  const members5 = members.slice(400, 500);
+  const members6 = members.slice(500);
+  //promises
+  const p1 = combineMembersToVotes(members1);
+
+  // i need to delay this but also have the promise.all know what to wait for
+  setTimeout(() => {
+    const p2 = combineMembersToVotes(members2);
+  }, 120000)
+  // const p3 = combineMembersToVotes(members3);
+  // const p4 = combineMembersToVotes(members4);
+  // const p5 = combineMembersToVotes(members5);
+  // const p6 = combineMembersToVotes(members6);
+
+  Promise.all([p1, p2])//, p3, p4, p5, p6])
+  .then(finalMembers => {
+    AllInformation = AllInformation.concat(finalMembers[0], finalMembers[1])//, finalMembers[2], finalMembers[3], finalMembers[4], finalMembers[5]);
+
+    console.log(AllInformation);
+  })
+  .catch(err => console.log(err));
 })
 .catch(err => console.log(err));
-// .then(membersWithDistrict => {
-//   // console.log(membersWithDistrict)
-// })
-// getMembersPositions();// this now uses getAllOrganizationsForBill within
+
+// getMembersPositions('C000984')
+// .then(arrOfBills => console.log(arrOfBills))
 // getAllOrganizationsForBill("h", 7);
+
 // getAllBills();
