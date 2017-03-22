@@ -4,6 +4,8 @@
 
 const Sequelize = require('sequelize');
 const db = require('../_db.js');
+const Issue = require('./issue.js');
+const Vote = require('./vote.js');
 
 const Member = db.define('members', {
   firstName: {
@@ -51,6 +53,51 @@ const Member = db.define('members', {
   }
 },
 {
+  instanceMethods: {
+    getIssueScore (issueId, startYear, endYear) {
+      //called on member instance, issue id required.
+      //startYear and endYear are optional,
+      //and limit score calculation to bills between specified years
+      if (startYear === undefined){ startYear = 2000; }
+      if (endYear === undefined){ endYear = 2016; }
+      const mId = this.id;
+      return Issue.findById(issueId)
+      .then(issue => issue.getIssue_bills({where:
+        {
+          year: {
+            $between: [startYear, endYear]
+          }
+        }
+      }))
+      .then(bills => {
+        const billArr = [];
+        bills.forEach(bill => billArr.push(bill.id));
+          return billArr;
+        })
+      .then(bIds => {
+        const voteArr = [];
+        bIds.forEach(bId => voteArr.push(Vote.findOne({
+                  where: {
+                    billId: bId,
+                    memberId: mId
+                  }
+                })
+              ));
+        return voteArr;
+      })
+      .then(vs => Promise.all(vs))
+      .then(votes => {
+        let score = 0;
+        if (votes.length !== 0){
+          votes.forEach(vote => {
+            if (vote.position === 'yes') {score++;}
+          });
+        }
+        return (votes.length !== 0) ? ((score / votes.length) * 100) : 0;
+      })
+      .catch(error => console.error(error));
+    }
+  },
   getterMethods: {
     fullName() {
       return (this.middleName)
