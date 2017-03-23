@@ -3,7 +3,7 @@
 const axios = require('axios');
 const queryString = require('querystring');
 const keys = require('./keys.js');//add this file (have it export the api keys) and add to gitignore
-
+const fs = require('fs');
 
 //KEYS
 const MAPLIGHTapikey = keys.mapLight;
@@ -50,7 +50,7 @@ const getAllOrganizationsForBill = (billType, billNum) => {
   .then((response) => {
     const organizations = response.data.bill.organizations.map(organization => ({
         name: organization.name,
-        position: organization.disposition,
+        disposition: organization.disposition,
         organizationType: organization.catcode //this can be used to determine the stance of the bill itself (i think) site: http://www.opensecrets.org/downloads/crp/CRP_Categories.txt
       })
     );
@@ -179,6 +179,45 @@ const combineMembersToVotes = (arrayOfMembers) => {
 
 };
 
+//converts the bills measure info from propublica to maplight
+const billNumberFormatter = (billNumberString) => {
+  // console.log(billNumberString);
+  const splitBill = billNumberString.split('.');
+  const number = splitBill.pop();
+  const tempType = splitBill.join('').toUpperCase();
+  let newType;
+
+  if (tempType === "HR"){
+    newType= "h"
+  }
+  if (tempType === "HRES"){
+    newType= "hr"
+  }
+  if (tempType === "HJRES"){
+    newType= "hj"
+  }
+  if (tempType === "HCONRES"){
+    newType= "hc"
+  }
+  if (tempType === "S"){
+    newType= "s"
+  }
+  if (tempType === "SRES"){
+    newType= "sr"
+  }
+  if (tempType === "SJRES"){
+    newType= "sj"
+  }
+  if (tempType === "SCONRES"){
+    newType= "sc"
+  }
+
+  return ({
+    billType: newType,
+    billNum: parseInt(number, 10)
+  })
+};
+
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
 const getMembersPositions = (memberId) => {
   // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
@@ -223,87 +262,57 @@ const getMembersPositions = (memberId) => {
   .catch(err => console.log(err));
 };
 
-//converts the bills measure info from propublica to maplight
-const billNumberFormatter = (billNumberString) => {
-  const splitBill = billNumberString.split(' ');
-  const number = splitBill.pop();
-  const tempType = splitBill.join('').toUpperCase();
-  let newType;
-
-  if (tempType === "HR"){
-    newType= "h"
-  }
-  if (tempType === "HRES"){
-    newType= "hr"
-  }
-  if (tempType === "HJRES"){
-    newType= "hj"
-  }
-  if (tempType === "HCONRES"){
-    newType= "hc"
-  }
-  if (tempType === "S"){
-    newType= "s"
-  }
-  if (tempType === "SRES"){
-    newType= "sr"
-  }
-  if (tempType === "SJRES"){
-    newType= "sj"
-  }
-  if (tempType === "SCONRES"){
-    newType= "sc"
-  }
-
-  return ({
-    billType: newType,
-    billNum: parseInt(number, 10)
-  })
-}
 
 
+//combines all slices of the arrayOfMembers recursively (combining individual member to their votes)
+const doCombine = (memberPieces, lastI, nextI, accReturn) => {
+  if (nextI === lastI + 1) {
+    console.log("Finished Processing");
+    // console.log(accReturn[0].positions[0].orgs);
+    fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
+      if (err) throw err;
+      console.log('Save Complete');
+    });
+  } else {
+    console.log("Processing batch: ", nextI);
+    combineMembersToVotes(memberPieces[nextI]).then((finalMembers) => {
+      accReturn = accReturn.concat(finalMembers);
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn), nextI * 60 * 1000);
+    });
+  }
+};
 
 
 ////////////////////////
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-let AllInformation = [];
+// let AllInformation = [];
 
 getMembers()
 .then((members) => {
-  //cannot run on all members at once. set up multiple calls.
-  // console.log(members);
-  const members1 = members.slice(0, 100);
-  const members2 = members.slice(100, 200);
-  const members3 = members.slice(200, 300);
-  const members4 = members.slice(300, 400);
-  const members5 = members.slice(400, 500);
-  const members6 = members.slice(500);
-  //promises
-  const p1 = combineMembersToVotes(members1);
+  //cannot run on all members at once. set up slices for multiple calls.
+  const memberPieces = [];
+  memberPieces.push(members.slice(0, 50));//0
+  memberPieces.push(members.slice(50, 100));//1
+  memberPieces.push(members.slice(100, 150));//2
+  memberPieces.push(members.slice(150, 200));//3
+  memberPieces.push(members.slice(200, 250));//4
+  memberPieces.push(members.slice(250, 300));//5
+  memberPieces.push(members.slice(300, 350));//6
+  memberPieces.push(members.slice(350, 400));//7
+  memberPieces.push(members.slice(400, 450));//8
+  memberPieces.push(members.slice(450, 500));//9
+  memberPieces.push(members.slice(500));//10
 
-  // i need to delay this but also have the promise.all know what to wait for
-  setTimeout(() => {
-    const p2 = combineMembersToVotes(members2);
-  }, 120000)
-  // const p3 = combineMembersToVotes(members3);
-  // const p4 = combineMembersToVotes(members4);
-  // const p5 = combineMembersToVotes(members5);
-  // const p6 = combineMembersToVotes(members6);
-
-  Promise.all([p1, p2])//, p3, p4, p5, p6])
-  .then(finalMembers => {
-    AllInformation = AllInformation.concat(finalMembers[0], finalMembers[1])//, finalMembers[2], finalMembers[3], finalMembers[4], finalMembers[5]);
-
-    console.log(AllInformation);
-  })
-  .catch(err => console.log(err));
+  //(array, last index, next index, memoization array)
+  doCombine(memberPieces, 4, 0, []);
 })
 .catch(err => console.log(err));
 
-// getMembersPositions('C000984')
-// .then(arrOfBills => console.log(arrOfBills))
-// getAllOrganizationsForBill("h", 7);
 
+//api test calls
+// getMembersPositions('A000360')//.then(data => console.log(data));
+// getAllOrganizationsForBill("h", 7);
 // getAllBills();
+
