@@ -1,9 +1,9 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import rootReducer from './ducks/reducers';
+import rootReducer from './dux/reducers';
 import createLogger from 'redux-logger'
 import thunkMiddleware from 'redux-thunk'
 
-import { getAllPoliticians } from './ducks/politicians.jsx';
+import { getAllPoliticians } from './dux/politicians.jsx';
 
 // logs state changes in chrome console
 const logger = createLogger({collapsed: true})

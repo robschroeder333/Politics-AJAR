@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getPoliticians } from '../ducks/politicians';
+import { getPoliticians } from '../dux/politicians';
 import Politician from '../components/Politician.jsx'
 // import RaisedButton from 'material-ui/RaisedButton';
 
