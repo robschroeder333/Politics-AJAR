@@ -6,6 +6,7 @@ const Sequelize = require('sequelize');
 const db = require('../_db.js');
 const Issue = require('./issue.js');
 const Vote = require('./vote.js');
+const Cat = require('./cat.js');
 
 const Member = db.define('members', {
   firstName: {
@@ -28,6 +29,7 @@ const Member = db.define('members', {
   ppid: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true
     }
@@ -87,13 +89,68 @@ const Member = db.define('members', {
       })
       .then(vs => Promise.all(vs))
       .then(votes => {
-        let score = 0;
+        let voteScore = 0;
         if (votes.length !== 0){
           votes.forEach(vote => {
-            if (vote.position === 'yes') {score++;}
+            if (vote.position === 'yes') {voteScore++;}
           });
         }
-        return (votes.length !== 0) ? ((score / votes.length) * 100) : 0;
+        return (votes.length !== 0) ? [voteScore, votes.length] : [0, 0];
+        // ((score / votes.length) * 100)
+      })
+      .catch(error => console.error(error));
+    },
+    getCatScore (catId, startYear, endYear) {
+      //called on member instance, issue id required.
+      //startYear and endYear are optional,
+      //and limit score calculation to bills between specified years
+      const member = this;
+      const mId = this.id;
+
+      return Cat.findById(catId)
+      .then(cat => cat.getIssue_cats())
+      .then(issues => {
+        let arr = [];
+        issues.forEach(issue => {
+          // let inArr = [];
+          // inArr.push(member.getIssueScore(issue.id, startYear, endYear));
+          arr.push(issue.getIssue_cats());
+          // arr.push(Promise.all(inArr));
+        });
+        return Promise.all(arr);
+      })
+      .then(result => {
+        // console.log('issueId is ', result[0][0]['issue_cats']['dataValues']['issueId'], ' plusOrMinus is ', result[0][0]['issue_cats']['dataValues']['plusOrMinus']);
+        // console.log('issueId is ', result[1][0]['issue_cats']['dataValues']['issueId'], ' plusOrMinus is ', result[1][0]['issue_cats']['dataValues']['plusOrMinus']);
+        let scoreArr = [];
+        result.forEach(issue => {
+          let inArr = [];
+          inArr.push(issue[0].issue_cats.dataValues.plusOrMinus);
+          inArr.push(member.getIssueScore(issue[0].issue_cats.dataValues.issueId, startYear, endYear));
+          scoreArr.push(Promise.all(inArr));
+        });
+        return Promise.all(scoreArr);
+      })
+      .then(scores => {
+        let score = 0;
+        let voteCount = 0;
+        let memberScore = 0
+        for (let i = 0; i < scores.length; i++){
+          if (scores[i][0] === '-'){
+            // console.log(scores[i])
+            score += (scores[i][1][1] - scores[i][1][0]);
+            voteCount += scores[i][1][1];
+          }
+          else {
+            // console.log(scores[i]);
+            score += scores[i][1][0];
+            voteCount += scores[i][1][1];
+          }
+        }
+        memberScore = (score / voteCount) * 100;
+
+        return [memberScore - 0, Math.abs(memberScore - 25), Math.abs(memberScore - 50), Math.abs(memberScore - 75), 100 - memberScore];
+
       })
       .catch(error => console.error(error));
     }
