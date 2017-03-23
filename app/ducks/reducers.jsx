@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import rename from './rename'
+import politicians from './politicians'
 
 const rootReducer = combineReducers({
-  rename
+  politicians
 });
 
 export default rootReducer;
