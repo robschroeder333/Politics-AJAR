@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getPoliticians } from '../dux/politicians';
+import { getPoliticians } from '../ducks/politicians';
 import Politician from '../components/Politician.jsx'
-// import RaisedButton from 'material-ui/RaisedButton';
-
-// const buttonStyle = {
-//   marginLeft: 600
-// }
-{/* <RaisedButton style={buttonStyle} label="Toggle"  onClick={this.props.handleToggle} /> */}
 
 class Politicians extends Component {
   constructor(props) {
