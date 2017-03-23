@@ -22,7 +22,6 @@ const Politician = (props) => {
           <h6>{politician.chamberName}</h6>
           <h6>{politician.state}</h6>
         </div>
-        {newIssues}
       </div>
     </Link>
   )
