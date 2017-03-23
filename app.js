@@ -6,15 +6,18 @@ const { resolve } = require('path');
 const db = require('./db/models');
 
 const app = express();
+const server = require('./server');
 
 // logging middleware
 app.use(morgan('dev'));
+
+app.use('/api', server)
 
 // serve static files from public
 app.use('/public', express.static('public'));
 
 // request any page and receive index.html
-app.get('/*', (req, res) => res.sendFile(resolve(__dirname, 'index.html')));
+app.get('/*', (req, res) => res.sendFile(resolve(__dirname, 'public/index.html')));
 
 // server listening!
 app.listen(process.env.PORT || 3000, () => {
