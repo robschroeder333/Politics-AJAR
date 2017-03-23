@@ -134,7 +134,7 @@ const Member = db.define('members', {
       .then(scores => {
         let score = 0;
         let voteCount = 0;
-        let memberScore = 0
+        let memberScore = 0;
         for (let i = 0; i < scores.length; i++){
           if (scores[i][0] === '-'){
             // console.log(scores[i])
