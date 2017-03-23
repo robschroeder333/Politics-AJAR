@@ -315,4 +315,3 @@ getMembers()
 // getMembersPositions('A000360')//.then(data => console.log(data));
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
-
