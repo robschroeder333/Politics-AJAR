@@ -1,11 +1,7 @@
 .ds_store
 
 # Ignore all node_modules
-<<<<<<< HEAD
-node_modules/*
-=======
 node_modules
->>>>>>> 63698fa30890fb486fc28a182db17788ef4c32fb
 
 # ...except the symlink to ourselves.
 !node_modules/APP
@@ -20,6 +16,3 @@ npm-debug.log
 # API keys
 <<<<<<< HEAD
 keys.js
-=======
-keys.js
->>>>>>> 63698fa30890fb486fc28a182db17788ef4c32fb

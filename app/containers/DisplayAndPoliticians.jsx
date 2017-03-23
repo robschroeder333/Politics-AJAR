@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Politicians from './Politicians'
-// import Sidebar from 'react-sidebar';
+import Sidebar from 'react-sidebar';
+import RaisedButton from 'material-ui/RaisedButton';
 
-import {Drawer, MenuItem, FlatButton, DropDownMenu} from 'material-ui'
+import { MenuItem, FlatButton, DropDownMenu } from 'material-ui'
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -11,7 +12,52 @@ const buttonStyle = {
 }
 
 const navbarStyle = {
-	backgroundColor: '#a52a2a'
+	 root: {
+	   position: 'absolute',
+	   top: 0,
+	   left: 0,
+	   right: 0,
+	   bottom: 0,
+	   overflow: 'hidden',
+	 },
+	 sidebar: {
+	   zIndex: 2,
+	   position: 'absolute',
+	   top: 0,
+	   bottom: 0,
+	   transition: 'transform .3s ease-out',
+	   WebkitTransition: '-webkit-transform .3s ease-out',
+	   willChange: 'transform',
+	   overflowY: 'auto',
+		 backgroundColor: '#a52a2a',
+	 },
+	 content: {
+	   position: 'absolute',
+	   top: 0,
+	   left: 0,
+	   right: 0,
+	   bottom: 0,
+	   overflow: 'auto',
+	   transition: 'left .3s ease-out, right .3s ease-out',
+	 },
+	 overlay: {
+	   zIndex: 1,
+	   position: 'fixed',
+	   top: 0,
+	   left: 0,
+	   right: 0,
+	   bottom: 0,
+	   opacity: 0,
+	   visibility: 'hidden',
+	   transition: 'opacity .3s ease-out',
+		 backgroundColor: 'rgba(0,0,0,.3)'
+	 },
+	 dragHandle: {
+	   zIndex: 1,
+	   position: 'fixed',
+	   top: 0,
+	   bottom: 0,
+	 }
 }
 
 class DisplayAndPoliticians extends Component {
@@ -19,7 +65,8 @@ class DisplayAndPoliticians extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			open: true,
+			sidebarOpen: false,
+			sidebarDocked: true,
 			search: '',
 			senateSelected: true,
 			houseSelected: true,
@@ -31,8 +78,12 @@ class DisplayAndPoliticians extends Component {
 		this.handleToggle = this.handleToggle.bind(this)
 	}
 
+	onSetSidebarOpen(open) {
+		this.setState({sidebarOpen: open})
+	}
+
 	handleToggle(){
-		this.setState({open: !this.state.open})
+		this.setState({sidebarDocked: !this.state.sidebarDocked})
 	}
 
 	onClick(filter){
@@ -52,30 +103,37 @@ class DisplayAndPoliticians extends Component {
 	}
 
 	render(){
-		let sidebarContent = <p> Sidebar content </p>
+		let sidebarContent = <div style={buttonStyle} >
+				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
+				<FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
+			</div>
+
 		let {politicians} = this.props
 		let {senateSelected, houseSelected} = this.state
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
 		}
-		if (!senateSelected && houseSelected){
+		else if (!senateSelected && houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('house'))
 		}
-		if (senateSelected && houseSelected){
+		else if (senateSelected && houseSelected){
 			politicians = politicians;
 		}
+		else politicians = []
 
 		return(
 			<div>
-			<Politicians handleToggle={this.handleToggle} politicians={politicians} />
-			<Drawer open={this.state.open} docked={true} containerStyle={navbarStyle} > 
-			<div style={buttonStyle} >
-			   <FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
-			   <FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
-			</div>
-        	</Drawer>
-        	</div>
+				<Sidebar
+					sidebar={sidebarContent}
+					open={this.state.sidebarOpen}
+					onSetOpen={this.onSetSidebarOpen}
+					docked={this.state.sidebarDocked}
+					styles={navbarStyle}>
+						<RaisedButton label="Toggle"  onClick={this.handleToggle} />
+						<Politicians handleToggle={this.handleToggle} politicians={politicians} />
+				</Sidebar>
+    	</div>
 		)
 	}
 }
@@ -87,8 +145,7 @@ const mapStateToProps = ({politicians}) => {
   }
 }
 
-// const mapDispatchToProps = dispatch => ({
-//   update: () => dispatch(getPoliticians())
-// })
-
 export default connect(mapStateToProps)(DisplayAndPoliticians)
+
+{/* <Drawer open={this.state.open} docked={true} containerStyle={navbarStyle} >
+</Drawer> */}

@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getPoliticians } from '../ducks/politicians';
 import Politician from '../components/Politician.jsx'
-import RaisedButton from 'material-ui/RaisedButton';
+// import RaisedButton from 'material-ui/RaisedButton';
 
-const buttonStyle = {
-  marginLeft: 600
-}
+// const buttonStyle = {
+//   marginLeft: 600
+// }
+{/* <RaisedButton style={buttonStyle} label="Toggle"  onClick={this.props.handleToggle} /> */}
 
 class Politicians extends Component {
   constructor(props) {
@@ -17,10 +18,9 @@ class Politicians extends Component {
     const {politicians} = this.props
     return (
       <div>
-         <RaisedButton style={buttonStyle} label="Toggle"  />
-        <h3>Render all politicians</h3>
-  
-        <ul>
+        <h3 className="text-center">Render all politicians</h3>
+
+        <ul className="text-left">
           {politicians.map(politician => {
               return (
                 <li key={politician.id}>
@@ -36,7 +36,5 @@ class Politicians extends Component {
 }
 
 /* REDUX CONTAINER */
-
-
 
 export default connect(/*, mapDispatchToProps*/)(Politicians);
