@@ -2,9 +2,6 @@ import React from 'react';
 import { Link } from 'react-router';
 
 
-const newIssues = <div> 
-<Issue />
-</div>
 const style = {
   marginLeft: '0%'
 }
@@ -32,11 +29,3 @@ const Politician = (props) => {
 }
 
 export default Politician;
-
-
-// issue = <div>
-// {newIssues}
-// </div> 
-
-// let newIssues = <Issue />
-
