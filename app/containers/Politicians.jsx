@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getPoliticians } from '../ducks/politicians';
-import Politician from '../components/Politician.jsx';
-
-/* <RaisedButton style={buttonStyle} label="Toggle"  onClick={this.props.handleToggle} /> */
+import Politician from '../components/Politician.jsx'
 
 class Politicians extends Component {
   constructor(props) {

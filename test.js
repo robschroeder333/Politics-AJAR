@@ -3,7 +3,7 @@
 const axios = require('axios');
 const queryString = require('querystring');
 const keys = require('./keys.js');//add this file (have it export the api keys) and add to gitignore
-
+const fs = require('fs');
 
 //KEYS
 const MAPLIGHTapikey = keys.mapLight;
@@ -27,9 +27,9 @@ const getAllBills = () => {
 
   axios.get(
     `http://maplight.org/services_open_api/map.bill_list_v1.json/?apikey=${MAPLIGHTapikey}&jurisdiction=${jurisdiction}&session=${congressNum}&include_organizations=${include_organizations}&has_organizations=${has_organizations}`)
-  .then((response) =>
-    console.log(response.data)
-  )
+  .then((response) => {
+    // console.log(response.data)
+  })
   .catch(err => console.log(err));
 };
 
@@ -50,7 +50,7 @@ const getAllOrganizationsForBill = (billType, billNum) => {
   .then((response) => {
     const organizations = response.data.bill.organizations.map(organization => ({
         name: organization.name,
-        position: organization.disposition,
+        disposition: organization.disposition,
         organizationType: organization.catcode //this can be used to determine the stance of the bill itself (i think) site: http://www.opensecrets.org/downloads/crp/CRP_Categories.txt
       })
     );
@@ -84,7 +84,12 @@ const getMembers = () => {
         chamber: chamber,
         election_year: member.next_election,
         district: null,
-        state: member.state
+        state: member.state,
+        twitter: member.twitter_account,
+        facebook: member.facebook_account,
+        website: member.url,
+        office: member.office,
+        phone: member.phone
       });
     });
     allMembers = officialsS;
@@ -94,7 +99,7 @@ const getMembers = () => {
     // find out if distrit is only in house
   })
   .then(() => {
-    chamber = 'house'
+    chamber = 'house';
     return axios.get(
         `https://api.propublica.org/congress/v1/${congressNum}/${chamber}/members.json`,{
         headers: {
@@ -113,14 +118,16 @@ const getMembers = () => {
             election_year: member.next_election,
             district: null,
             state: member.state,
+            twitter: member.twitter_account,
+            facebook: member.facebook_account,
+            website: member.url,
+            office: member.office,
+            phone: member.phone
           });
         });
-        allMembers = allMembers.concat(officialsH)
+        allMembers = allMembers.concat(officialsH);
         return allMembers;
-      })
-
-   console.log('final', allMembers)
-   // return allMembers;
+      });
   })
   .catch(err => console.log(err));
 };
@@ -135,73 +142,47 @@ const getMembersDistrict = (memberId) => {
     }
   })
   .then((response) => {
-    // console.log('wtf', response)
-    // if (response.results[0].roles[0].chamber === "House") {
-    //     return response.results[0].roles[0].district;
-    // }
-    // else {
-    //   return null;
-    // }
-  })
-}
-
-const combineMembersToVotes = (arrayOfMembers) => {
-// console.log('hi', arrayOfMembers)
- return arrayOfMembers.map((member) => {
-    // console.log(member)
-
-    member.district = getMembersDistrict(member.ppid)
-  })
-}
-
-
-//For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
-const getMembersPositions = (memberId) => {
-  // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
-                             //'S000033'//Senator Sanders [D] Vermont
-
-  axios.get(
-    `https://api.propublica.org/congress/v1/members/${memberId}/votes.json`,{
-    headers: {
-      'X-API-Key': PROPUBLICAapikey
+    // console.log(response.data.results[0] && response.data.results[0].roles[0].chamber === "House");
+    if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House") {
+      // console.log(response.data.results[0].roles[0].district)
+      return response.data.results[0].roles[0].district;
+    } else {
+      return null;
     }
-  })
-  .then((response) => {
-    let positions = response.data.results[0].votes.map(vote => {
-          if (vote.bill.title !== undefined
-              && vote.question.toLowerCase().includes('passage')) {
-            const billObj = billNumberFormatter(vote.bill.number);
-            return ({
-              prefix: billObj.billType,
-              number: billObj.billNum,
-              name: vote.bill.title,
-              question: vote.question,
-              position: vote.position,
-              orgs: null,
-              year: vote.date.split('-')[0]
-            });
-          }
-      });
-      positions = positions.filter(ele => ele !== undefined);
-
-      //below is how we tie in the organizations that are involved with a bill
-      const positionsWithOrgs = positions.map(bill => {
-        return getAllOrganizationsForBill(bill.prefix, bill.number)
-        .then(orgsArray => {
-          bill.orgs = orgsArray;
-          return bill;
-        })
-        .catch(err => console.log(err));
-      })
-      Promise.all(positionsWithOrgs)
-      .then((newposwithorgs) => console.log(newposwithorgs));//this is just an example to show how to get the data within the bill object
   })
   .catch(err => console.log(err));
 };
 
+//only adds district right now
+const combineMembersToVotes = (arrayOfMembers) => {
+// console.log(arrayOfMembers);
+  let membersWithDistrict = arrayOfMembers.map((member) => {
+
+    return getMembersDistrict(member.ppid)
+    .then((district) => {
+      member.district = district;
+    })
+    .then(() => {
+      return getMembersPositions(member.ppid)
+      .then((positions) => {
+        member.positions = positions;
+        // console.log(member);
+        return member;//this is correct!!!!!!!!!!!!!!!
+      })
+      .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+  });
+
+    // console.log("testing ",membersWithDistrict[0]);
+  return Promise.all(membersWithDistrict);
+
+};
+
 //converts the bills measure info from propublica to maplight
 const billNumberFormatter = (billNumberString) => {
-  const splitBill = billNumberString.split(' ');
+  // console.log(billNumberString);
+  const splitBill = billNumberString.split('.');
   const number = splitBill.pop();
   const tempType = splitBill.join('').toUpperCase();
   let newType;
@@ -235,16 +216,102 @@ const billNumberFormatter = (billNumberString) => {
     billType: newType,
     billNum: parseInt(number, 10)
   })
-}
+};
+
+//For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
+const getMembersPositions = (memberId) => {
+  // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
+                             //'S000033'//Senator Sanders [D] Vermont
+
+  return axios.get(
+    `https://api.propublica.org/congress/v1/members/${memberId}/votes.json`,{
+    headers: {
+      'X-API-Key': PROPUBLICAapikey
+    }
+  })
+  .then((response) => {
+    let positions = response.data.results[0].votes.map(vote => {
+          if (vote.bill.title !== undefined
+              && vote.question.toLowerCase().includes('passage')) {
+            const billObj = billNumberFormatter(vote.bill.number);
+            return ({
+              prefix: billObj.billType,
+              number: billObj.billNum,
+              name: vote.bill.title,
+              question: vote.question,
+              position: vote.position,
+              orgs: null,
+              year: parseInt(vote.date.split('-')[0], 10)
+            });
+          }
+      });
+      positions = positions.filter(ele => ele !== undefined);
+
+      //below is how we tie in the organizations that are involved with a bill
+      const positionsWithOrgs = positions.map(bill => {
+        return getAllOrganizationsForBill(bill.prefix, bill.number)
+        .then(orgsArray => {
+          bill.orgs = orgsArray;
+          return bill;
+        })
+        .catch(err => console.log(err));
+      })
+      return Promise.all(positionsWithOrgs)
+      // .then((newposwithorgs) => console.log(newposwithorgs));
+  })
+  .catch(err => console.log(err));
+};
 
 
+
+//combines all slices of the arrayOfMembers recursively (combining individual member to their votes)
+const doCombine = (memberPieces, lastI, nextI, accReturn) => {
+  if (nextI === lastI + 1) {
+    console.log("Finished Processing");
+    // console.log(accReturn[0].positions[0].orgs);
+    fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
+      if (err) throw err;
+      console.log('Save Complete');
+    });
+  } else {
+    console.log("Processing batch: ", nextI);
+    combineMembersToVotes(memberPieces[nextI]).then((finalMembers) => {
+      accReturn = accReturn.concat(finalMembers);
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn), nextI * 60 * 1000);
+    });
+  }
+};
 
 
 ////////////////////////
 //DONT RUN ALL AT ONCE//
 ////////////////////////
 
-getMembers().then((members) => combineMembersToVotes(members))
-// getMembersPositions();// this now uses getAllOrganizationsForBill within
+// let AllInformation = [];
+
+getMembers()
+.then((members) => {
+  //cannot run on all members at once. set up slices for multiple calls.
+  const memberPieces = [];
+  memberPieces.push(members.slice(0, 50));//0
+  memberPieces.push(members.slice(50, 100));//1
+  memberPieces.push(members.slice(100, 150));//2
+  memberPieces.push(members.slice(150, 200));//3
+  memberPieces.push(members.slice(200, 250));//4
+  memberPieces.push(members.slice(250, 300));//5
+  memberPieces.push(members.slice(300, 350));//6
+  memberPieces.push(members.slice(350, 400));//7
+  memberPieces.push(members.slice(400, 450));//8
+  memberPieces.push(members.slice(450, 500));//9
+  memberPieces.push(members.slice(500));//10
+
+  //(array, last index, next index, memoization array)
+  doCombine(memberPieces, 4, 0, []);
+})
+.catch(err => console.log(err));
+
+
+//api test calls
+// getMembersPositions('A000360')//.then(data => console.log(data));
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
