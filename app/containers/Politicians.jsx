@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getPoliticians } from '../ducks/politicians';
-import Politician from '../components/Politician.jsx'
-// import RaisedButton from 'material-ui/RaisedButton';
+import Politician from '../components/Politician.jsx';
 
-// const buttonStyle = {
-//   marginLeft: 600
-// }
-{/* <RaisedButton style={buttonStyle} label="Toggle"  onClick={this.props.handleToggle} /> */}
+/* <RaisedButton style={buttonStyle} label="Toggle"  onClick={this.props.handleToggle} /> */
 
 class Politicians extends Component {
   constructor(props) {
@@ -37,4 +33,4 @@ class Politicians extends Component {
 
 /* REDUX CONTAINER */
 
-export default connect(/*, mapDispatchToProps*/)(Politicians);
+export default connect()(Politicians);
