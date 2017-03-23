@@ -31,4 +31,4 @@ class Politicians extends Component {
 
 /* REDUX CONTAINER */
 
-export default connect(/*, mapDispatchToProps*/)(Politicians);
+export default connect()(Politicians);
