@@ -108,6 +108,12 @@ const Member = db.define('members', {
       return (this.chamber === 'senate')
         ? 'Senate'
         : 'House of Representatives';
+    },
+    partyName() {
+      if (this.party === 'D') return '(D) Democrat'
+      if (this.party === 'R') return '(R) Republican'
+      if (this.party === 'I') return '(I) Independent'
+      else return 'No party listed'
     }
   },
   hooks: {
