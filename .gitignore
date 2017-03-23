@@ -15,3 +15,7 @@ npm-debug.log
 
 # API keys
 keys.js
+
+# seed local
+backup.txt
+catcodes.txt
