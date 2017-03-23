@@ -1,7 +1,6 @@
 //for ease of use functions to call are at the bottom
 
 const axios = require('axios');
-const queryString = require('querystring');
 const keys = require('./keys.js');//add this file (have it export the api keys) and add to gitignore
 const fs = require('fs');
 
@@ -28,7 +27,7 @@ const getAllBills = () => {
   axios.get(
     `http://maplight.org/services_open_api/map.bill_list_v1.json/?apikey=${MAPLIGHTapikey}&jurisdiction=${jurisdiction}&session=${congressNum}&include_organizations=${include_organizations}&has_organizations=${has_organizations}`)
   .then((response) => {
-    // console.log(response.data)
+    console.log(response.data)
   })
   .catch(err => console.log(err));
 };
@@ -174,7 +173,7 @@ const combineMembersToVotes = (arrayOfMembers) => {
     .catch(err => console.log(err));
   });
 
-    // console.log("testing ",membersWithDistrict[0]);
+  // console.log("testing ",membersWithDistrict[0]);
   return Promise.all(membersWithDistrict);
 
 };
@@ -265,53 +264,88 @@ const getMembersPositions = (memberId) => {
 
 
 //combines all slices of the arrayOfMembers recursively (combining individual member to their votes)
-const doCombine = (memberPieces, lastI, nextI, accReturn) => {
+const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
   if (nextI === lastI + 1) {
     console.log("Finished Processing");
-    // console.log(accReturn[0].positions[0].orgs);
-    fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
-      if (err) throw err;
-      console.log('Save Complete');
-    });
+    //store data as variable (array)
+    resolve(accReturn);
+
+    //write data to text file
+    // fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
+    //   if (err) throw err;
+    //   console.log('Save Complete');
+    // });
   } else {
     console.log("Processing batch: ", nextI);
-    combineMembersToVotes(memberPieces[nextI]).then((finalMembers) => {
+    combineMembersToVotes(memberPieces[nextI])
+    .then((finalMembers) => {
       accReturn = accReturn.concat(finalMembers);
-      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn), nextI * 60 * 1000);
-    });
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject), nextI * 60 * 1000);
+    })
+    .catch(reject);
   }
 };
 
+//formatting catcodes for 'issues' seeding
+const issues = new Promise((resolve, reject) => {
+  fs.readFile('catcodes.txt', 'utf-8', (err, data) => {
+    if (err) reject(err);
+    let catCodes = [];
+    let rows = data.split('\n');
+    const columns = rows.shift().split('\t');
+    for (let i = 0; i < rows.length; i++) {
+      const splitRow = rows[i].split('\t');
+      const codeObj = {};
+      for (let ii = 0; ii < splitRow.length; ii++) {
+        codeObj[columns[ii]] = splitRow[ii];
+      }
+      catCodes.push(codeObj);
+    }
+    catCodes.pop();
+    resolve(catCodes);
+  });
+});
 
-////////////////////////
-//DONT RUN ALL AT ONCE//
-////////////////////////
 
-// let AllInformation = [];
+const allData = new Promise((resolve, reject) => {
 
-getMembers()
-.then((members) => {
-  //cannot run on all members at once. set up slices for multiple calls.
-  const memberPieces = [];
-  memberPieces.push(members.slice(0, 50));//0
-  memberPieces.push(members.slice(50, 100));//1
-  memberPieces.push(members.slice(100, 150));//2
-  memberPieces.push(members.slice(150, 200));//3
-  memberPieces.push(members.slice(200, 250));//4
-  memberPieces.push(members.slice(250, 300));//5
-  memberPieces.push(members.slice(300, 350));//6
-  memberPieces.push(members.slice(350, 400));//7
-  memberPieces.push(members.slice(400, 450));//8
-  memberPieces.push(members.slice(450, 500));//9
-  memberPieces.push(members.slice(500));//10
+  getMembers()
+  .then((members) => {
+    //cannot run on all members at once. set up slices for multiple calls.
+    const memberPieces = [];
+    memberPieces.push(members.slice(0, 50));//0
+    memberPieces.push(members.slice(50, 100));//1
+    memberPieces.push(members.slice(100, 150));//2
+    memberPieces.push(members.slice(150, 200));//3
+    memberPieces.push(members.slice(200, 250));//4
+    memberPieces.push(members.slice(250, 300));//5
+    memberPieces.push(members.slice(300, 350));//6
+    memberPieces.push(members.slice(350, 400));//7
+    memberPieces.push(members.slice(400, 450));//8
+    memberPieces.push(members.slice(450, 500));//9
+    memberPieces.push(members.slice(500));//10
 
-  //(array, last index, next index, memoization array)
-  doCombine(memberPieces, 4, 0, []);
-})
-.catch(err => console.log(err));
+    //(array, last index, next index, memoization array)
+    doCombine(memberPieces, 0, 0, [], resolve, reject);
+  })
+  .catch(err => console.log(err));
+});
+
 
 
 //api test calls
 // getMembersPositions('A000360')//.then(data => console.log(data));
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
+
+const membersAndVotes = () => {
+  return allData;
+};
+const categories = () => {
+  return issues;
+};
+
+module.exports = {
+  getData: membersAndVotes,
+  getIssues: categories
+};
