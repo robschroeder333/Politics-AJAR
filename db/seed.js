@@ -23,7 +23,8 @@ const seedBills = () => db.Promise.map([
 	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
 	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
+  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016},
+  {prefix: 'H', number: '106', session: '115', name: 'Another Pro-Gun bill also 2016', year: 2016},
 ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
 
 // const updateBill = () => db.Promise.map([
@@ -40,8 +41,7 @@ const seedMembers = () => db.Promise.map([
   {firstName: 'Van', middleName: null, lastName: 'Helsing', ppid: 'B183819', party: 'D', chamber: 'senate', state: 'NY', district: '69', electionYear: '2020'},
   {firstName: 'Sasuke', middleName: null, lastName: 'Brother', ppid: 'C183839', party: 'D', chamber: 'senate', state: 'NY', district: '69', electionYear: '2020'},
   {firstName: 'Bro', middleName: null, lastName: 'Mo-Sapiens', ppid: 'D183912', party: 'I', chamber: 'senate', state: 'NY', district: '69', electionYear: '2020'},
-
-], member => db.model('members').create(member))
+], member => db.model('members').create(member).catch(() => console.error('You made a duplicate request')))
 
 const seedWrongMembers = () => db.Promise.map([
   {firstName: 'Ted', middleName: null, lastName: 'Danson', ppid: 'D000217', party: 'I', chamber: 'house', state: 'CO', district: '4', electionYear: '2018'},
@@ -74,7 +74,7 @@ db.sync({force: true})
   .then(() => Issue.findById(1))
   .then((issue) => issue.addIssue_bills([4, 5]))
   .then(() => Issue.findById(2))
-  .then((issue) => issue.addIssue_bills([1, 2, 3]))
+  .then((issue) => issue.addIssue_bills([1, 2, 3, 8]))
   .then(() => Member.findById(1))
   .then((member) => member.addBill_vote(1, {position: 'yes'}))
   .then(() => Member.findById(1))
@@ -85,6 +85,8 @@ db.sync({force: true})
   .then((member) => member.addBill_vote(4, {position: 'yes'}))
   .then(() => Member.findById(1))
   .then((member) => member.addBill_vote(5, {position: 'no'}))
+  .then(() => Member.findById(1))
+  .then((member) => member.addBill_vote(8, {position: 'yes'}))
   .then(() => Member.findById(2))
   .then((member) => member.addBill_vote(1, {position: 'no'}))
   .then(() => Member.findById(2))
@@ -95,7 +97,8 @@ db.sync({force: true})
   .then((member) => member.addBill_vote(4, {position: 'no'}))
   .then(() => Member.findById(2))
   .then((member) => member.addBill_vote(5, {position: 'no'}))
-
+  .then(() => Member.findById(2))
+  .then((member) => member.addBill_vote(8, {position: 'yes'}))
   // .then(() => Issue.findById(1))
   // .then((issue) => issue.getIssue_bills())
   // .then(billArr => {billArr.forEach(bill => console.log(bill.id));})
@@ -122,7 +125,11 @@ db.sync({force: true})
   .then(() => Member.findById(1))
   .then(member => member.getCatScore(1, 2012, 2016))
   .then(score => console.log("Lloyd's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
+  .then(() => Member.findById(2))
+  .then(member => member.getCatScore(1, 2012, 2016))
+  .then(score => console.log("Rosa's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
  
+
   .then(() => Bill.findById(5))
   .then(bill => bill.update({name: 'A new name!'}))
 

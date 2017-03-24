@@ -26,6 +26,7 @@ const navbarStyle = {
 	   position: 'absolute',
 	   top: 0,
 	   bottom: 0,
+	   right: '80%',
 	   transition: 'transform .3s ease-out',
 	   WebkitTransition: '-webkit-transform .3s ease-out',
 	   willChange: 'transform',
@@ -127,7 +128,6 @@ class DisplayAndPoliticians extends Component {
 		else {
 			politicians = []
 		}
-
 		return (
 			<div>
 				<Sidebar
@@ -152,6 +152,3 @@ const mapStateToProps = ({politicians}) => {
 }
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)
-
-/* <Drawer open={this.state.open} docked={true} containerStyle={navbarStyle} >
-</Drawer> */
