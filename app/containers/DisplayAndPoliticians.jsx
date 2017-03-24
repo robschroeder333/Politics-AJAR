@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import Politicians from './Politicians'
+import Politicians from './Politicians';
+import Issues from './Issues';
+
 import Sidebar from 'react-sidebar';
 import RaisedButton from 'material-ui/RaisedButton';
-
 import { MenuItem, FlatButton, DropDownMenu } from 'material-ui'
 
 const buttonStyle = {
@@ -25,11 +26,12 @@ const navbarStyle = {
 	   position: 'absolute',
 	   top: 0,
 	   bottom: 0,
+	   right: '80%',
 	   transition: 'transform .3s ease-out',
 	   WebkitTransition: '-webkit-transform .3s ease-out',
 	   willChange: 'transform',
 	   overflowY: 'auto',
-		 backgroundColor: '#a52a2a',
+		//  backgroundColor: '#a52a2a',
 	 },
 	 content: {
 	   position: 'absolute',
@@ -95,19 +97,22 @@ class DisplayAndPoliticians extends Component {
 			this.setState({ houseClickedColor: '#ffffff', houseSelected: false, houseText: {color: '#00008b'} })
 		}
 		if (filter === 'senate' && this.state.senateSelected === false){
-			this.setState({senateClickedColor:'#00008b', senateSelected: true, senateText:{color: 'white'} })
+			this.setState({senateClickedColor: '#00008b', senateSelected: true, senateText: {color: 'white'} })
 		}
 		if (filter === 'house' && this.state.houseSelected === false) {
-			this.setState({houseClickedColor:'#00008b', houseSelected: true, houseText:{color: 'white'} })
+			this.setState({houseClickedColor: '#00008b', houseSelected: true, houseText: {color: 'white'} })
 		}
 	}
 
 	render(){
-		let sidebarContent = <div style={buttonStyle} >
+		let sidebarContent = (
+			<div style={buttonStyle}>
 				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
 				<FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
-			</div>
 
+				<Issues />
+			</div>
+		)
 		let {politicians} = this.props
 		let {senateSelected, houseSelected} = this.state
 
@@ -120,9 +125,10 @@ class DisplayAndPoliticians extends Component {
 		else if (senateSelected && houseSelected){
 			politicians = politicians;
 		}
-		else politicians = []
-
-		return(
+		else {
+			politicians = []
+		}
+		return (
 			<div>
 				<Sidebar
 					sidebar={sidebarContent}
@@ -133,7 +139,7 @@ class DisplayAndPoliticians extends Component {
 						<RaisedButton label="Toggle"  onClick={this.handleToggle} />
 						<Politicians handleToggle={this.handleToggle} politicians={politicians} />
 				</Sidebar>
-    	</div>
+			</div>
 		)
 	}
 }
@@ -146,6 +152,3 @@ const mapStateToProps = ({politicians}) => {
 }
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)
-
-{/* <Drawer open={this.state.open} docked={true} containerStyle={navbarStyle} >
-</Drawer> */}

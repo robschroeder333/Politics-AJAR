@@ -134,7 +134,7 @@ const Member = db.define('members', {
       .then(scores => {
         let score = 0;
         let voteCount = 0;
-        let memberScore = 0
+        let memberScore = 0;
         for (let i = 0; i < scores.length; i++){
           if (scores[i][0] === '-'){
             // console.log(scores[i])
@@ -149,7 +149,7 @@ const Member = db.define('members', {
         }
         memberScore = (score / voteCount) * 100;
 
-        return [memberScore - 0, Math.abs(memberScore - 25), Math.abs(memberScore - 50), Math.abs(memberScore - 75), 100 - memberScore];
+        return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
 
       })
       .catch(error => console.error(error));

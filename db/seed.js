@@ -28,6 +28,7 @@ const seedCats = () => db.Promise.map([
   {name: 'Gun Control'}
 ], cat => db.model('cats').create(cat));
 
+
 const seedBills = (billsArray) => db.Promise.map(billsArray, (bill) => {
   const formattedBill = {
     prefix: bill.prefix,
@@ -48,6 +49,7 @@ const seedBills = (billsArray) => db.Promise.map(billsArray, (bill) => {
 //   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
 //   {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
 // ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
+
 
 // const updateBill = () => db.Promise.map([
 //   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016}
@@ -123,6 +125,8 @@ db.sync({force: true})
     })
     .then(bills => console.log(`Seeded ${bills.length} bills OK`))
   })
+  // .then(seedBills)
+  // .then(bills => console.log(`Seeded ${bills.length} bills OK`))
   // .then(seedMembersInfo)
   // .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
   // .then(seedCats)
