@@ -28,15 +28,26 @@ const seedCats = () => db.Promise.map([
   {name: 'Gun Control'}
 ], cat => db.model('cats').create(cat));
 
-const seedBills = () => db.Promise.map([
-	{prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
-	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
-], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
+const seedBills = (billsArray) => db.Promise.map(billsArray, (bill) => {
+  const formattedBill = {
+    prefix: bill.prefix,
+    number: bill.number,
+    name: bill.name,
+    year: bill.year,
+    session: bill.session
+  };
+  return db.model('bills').create(formattedBill).catch((err) => console.log(err))
+})
+
+// const seedBills = () => db.Promise.map([
+// 	{prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
+// 	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
+//   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
+//   {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
+// ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
 
 // const updateBill = () => db.Promise.map([
 //   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016}
@@ -95,11 +106,23 @@ db.sync({force: true})
     return data;
   })
   .then((members) => {
-    return seedMembers(members)
+    return seedMembers(members);
   })
   .then(members => console.log(`Seeded ${members.length} members OK`))
-  // .then(seedBills)
-  // .then(bills => console.log(`Seeded ${bills.length} bills OK`))
+  .then(() => {
+    data.then((unwrappedData) => {
+      let billsArray = [];
+      unwrappedData.forEach(member => {
+        billsArray = billsArray.concat(member.positions);
+      });
+      return billsArray;
+      // console.log('this is data\'s length', unwrappedData.length)
+    })
+    .then((bills) => {
+      return seedBills(bills);
+    })
+    .then(bills => console.log(`Seeded ${bills.length} bills OK`))
+  })
   // .then(seedMembersInfo)
   // .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
   // .then(seedCats)
