@@ -21,24 +21,21 @@ export const getAllPoliticians = () => {
   }
 }
 
-// possible 
-const initialState = {
-  politicians: []
-}
-
 
 /* -------------       REDUCER     ------------------- */
 
-const reducer = (state = [] , action) => { // state = initialState
+const reducer = (state = [] , action) => { // state = []
 
-  // let newState = Object.assign({}, state)
+  let newState = Object.assign({}, state)
 
   switch (action.type){
 
     case GET_POLITICIANS:
+    // console.log('in reducer, this is array', action.politicians)
       return action.politicians
-      // newState.politicians = action.politicians
-      // return newState;
+    // newState.politicians = action.politicians
+    // console.log('this is the new state', newState) // state comes back as {politicians: Array[8]}
+    // return newState
 
     default:
       return state;

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import store from '../store';
+
 
 /* -----------------    ACTIONS     ------------------ */
 const MODIFY_INCLUDED_ISSUE = "MODIFY_INCLUDED_ISSUE"; // will change included to its opposite
@@ -13,75 +15,77 @@ export const modifyIncludedIssue = (issueId) => ({
 	issueId
 })
 
-// Will be sent with the specific issueId from the react component so that it will switch the 
-// selected property of the specific issue to true or false. --> in order to determine if it is 
-// going to be used in the final calculation.
+// Sent to reducer with issueId in order to switch the included property so that issue can be included in calculations
 
 export const modifyScoreAndWeight = (issueId, score) => ({
 	type: CHANGE_SCORE_WEIGHT,
 	issueId,
-	score 
+	score
 }) 
 
 /* -------------       REDUCER     ------------------- */
 
 const initialState = { // will add a new key with an object to each issue
 	issues: {
-		'Gun Control': {
-			id: 1, // fixed
-			score: 0, // flexible. is tracked in order to select the right AS from the array.
-			weight: 0, // flexible. will change at the same time as score is changed
-			included: false, // flexible. will change when receives an action to uncheck it, 
-							// does not enter calculation
-			categoryId: 1 // used to get the info for the right issue for each member of Senate
-		},
-		'Environment': {
-			id: 2,
-			score: 0,
-			weight: 0,
-			included: false,
-			categoryId: 2 // ????
-		}
+			'Gun Control': {
+				id: 1, // fixed
+				score: 0, // flexible. is tracked in order to select the right AS from the array.
+				weight: 0, // flexible. will change at the same time as score is changed
+				included: false, // flexible. will change when receives an action to uncheck it, 
+								// does not enter calculation
+				categoryId: 1 // used to get the info for the right issue for each member of Senate
+			},
+			'Environment': {
+				id: 2,
+				score: 0,
+				weight: 0,
+				included: false,
+				categoryId: 2 // will change according to the categories in the database.
+			},
+            'Foreign & Defense Spending': {
+                id: 3,
+                score: 0, 
+                weight: 0,
+                included: false,
+                categoryId: 3
+            }
 	}
 }
 
-
 const reducer = (state = initialState, action) => {
 
-	let newState = Object.assign({}, state)
+	const newState = Object.assign({}, state)
+	console.log('Entering the reducer, this is the issue object', newState.issues) // for some reason if i get rid of this, everything breaks
+	console.log('Still in reducer of issues.jsx, rendering the store', store)
 
 	switch (action.type){
 
 		case MODIFY_INCLUDED_ISSUE:
-		for (var issue in newState.issues) {
-			if (issue.id === action.issueId) {
-				issue.included = !issue.included // makes it true if false, vice versa.
+		for (let issue in newState.issues) {
+
+			if (newState.issues[issue].id === action.issueId) {
+				newState.issues[issue].included = !newState.issues[issue].included // Makes the included property the opposite of what it currently is.
 				break;
 			}
 		}
 		return newState;
 
 		case CHANGE_SCORE_WEIGHT:
-		for (var issue in newState.issues) {
-			if (issue.id === action.issueId) {
-			if (action.score === 25 || action.score === 75) { // the issue score may change later, depending on what is done in the React Component
-				issue.score = action.score; // might to lead to some problems if .score is not set up correctly
-				issue.weight = 2;
+		for (let issue in newState.issues) {
+			if (newState.issues[issue].id === action.issueId) {
+			if (action.score === 25 || action.score === 75) { 
+				newState.issues[issue].score = action.score; 
+				newState.issues[issue].weight = 2;
 				break;
 			}
 			else if (action.score === 50){
-				issue.score = 50
-				issue.weight = 1;
+				newState.issues[issue].score = 50
+				newState.issues[issue].weight = 1;
 				break;
 			}
-			else if (action.score === 0) {
-				issue.score = 0;
-				issue.weight = 4;
-				break;
-			}
-			else if (action.score === 100) {
-				issue.score =  100;
-				issue.weight = 4;
+			else if (action.score === 0 || action.score === 100) {
+				newState.issues[issue].score = action.score;
+				newState.issues[issue].weight = 4;
 				break;
 			}
 		  }

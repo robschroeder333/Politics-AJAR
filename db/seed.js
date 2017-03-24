@@ -35,7 +35,8 @@ const seedBills = () => db.Promise.map([
 	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
 	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
+  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016},
+  {prefix: 'H', number: '106', session: '115', name: 'Another Pro-Gun bill also 2016', year: 2016},
 ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
 
 // const updateBill = () => db.Promise.map([
@@ -98,6 +99,34 @@ db.sync({force: true})
     return seedMembers(members)
   })
   .then(members => console.log(`Seeded ${members.length} members OK`))
+  .then(score => console.log('Lloyd pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
+  .then(() => Member.findById(2))
+  .then(member => member.getIssueScore(1))
+  .then(score => console.log('Rosa anti-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
+  .then(() => Member.findById(2))
+  .then(member => member.getIssueScore(2))
+  .then(score => console.log('Rosa pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(1, 2012, 2015))
+  .then(score => console.log('Lloyd pre-2016 anti-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
+  .then(() => Member.findById(1))
+  .then(member => member.getIssueScore(2, 2012, 2015))
+  .then(score => console.log('Lloyd pre-2016 pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
+
+  .then(() => Member.findById(1))
+  .then(member => member.getCatScore(1, 2012, 2016))
+  .then(score => console.log("Lloyd's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
+  .then(() => Member.findById(2))
+  .then(member => member.getCatScore(1, 2012, 2016))
+  .then(score => console.log("Rosa's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
+ 
+
+  .then(() => Bill.findById(5))
+  .then(bill => bill.update({name: 'A new name!'}))
+
+  // .then(seedWrongMembers)
+  // .then(members => console.log(`Seeded ${members.length} members OK`))
+=======
   // .then(seedBills)
   // .then(bills => console.log(`Seeded ${bills.length} bills OK`))
   // .then(seedMembersInfo)
