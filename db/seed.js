@@ -154,7 +154,7 @@ const billsSeeded = dataReady
   .then(bills => console.log(`Seeded ${bills.length - billDupeCounter} bills OK`))
 
 
-const associatingMembers = billsSeeded
+const associatingIssuesToBills = billsSeeded
   .then(() => {
     const completingMemberAssociations = data.map(member => {
       const arrayOfAssociationPromises = member.positions.map((bill) => {
@@ -174,7 +174,7 @@ const associatingMembers = billsSeeded
           const notNullIssues = fetchedIssues.filter(issue => issue);
 
           // console.log(notNullIssues.slice(0, 2).map(issue => issue.dataValues));
-          console.log(`associating bill ${fetchedBill.id} with issues ${notNullIssues.map(issue => issue.id)}`)
+          // console.log(`associating bill ${fetchedBill.id} with issues ${notNullIssues.map(issue => issue.id)}`)
           const addedIssues = notNullIssues.map(issue => {
             return fetchedBill.addIssue_bills(issue)
             .catch(() => {})
@@ -187,7 +187,40 @@ const associatingMembers = billsSeeded
     });
     return Promise.all(completingMemberAssociations);
   })
-  Promise.all([memberInfoSeeded, associatingMembers])
+
+  const associatingMembersToBills = associatingIssuesToBills
+  .then(() => {
+    const completingMemberAssociations = data.map(member => {
+
+      const targetMember = Member.findOne({where: {
+          ppid: member.ppid
+        }});
+
+      const arrayOfAssociationPromises = member.positions.map((bill) => {
+        return Bill.findOne({where: {
+          prefix: bill.prefix,
+          number: bill.number,
+          session: bill.session
+        }});
+      });
+      const arrayForBills = Promise.all(arrayOfAssociationPromises);
+      return Promise.all([targetMember, arrayForBills])
+      .then(([fetchedMember, fetchedBills]) => {
+        // console.log(fetchedBills[0]);
+
+        const addedBills = fetchedBills.map((bill, i) => {
+          // console.log(member.positions[i].position)
+         return fetchedMember.addBill_vote(bill, {position: member.positions[i].position});
+        });
+        return Promise.all(addedBills);
+      })
+
+    });
+    return Promise.all(completingMemberAssociations);
+  })
+
+
+  Promise.all([memberInfoSeeded, associatingMembersToBills])
 
 
   // .then(() => Issue.findById(1))
