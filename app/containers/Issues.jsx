@@ -19,44 +19,83 @@ class Issues extends Component {
     super(props);
     this.state = {
             value: 1,
+            valueOfSecondMenu: 1,
             slidebar: 50,
+            issueValues: {},
+            IssueNumber: 0
     }
     this.handleChange = this.handleChange.bind(this);
-    // this.listIssues = this.listIssues.bind(this); // What is this for?
     this.handleMenuChange = this.handleMenuChange.bind(this);
+    this.handleChangeIssueNumbers =  this.handleChangeIssueNumbers.bind(this);
+    this.renderIssues =  this.renderIssues.bind(this);
   }
 
-  handleChange(evt, newValue) {
-    this.setState({slidebar: newValue})
-    // console.log('this is value', this.state.value, 'and this is score', newValue)
-    this.props.changeScore(this.state.value, newValue)
+  handleChange(index, newValue) {
+    const itemValue = this.state.issueValues[index].value
+    const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    updatedIssueValues[index] = { value: itemValue, slidebar: newValue };
+    this.setState({issueValues: updatedIssueValues})
+    this.props.changeScore(itemValue, newValue)
   }
 
-  handleMenuChange(event, index, value) {
-    this.setState({value: value})
-    // console.log('this is value', value)
+  handleMenuChange(index, value) {
+    const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    updatedIssueValues[index] = {value: value, slidebar: 50};
+    this.setState({issueValues: updatedIssueValues})
     this.props.includeOrNot(value)
   }
 
+
+  handleChangeIssueNumbers() {
+    let stateChanges = {};
+    stateChanges.IssueNumber = this.state.IssueNumber+1;
+    stateChanges.issueValues = Object.assign({}, this.state.issueValues);
+    stateChanges.issueValues[this.state.IssueNumber+1] = { value: 1, slidebar: 50 };
+    
+
+     this.setState(stateChanges)
+     // this.state[this.props.issues[issue]
+     console.log('state true', this.state)
+   }
+
+   renderIssues() {
+    const {issues} = this.props.issues;
+    let issuesList = [];
+
+    for (let i = 1; i <= this.state.IssueNumber; i++) {
+      issuesList.push(
+          <div key={i}>
+           <DropDownMenu value={this.state.issueValues[i].value} onChange={(event, index, value) => this.handleMenuChange(i, value)}>
+           <MenuItem value={1} primaryText="Select Issue" />
+             {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
+           </DropDownMenu>
+
+           <Issue
+             value={this.state.issueValues[i].slidebar}
+             handleChange={(evt, newValue) => this.handleChange(i, newValue)}
+           />
+         </div>
+       )
+      }
+    return issuesList;
+   }
+
   render() {
     const {issues} = this.props.issues;
-    console.log('Issues component rendering, these are issues', issues)
+    console.log(this.state);
+    console.log('Issues component rendering, these  are issues', issues)
     return (
       <div style={styles.block}>
         <Checkbox  style={styles.checkbox} />
 
-        <DropDownMenu value={this.state.value} onChange={this.handleMenuChange}>
-          {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
-        </DropDownMenu>
-
-        <Issue
-          value={this.state.slidebar}
-          handleChange={this.handleChange}
-        />
+        <div>
+          { this.renderIssues() }
+        </div>
 
         <FloatingActionButton
           mini={true}
-          secondary={true}>
+          secondary={true}
+          onClick={this.handleChangeIssueNumbers}>
           <ContentAdd />
         </FloatingActionButton>
       </div>
