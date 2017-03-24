@@ -119,6 +119,14 @@ const issuesSeeded = db.sync({force: true})
   })
   .then(issues => console.log(`Seeded ${issues.length} issues OK`))
 
+// const seedIssuesUsingAsyncFn = async function () {
+//   await db.sync({force: true})
+//   const issues = await allData.getIssues();
+//   await seedIssues(issues);
+//   console.log(`Seeded ${issues.length} issues OK`)
+// }
+
+// const issuesSeeded = seedIssuesUsingAsyncFn()
 
 const membersSeeded = allData.getData()
   .then((members) => {
@@ -180,6 +188,8 @@ const associatingMembers = billsSeeded
     return Promise.all(completingMemberAssociations);
   })
   Promise.all([memberInfoSeeded, associatingMembers])
+
+
   // .then(() => Issue.findById(1))
   // .then((issue) => issue.addIssue_bills([4, 5]))
   // .then(() => Bill.findById(2))
