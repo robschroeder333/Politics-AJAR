@@ -28,35 +28,49 @@ const seedCats = () => db.Promise.map([
   {name: 'Gun Control'}
 ], cat => db.model('cats').create(cat));
 
-const seedBills = () => db.Promise.map([
-	{prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
-	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
-	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
-  {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016},
-  {prefix: 'H', number: '106', session: '115', name: 'Another Pro-Gun bill also 2016', year: 2016},
-], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
+let billDupeCounter = 0;
+
+const seedBills = (billsArray) => db.Promise.map(billsArray,
+  (bill) => {
+    const formattedBill = {
+      prefix: bill.prefix,
+      number: bill.number.toString(),
+      name: bill.name,
+      year: bill.year,
+      session: bill.session
+    };
+    return db.model('bills').create(formattedBill).catch(() => billDupeCounter++)
+})
+
+// const seedBills = () => db.Promise.map([
+// 	{prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
+// 	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
+// 	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
+//   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
+//   {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
+// ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
+
 
 // const updateBill = () => db.Promise.map([
 //   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016}
 // ], bill => db.model('bills').update(bill))
 
 const seedMembers = (members) => db.Promise.map(members,
-(member) => {
-  const formattedMember = {
-    firstName: member.first_name,
-    middleName: member.middle_name,
-    lastName: member.last_name,
-    ppid: member.ppid,
-    party: member.party,
-    chamber: member.chamber,
-    state: member.state,
-    district: member.district,
-    electionYear: member.election_year
-  };
-  return db.model('members').create(formattedMember);
+  (member) => {
+    const formattedMember = {
+      firstName: member.first_name,
+      middleName: member.middle_name,
+      lastName: member.last_name,
+      ppid: member.ppid,
+      party: member.party,
+      chamber: member.chamber,
+      state: member.state,
+      district: member.district,
+      electionYear: member.election_year
+    };
+    return db.model('members').create(formattedMember);
 })
 // const seedMembers = () => db.Promise.map([
 // 	{firstName: 'Rosa', middleName: null, lastName: 'DeLauro', ppid: 'D000216', party: 'D', chamber: 'house', state: 'CT', district: '3', electionYear: '2018'},
@@ -76,10 +90,12 @@ const seedWrongMembers = () => db.Promise.map([
   {firstName: 'Jake', middleName: 'Fred', lastName: 'Nike', ppid: 'D000399', party: 'R', chamber: 'house', state: 'TN', district: '32', electionYear: '2018'}
 ], member => db.model('members').create(member))
 
-const seedMembersInfo = () => db.Promise.map([
-	{twitter: 'RosaDeLauro', facebook: 'CongresswomanRosaDeLauro', website: 'https://delauro.house.gov', phone: '202-225-3661', office: '', memberId: 1},
-	{twitter: 'RepLloydDoggett', facebook: 'lloyddoggett', website: 'https://doggett.house.gov', phone: '202-225-4865', office: '', memberId: 2}
-], memberInfo => db.model('member_info').create(memberInfo))
+const seedMembersInfo = (members) => db.Promise.map(members,
+  (memberInfo) => {
+
+
+  return db.model('member_info').create(memberInfo);
+})
 
 var data;
 
@@ -96,41 +112,20 @@ db.sync({force: true})
     return data;
   })
   .then((members) => {
-    return seedMembers(members)
+    data = members;
+    return seedMembers(members);
   })
   .then(members => console.log(`Seeded ${members.length} members OK`))
-  .then(score => console.log('Lloyd pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
-  .then(() => Member.findById(2))
-  .then(member => member.getIssueScore(1))
-  .then(score => console.log('Rosa anti-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
-  .then(() => Member.findById(2))
-  .then(member => member.getIssueScore(2))
-  .then(score => console.log('Rosa pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
-  .then(() => Member.findById(1))
-  .then(member => member.getIssueScore(1, 2012, 2015))
-  .then(score => console.log('Lloyd pre-2016 anti-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
-  .then(() => Member.findById(1))
-  .then(member => member.getIssueScore(2, 2012, 2015))
-  .then(score => console.log('Lloyd pre-2016 pro-gun vote record is:', score[0], 'yes votes out of', score[1], 'total votes'))
-
-  .then(() => Member.findById(1))
-  .then(member => member.getCatScore(1, 2012, 2016))
-  .then(score => console.log("Lloyd's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
-  .then(() => Member.findById(2))
-  .then(member => member.getCatScore(1, 2012, 2016))
-  .then(score => console.log("Rosa's array of scores for alignment to possible user positions on Gun Control are:\n", score, '\nIn order, these alignments are if the user\n [strongly disagrees, disagrees, is neutral, agrees, strongly agrees] with the issue.'))
- 
-
-  .then(() => Bill.findById(5))
-  .then(bill => bill.update({name: 'A new name!'}))
-
-  // .then(seedWrongMembers)
-  // .then(members => console.log(`Seeded ${members.length} members OK`))
-=======
-  // .then(seedBills)
-  // .then(bills => console.log(`Seeded ${bills.length} bills OK`))
-  // .then(seedMembersInfo)
-  // .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
+  .then(() => {
+    let billsArray = [];
+    data.forEach(member => {
+      billsArray = billsArray.concat(member.positions);
+    });
+    return seedBills(billsArray);
+  })
+  .then(bills => console.log(`Seeded ${bills.length - billDupeCounter} bills OK`))
+  .then(seedMembersInfo)
+  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
   // .then(seedCats)
   // .then(cat => console.log(`Seeded ${cat.length} catagories OK`))
   // .then(() => Cat.findById(1))
