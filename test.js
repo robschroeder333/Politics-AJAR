@@ -240,7 +240,8 @@ const getMembersPositions = (memberId) => {
               question: vote.question,
               position: vote.position,
               orgs: null,
-              year: parseInt(vote.date.split('-')[0], 10)
+              year: parseInt(vote.date.split('-')[0], 10),
+              session: vote.congress
             });
           }
       });
@@ -313,7 +314,7 @@ const allData = new Promise((resolve, reject) => {
   .then((members) => {
     //cannot run on all members at once. set up slices for multiple calls.
     const memberPieces = [];
-    memberPieces.push(members.slice(0, 50));//0
+    memberPieces.push(members.slice(0, 5));//0  ///// correct 5 to 50
     memberPieces.push(members.slice(50, 100));//1
     memberPieces.push(members.slice(100, 150));//2
     memberPieces.push(members.slice(150, 200));//3
