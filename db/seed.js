@@ -28,16 +28,18 @@ const seedCats = () => db.Promise.map([
   {name: 'Gun Control'}
 ], cat => db.model('cats').create(cat));
 
+let billDupeCounter = 0;
 
-const seedBills = (billsArray) => db.Promise.map(billsArray, (bill) => {
-  const formattedBill = {
-    prefix: bill.prefix,
-    number: bill.number,
-    name: bill.name,
-    year: bill.year,
-    session: bill.session
-  };
-  return db.model('bills').create(formattedBill).catch((err) => console.log(err))
+const seedBills = (billsArray) => db.Promise.map(billsArray,
+  (bill) => {
+    const formattedBill = {
+      prefix: bill.prefix,
+      number: bill.number.toString(),
+      name: bill.name,
+      year: bill.year,
+      session: bill.session
+    };
+    return db.model('bills').create(formattedBill).catch(() => billDupeCounter++)
 })
 
 // const seedBills = () => db.Promise.map([
@@ -56,19 +58,19 @@ const seedBills = (billsArray) => db.Promise.map(billsArray, (bill) => {
 // ], bill => db.model('bills').update(bill))
 
 const seedMembers = (members) => db.Promise.map(members,
-(member) => {
-  const formattedMember = {
-    firstName: member.first_name,
-    middleName: member.middle_name,
-    lastName: member.last_name,
-    ppid: member.ppid,
-    party: member.party,
-    chamber: member.chamber,
-    state: member.state,
-    district: member.district,
-    electionYear: member.election_year
-  };
-  return db.model('members').create(formattedMember);
+  (member) => {
+    const formattedMember = {
+      firstName: member.first_name,
+      middleName: member.middle_name,
+      lastName: member.last_name,
+      ppid: member.ppid,
+      party: member.party,
+      chamber: member.chamber,
+      state: member.state,
+      district: member.district,
+      electionYear: member.election_year
+    };
+    return db.model('members').create(formattedMember);
 })
 // const seedMembers = () => db.Promise.map([
 // 	{firstName: 'Rosa', middleName: null, lastName: 'DeLauro', ppid: 'D000216', party: 'D', chamber: 'house', state: 'CT', district: '3', electionYear: '2018'},
@@ -88,10 +90,12 @@ const seedWrongMembers = () => db.Promise.map([
   {firstName: 'Jake', middleName: 'Fred', lastName: 'Nike', ppid: 'D000399', party: 'R', chamber: 'house', state: 'TN', district: '32', electionYear: '2018'}
 ], member => db.model('members').create(member))
 
-const seedMembersInfo = () => db.Promise.map([
-	{twitter: 'RosaDeLauro', facebook: 'CongresswomanRosaDeLauro', website: 'https://delauro.house.gov', phone: '202-225-3661', office: '', memberId: 1},
-	{twitter: 'RepLloydDoggett', facebook: 'lloyddoggett', website: 'https://doggett.house.gov', phone: '202-225-4865', office: '', memberId: 2}
-], memberInfo => db.model('member_info').create(memberInfo))
+const seedMembersInfo = (members) => db.Promise.map(members,
+  (memberInfo) => {
+
+
+  return db.model('member_info').create(memberInfo);
+})
 
 var data;
 
@@ -108,27 +112,20 @@ db.sync({force: true})
     return data;
   })
   .then((members) => {
+    data = members;
     return seedMembers(members);
   })
   .then(members => console.log(`Seeded ${members.length} members OK`))
   .then(() => {
-    data.then((unwrappedData) => {
-      let billsArray = [];
-      unwrappedData.forEach(member => {
-        billsArray = billsArray.concat(member.positions);
-      });
-      return billsArray;
-      // console.log('this is data\'s length', unwrappedData.length)
-    })
-    .then((bills) => {
-      return seedBills(bills);
-    })
-    .then(bills => console.log(`Seeded ${bills.length} bills OK`))
+    let billsArray = [];
+    data.forEach(member => {
+      billsArray = billsArray.concat(member.positions);
+    });
+    return seedBills(billsArray);
   })
-  // .then(seedBills)
-  // .then(bills => console.log(`Seeded ${bills.length} bills OK`))
-  // .then(seedMembersInfo)
-  // .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
+  .then(bills => console.log(`Seeded ${bills.length - billDupeCounter} bills OK`))
+  .then(seedMembersInfo)
+  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
   // .then(seedCats)
   // .then(cat => console.log(`Seeded ${cat.length} catagories OK`))
   // .then(() => Cat.findById(1))
