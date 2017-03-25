@@ -34,7 +34,7 @@ const seedBills = (billsArray) => db.Promise.map(billsArray,
   (bill) => {
     const formattedBill = {
       prefix: bill.prefix,
-      number: bill.number.toString(),
+      number: bill.number,
       name: bill.name,
       year: bill.year,
       session: bill.session
@@ -88,18 +88,29 @@ const seedMembers = (members) => db.Promise.map(members,
 const seedWrongMembers = () => db.Promise.map([
   {firstName: 'Ted', middleName: null, lastName: 'Danson', ppid: 'D000217', party: 'I', chamber: 'house', state: 'CO', district: '4', electionYear: '2018'},
   {firstName: 'Jake', middleName: 'Fred', lastName: 'Nike', ppid: 'D000399', party: 'R', chamber: 'house', state: 'TN', district: '32', electionYear: '2018'}
-], member => db.model('members').create(member))
+], member => db.model('members').create(member));
 
 const seedMembersInfo = (members) => db.Promise.map(members,
-  (memberInfo) => {
+  (member) => {
+    const memberInfo = {
+      twitter: member.twitter,
+      facebook: member.facebook,
+      website: member.website,
+      phone: member.phone,
+      office: member.office
+    };
+    return db.model('member_info').create(memberInfo);
+});
 
-
-  return db.model('member_info').create(memberInfo);
-})
+// const seedMembersInfo = () => db.Promise.map([
+//     {twitter: 'RosaDeLauro', facebook: 'CongresswomanRosaDeLauro',
+// website: 'https://delauro.house.gov', phone: '202-225-3661', office: '', memberId: 1},
+//     {twitter: 'RepLloydDoggett', facebook: 'lloyddoggett', website: 'https://doggett.house.gov', phone: '202-225-4865', office: '', memberId: 2}
+// ], memberInfo => db.model('member_info').create(memberInfo))
 
 var data;
 
-db.sync({force: true})
+const issuesSeeded = db.sync({force: true})
   .then(() => {
     return allData.getIssues();
   })
@@ -107,16 +118,33 @@ db.sync({force: true})
     return seedIssues(issues);
   })
   .then(issues => console.log(`Seeded ${issues.length} issues OK`))
-  .then(() => {
-    data = allData.getData();
-    return data;
-  })
+
+// const seedIssuesUsingAsyncFn = async function () {
+//   await db.sync({force: true})
+//   const issues = await allData.getIssues();
+//   await seedIssues(issues);
+//   console.log(`Seeded ${issues.length} issues OK`)
+// }
+
+// const issuesSeeded = seedIssuesUsingAsyncFn()
+
+const membersSeeded = allData.getData()
   .then((members) => {
     data = members;
     return seedMembers(members);
   })
   .then(members => console.log(`Seeded ${members.length} members OK`))
+
+const dataReady = Promise.all([issuesSeeded, membersSeeded]);
+
+const memberInfoSeeded = dataReady
   .then(() => {
+    return seedMembersInfo(data);
+  })
+  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
+
+const billsSeeded = dataReady
+.then(() => {
     let billsArray = [];
     data.forEach(member => {
       billsArray = billsArray.concat(member.positions);
@@ -124,8 +152,83 @@ db.sync({force: true})
     return seedBills(billsArray);
   })
   .then(bills => console.log(`Seeded ${bills.length - billDupeCounter} bills OK`))
-  .then(seedMembersInfo)
-  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
+
+
+const associatingIssuesToBills = billsSeeded
+  .then(() => {
+    const completingMemberAssociations = data.map(member => {
+      const arrayOfAssociationPromises = member.positions.map((bill) => {
+        const targetBill = Bill.findOne({where: {
+          prefix: bill.prefix,
+          number: bill.number,
+          session: bill.session
+        }})
+        const issuePromises = bill.orgs.map((org) => {
+          // console.log(org);
+          return Issue.findOne({where: {catCode: org.organizationType}});
+        })
+        const fetchingIssues = Promise.all(issuePromises)
+        return Promise.all([targetBill, fetchingIssues])
+        .then(([fetchedBill, fetchedIssues]) => {
+          // console.log(fetchedIssues);
+          const notNullIssues = fetchedIssues.filter(issue => issue);
+
+          // console.log(notNullIssues.slice(0, 2).map(issue => issue.dataValues));
+          // console.log(`associating bill ${fetchedBill.id} with issues ${notNullIssues.map(issue => issue.id)}`)
+          const addedIssues = notNullIssues.map(issue => {
+            return fetchedBill.addIssue_bills(issue)
+            .catch(() => {})
+          })
+          return Promise.all(addedIssues);
+
+        })
+      })
+      return Promise.all(arrayOfAssociationPromises);
+    });
+    return Promise.all(completingMemberAssociations);
+  })
+
+  const associatingMembersToBills = associatingIssuesToBills
+  .then(() => {
+    const completingMemberAssociations = data.map(member => {
+
+      const targetMember = Member.findOne({where: {
+          ppid: member.ppid
+        }});
+
+      const arrayOfAssociationPromises = member.positions.map((bill) => {
+        return Bill.findOne({where: {
+          prefix: bill.prefix,
+          number: bill.number,
+          session: bill.session
+        }});
+      });
+      const arrayForBills = Promise.all(arrayOfAssociationPromises);
+      return Promise.all([targetMember, arrayForBills])
+      .then(([fetchedMember, fetchedBills]) => {
+        // console.log(fetchedBills[0]);
+
+        const addedBills = fetchedBills.map((bill, i) => {
+          // console.log(member.positions[i].position)
+         return fetchedMember.addBill_vote(bill, {position: member.positions[i].position});
+        });
+        return Promise.all(addedBills);
+      })
+
+    });
+    return Promise.all(completingMemberAssociations);
+  })
+
+
+  Promise.all([memberInfoSeeded, associatingMembersToBills])
+
+
+  // .then(() => Issue.findById(1))
+  // .then((issue) => issue.addIssue_bills([4, 5]))
+  // .then(() => Bill.findById(2))
+  // .then((bill) => bill.addIssue_bills([1, 2, 3]))
+
+
   // .then(seedCats)
   // .then(cat => console.log(`Seeded ${cat.length} catagories OK`))
   // .then(() => Cat.findById(1))
@@ -135,10 +238,6 @@ db.sync({force: true})
   // .then((cat) => cat.addIssue_cat(2, {plusOrMinus: '-'}))
   // // .then(() => Cat.findById(2))
   // // .then((cat) => cat.addIssue_cats([1]))
-  // .then(() => Issue.findById(1))
-  // .then((issue) => issue.addIssue_bills([4, 5]))
-  // .then(() => Issue.findById(2))
-  // .then((issue) => issue.addIssue_bills([1, 2, 3]))
   // .then(() => Member.findById(1))
   // .then((member) => member.addBill_vote(1, {position: 'yes'}))
   // .then(() => Member.findById(1))
@@ -194,4 +293,4 @@ db.sync({force: true})
   // // .then(members => console.log(`Seeded ${members.length} members OK`))
 
   .catch(error => console.error(error))
-  .finally(() => db.close());
+  .then(() => db.close());

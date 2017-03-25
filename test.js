@@ -235,7 +235,7 @@ const getMembersPositions = (memberId) => {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
               prefix: billObj.billType,
-              number: billObj.billNum,
+              number: billObj.billNum.toString(),
               name: vote.bill.title,
               question: vote.question,
               position: vote.position,
