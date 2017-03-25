@@ -3,16 +3,18 @@ import store from '../store';
 
 
 /* -----------------    ACTIONS     ------------------ */
-const MODIFY_INCLUDED_ISSUE = "MODIFY_INCLUDED_ISSUE"; // will change included to its opposite
-const CHANGE_SCORE_WEIGHT = "CHANGE_SCORE_WEIGHT"; 
+const MODIFY_INCLUDED_ISSUE = 'MODIFY_INCLUDED_ISSUE'; // will change included to its opposite
+const CHANGE_SCORE_WEIGHT = 'CHANGE_SCORE_WEIGHT';
+const DELETE_ISSUE = 'DELETE_ISSUE';
 
 /* ------------   ACTION CREATORS     ----------------- */
-// At this point, focus solely on what actions will be sent from the React Components to change 
+// At this point, focus solely on what actions will be sent from the React Components to change
 // the score and action needs an ID to be added, just like for the politicians on the side.
 
-export const modifyIncludedIssue = (issueId) => ({ 
+export const modifyIncludedIssue = (issueId, linkId) => ({
 	type: MODIFY_INCLUDED_ISSUE,
-	issueId
+	issueId,
+	linkId
 })
 
 // Sent to reducer with issueId in order to switch the included property so that issue can be included in calculations
@@ -21,7 +23,13 @@ export const modifyScoreAndWeight = (issueId, score) => ({
 	type: CHANGE_SCORE_WEIGHT,
 	issueId,
 	score
-}) 
+})
+
+export const deleteIssue = (issueId, linkId) => ({
+	type: DELETE_ISSUE,
+	issueId,
+	linkId
+})
 
 /* -------------       REDUCER     ------------------- */
 
@@ -32,22 +40,25 @@ const initialState = { // Will add a new key with a new object for each addition
 				score: 0, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
 				weight: 0, // Flexible. Will change at the same time as score is changed
 				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
-				categoryId: 1 // Id will be hard coded depending on the iD in the database.
+				categoryId: 1, // Id will be hard coded depending on the iD in the database.
+				link: null
 			},
 			'Environment': {
 				id:3,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 2 // will change according to the categories in the database.
+				categoryId: 2, // will change according to the categories in the database.
+				link: null
 			},
-            'Foreign & Defense Spending': {
-                id: 4,
-                score: 0, 
-                weight: 0,
-                included: false,
-                categoryId: 3
-            }
+      'Foreign & Defense Spending': {
+        id: 4,
+        score: 0,
+        weight: 0,
+        included: false,
+        categoryId: 3,
+				link: null
+      }
 	}
 }
 
@@ -60,23 +71,30 @@ const reducer = (state = initialState, action) => {
 	switch (action.type){
 
 		case MODIFY_INCLUDED_ISSUE:
-		for (let issue in newState.issues) {
- 
-			if (newState.issues[issue].id === action.issueId) {
-				newState.issues[issue].included = true; // Makes the included property the opposite of what it currently is.
+			for (let issue in newState.issues) {
+				if (newState.issues[issue].id === action.issueId) {
+					newState.issues[issue].included = true;
+					newState.issues[issue].link = action.linkId;
+					newState.issues[issue].score = 50;
+				}
 			}
-			else {
-				if (newState.issues[issue].included === true) continue;
-				else newState.issues[issue].included = false;
+			return newState;
+
+		case DELETE_ISSUE:
+			for (let issue in newState.issues) {
+				if (newState.issues[issue].link === action.linkId) {
+					newState.issues[issue].included = false;
+					newState.issues[issue].link = null;
+					newState.issues[issue].score = 50;
+				}
 			}
-		}
-		return newState;
+			return newState;
 
 		case CHANGE_SCORE_WEIGHT:
 		for (let issue in newState.issues) {
 			if (newState.issues[issue].id === action.issueId) {
-			if (action.score === 25 || action.score === 75) { 
-				newState.issues[issue].score = action.score; 
+			if (action.score === 25 || action.score === 75) {
+				newState.issues[issue].score = action.score;
 				newState.issues[issue].weight = 2;
 				break;
 			}
@@ -94,7 +112,7 @@ const reducer = (state = initialState, action) => {
 		}
 		return newState;
 
-		default: 
+		default:
 		return state
 	}
 }
