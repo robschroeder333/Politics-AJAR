@@ -268,6 +268,7 @@ const getMembersPositions = (memberId) => {
 const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
   if (nextI === lastI + 1) {
     console.log("Finished Processing");
+
     //store data as variable (array)
     resolve(accReturn);
 
@@ -307,9 +308,7 @@ const issues = new Promise((resolve, reject) => {
   });
 });
 
-
 const allData = new Promise((resolve, reject) => {
-
 
 
 //////////When this runs 'last index' of 0 will only run through the first slice
