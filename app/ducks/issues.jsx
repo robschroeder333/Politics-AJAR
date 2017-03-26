@@ -25,25 +25,24 @@ export const modifyScoreAndWeight = (issueId, score) => ({
 
 /* -------------       REDUCER     ------------------- */
 
-const initialState = { // will add a new key with an object to each issue
+const initialState = { // Will add a new key with a new object for each additional issue.
 	issues: {
 			'Gun Control': {
-				id: 1, // fixed
-				score: 0, // flexible. is tracked in order to select the right AS from the array.
-				weight: 0, // flexible. will change at the same time as score is changed
-				included: false, // flexible. will change when receives an action to uncheck it, 
-								// does not enter calculation
-				categoryId: 1 // used to get the info for the right issue for each member of Senate
+				id: 2, // Fixed. Used to find which issue to change when slider or menu on the UI is modified.
+				score: 0, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
+				weight: 0, // Flexible. Will change at the same time as score is changed
+				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
+				categoryId: 1 // Id will be hard coded depending on the iD in the database.
 			},
 			'Environment': {
-				id: 2,
+				id:3,
 				score: 0,
 				weight: 0,
 				included: false,
 				categoryId: 2 // will change according to the categories in the database.
 			},
             'Foreign & Defense Spending': {
-                id: 3,
+                id: 4,
                 score: 0, 
                 weight: 0,
                 included: false,
@@ -55,17 +54,20 @@ const initialState = { // will add a new key with an object to each issue
 const reducer = (state = initialState, action) => {
 
 	const newState = Object.assign({}, state)
-	console.log('Entering the reducer, this is the issue object', newState.issues) // for some reason if i get rid of this, everything breaks
+	console.log('Entering the reducer, this is the issue object', newState.issues) // For some reason if I get rid of this, everything breaks.
 	console.log('Still in reducer of issues.jsx, rendering the store', store)
 
 	switch (action.type){
 
 		case MODIFY_INCLUDED_ISSUE:
 		for (let issue in newState.issues) {
-
+ 
 			if (newState.issues[issue].id === action.issueId) {
-				newState.issues[issue].included = !newState.issues[issue].included // Makes the included property the opposite of what it currently is.
-				break;
+				newState.issues[issue].included = true; // Makes the included property the opposite of what it currently is.
+			}
+			else {
+				if (newState.issues[issue].included === true) continue;
+				else newState.issues[issue].included = false;
 			}
 		}
 		return newState;

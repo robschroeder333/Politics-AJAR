@@ -176,6 +176,12 @@ const memberInfoSeeded = issuesAndMembersReady
 
 const billsSeeded = issuesAndMembersReady
   .then(() => {
+    return seedMembersInfo(data);
+  })
+  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
+
+const billsSeeded = dataReady
+.then(() => {
     let billsArray = [];
     data.forEach(member => {
       billsArray = billsArray.concat(member.positions);
@@ -219,6 +225,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
           // console.log(fetchedBill.dataValues);
           const notNullIssues = fetchedIssues.filter(issue => issue);
           const addedIssues = notNullIssues.map(issue => {
+
             let issuePosition = '';
             for (let i = 0; i < bill.orgs.length; i++) {
               if (bill.orgs[i].organizationType === issue.dataValues.catCode) {
