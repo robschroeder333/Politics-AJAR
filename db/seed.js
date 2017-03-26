@@ -175,12 +175,6 @@ const memberInfoSeeded = issuesAndMembersReady
   .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
 
 const billsSeeded = issuesAndMembersReady
-  .then(() => {
-    return seedMembersInfo(data);
-  })
-  .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
-
-const billsSeeded = dataReady
 .then(() => {
     let billsArray = [];
     data.forEach(member => {
