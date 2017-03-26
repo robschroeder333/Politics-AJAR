@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { DropDownMenu, MenuItem, Checkbox, FloatingActionButton } from 'material-ui';
+import { DropDownMenu, MenuItem, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
 import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues'
@@ -10,8 +10,16 @@ const styles = {
   block: {
     maxWidth: 250
   },
-  checkbox: {
-    marginBottom: 16
+  delete: {
+    marginTop: '20px',
+    color: 'red',
+    display: 'inline'
+  },
+  dropdown: {
+    // width: '200px',
+    // marginLeft: '5%',
+    // margin: 'auto'
+    display: 'inline'
   }
 }
 
@@ -74,17 +82,17 @@ class Issues extends Component {
     for (let i = 1; i <= this.state.IssueNumber; i++) {
       issuesList.push(
         <div key={i}>
-          <div className="row">
-            {/* <Checkbox
-              className="col-sm-2"
-              style={styles.checkbox}
-            /> */}
+          <div style={styles.dropdown}>
             <DropDownMenu
-              className="col-sm-8"
+              style={styles.dropdown}
               value={this.state.issueValues[i].value}
               onChange={(event, index, value) =>  this.handleMenuChange(i, value)}
             >
-            <MenuItem className="col-sm-12" value={1} primaryText="Select Issue" />
+              <MenuItem
+                className="col-sm-12"
+                value={1}
+                primaryText="Select Issue"
+              />
               {
                 Object.keys(issues).map((issue) => {
                   return (
@@ -99,11 +107,10 @@ class Issues extends Component {
             </DropDownMenu>
 
             <FaMinusCircle
-              style={{color: 'red', float: 'right'}}
+              style={styles.delete}
               value={this.state.issueValues[i].value}
               onClick={() => {this.handleDeleteIssue(i, this.state.issueValues[i].value)}}
             />
-
           </div>
           <Issue
             value={this.state.issueValues[i].slidebar}
@@ -117,8 +124,8 @@ class Issues extends Component {
 
   render() {
     const {issues} = this.props.issues;
-    // console.log(this.state);
     console.log('Issues component rendering, these  are issues', issues)
+
     return (
       <div style={styles.block}>
 

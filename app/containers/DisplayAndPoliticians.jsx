@@ -107,9 +107,19 @@ class DisplayAndPoliticians extends Component {
 	render(){
 		let sidebarContent = (
 			<div style={buttonStyle}>
-				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
-				<FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
-
+				<FlatButton
+					label="Senate"
+					onClick={() => this.onClick('senate')}
+					backgroundColor={this.state.senateClickedColor}
+					labelStyle={this.state.senateText}
+				/>
+				<FlatButton
+					label="House"
+					onClick={() => this.onClick('house')}
+					backgroundColor={this.state.houseClickedColor}
+					labelStyle={this.state.houseText}
+				/>
+			<hr />
 				<Issues />
 			</div>
 		)

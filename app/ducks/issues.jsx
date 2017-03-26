@@ -37,15 +37,15 @@ const initialState = { // Will add a new key with a new object for each addition
 	issues: {
 			'Gun Control': {
 				id: 2, // Fixed. Used to find which issue to change when slider or menu on the UI is modified.
-				score: 0, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
+				score: null, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
 				weight: 0, // Flexible. Will change at the same time as score is changed
 				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
 				categoryId: 1, // Id will be hard coded depending on the iD in the database.
 				link: null
 			},
 			'Environment': {
-				id:3,
-				score: 0,
+				id: 3,
+				score: null,
 				weight: 0,
 				included: false,
 				categoryId: 2, // will change according to the categories in the database.
@@ -53,7 +53,7 @@ const initialState = { // Will add a new key with a new object for each addition
 			},
       'Foreign & Defense Spending': {
         id: 4,
-        score: 0,
+        score: null,
         weight: 0,
         included: false,
         categoryId: 3,
