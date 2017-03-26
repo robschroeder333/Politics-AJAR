@@ -77,6 +77,11 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].link = action.linkId;
 					newState.issues[issue].score = 50;
 					newState.issues[issue].weight = 1;
+				} else if (newState.issues[issue].link === action.linkId) {
+					newState.issues[issue].link = null;
+					newState.issues[issue].included = false;
+					newState.issues[issue].score = null;
+					newState.issues[issue].weight = 0;
 				}
 			}
 			return newState;

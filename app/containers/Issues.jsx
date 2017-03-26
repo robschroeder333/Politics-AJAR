@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { DropDownMenu, MenuItem, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
-import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues'
+
 import Issue from '../components/Issue.jsx';
+import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues'
 
 const styles = {
   block: {
@@ -16,11 +17,8 @@ const styles = {
     display: 'inline'
   },
   dropdown: {
-    // width: '200px',
-    // marginLeft: '5%',
-    // margin: 'auto'
     display: 'inline'
-  }
+  },
 }
 
 class Issues extends Component {
@@ -95,6 +93,7 @@ class Issues extends Component {
                 disabled={true}
               />
               {
+                //TODO: FIX slider reverts to 50 from 0 when another is changed
                 Object.keys(issues).map((issue) => {
                   return (
                     (issues[issue].included)
