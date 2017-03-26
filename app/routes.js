@@ -4,7 +4,7 @@ import { Router, Route, browserHistory, IndexRedirect } from 'react-router';
 import App from './components/App'
 import Politicians from './containers/Politicians'
 import Politician from './components/Politician';
-import DisplayAndPoliticians from './containers/DisplayAndPoliticians'
+import DisplayAndPoliticians from './containers/DisplayAndPoliticians';
 
 
 export default () => (
