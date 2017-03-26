@@ -204,7 +204,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
   .then(() => {
     const completingMemberAssociations = data.map(member => {
       const arrayOfAssociationPromises = member.positions.map((bill) => {
-        const targetBill = Bill.findOne({where: {
+        let targetBill = Bill.findOne({where: {
           prefix: bill.prefix,
           number: bill.number,
           session: bill.session
@@ -216,13 +216,9 @@ const associatingIssuesToBills = associatingIssuesToCategories
         const fetchingIssues = Promise.all(issuePromises)
         return Promise.all([targetBill, fetchingIssues])
         .then(([fetchedBill, fetchedIssues]) => {
-          // console.log(fetchedIssues);
+          // console.log(fetchedBill.dataValues);
           const notNullIssues = fetchedIssues.filter(issue => issue);
-
-          // console.log(notNullIssues.slice(0, 2).map(issue => issue.dataValues));
-          // console.log(`associating bill ${fetchedBill.id} with issues ${notNullIssues.map(issue => issue.id)}`)
           const addedIssues = notNullIssues.map(issue => {
-            // console.log(issue.dataValues.catCode)// === bill.orgs.organizationType)
             let issuePosition = '';
             for (let i = 0; i < bill.orgs.length; i++) {
               if (bill.orgs[i].organizationType === issue.dataValues.catCode) {
