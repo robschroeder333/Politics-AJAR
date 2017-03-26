@@ -235,7 +235,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
             }
             //add issuePosition as value passed into the options object
             return fetchedBill.addIssue_bills(issue, {forOrAgainst: issuePosition})
-            .catch(() => {})
+            .catch(() => {});
           })
           return Promise.all(addedIssues);
 
