@@ -41,7 +41,7 @@ const initialState = { // Will add a new key with a new object for each addition
 				weight: 0, // Flexible. Will change at the same time as score is changed
 				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
 				categoryId: 1, // Id will be hard coded depending on the iD in the database.
-				link: null
+				link: null,
 			},
 			'Environment': {
 				id: 3,
@@ -49,7 +49,7 @@ const initialState = { // Will add a new key with a new object for each addition
 				weight: 0,
 				included: false,
 				categoryId: 2, // will change according to the categories in the database.
-				link: null
+				link: null,
 			},
       'Foreign & Defense Spending': {
         id: 4,
@@ -57,7 +57,7 @@ const initialState = { // Will add a new key with a new object for each addition
         weight: 0,
         included: false,
         categoryId: 3,
-				link: null
+				link: null,
       }
 	}
 }
@@ -65,8 +65,8 @@ const initialState = { // Will add a new key with a new object for each addition
 const reducer = (state = initialState, action) => {
 
 	const newState = Object.assign({}, state)
-	console.log('Entering the reducer, this is the issue object', newState.issues) // For some reason if I get rid of this, everything breaks.
-	console.log('Still in reducer of issues.jsx, rendering the store', store)
+	// console.log('Entering the reducer, this is the issue object', newState.issues) // For some reason if I get rid of this, everything breaks.
+	// console.log('Still in reducer of issues.jsx, rendering the store', store)
 
 	switch (action.type){
 
@@ -76,6 +76,7 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].included = true;
 					newState.issues[issue].link = action.linkId;
 					newState.issues[issue].score = 50;
+					newState.issues[issue].weight = 1;
 				}
 			}
 			return newState;
@@ -85,7 +86,10 @@ const reducer = (state = initialState, action) => {
 				if (newState.issues[issue].link === action.linkId) {
 					newState.issues[issue].included = false;
 					newState.issues[issue].link = null;
-					newState.issues[issue].score = 50;
+					newState.issues[issue].score = null;
+					newState.issues[issue].weight = 0;
+				} else if (newState.issues[issue].included && newState.issues[issue].link >= action.linkId) {
+					newState.issues[issue].link--;
 				}
 			}
 			return newState;

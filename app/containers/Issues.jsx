@@ -92,11 +92,19 @@ class Issues extends Component {
                 className="col-sm-12"
                 value={1}
                 primaryText="Select Issue"
+                disabled={true}
               />
               {
                 Object.keys(issues).map((issue) => {
                   return (
-                    <MenuItem
+                    (issues[issue].included)
+                    ? <MenuItem
+                      value={issues[issue].id}
+                      key={issues[issue].id}
+                      primaryText={issue}
+                      disabled
+                    />
+                    : <MenuItem
                       value={issues[issue].id}
                       key={issues[issue].id}
                       primaryText={issue}
