@@ -225,7 +225,6 @@ const associatingIssuesToBills = associatingIssuesToCategories
           // console.log(fetchedBill.dataValues);
           const notNullIssues = fetchedIssues.filter(issue => issue);
           const addedIssues = notNullIssues.map(issue => {
-
             let issuePosition = '';
             for (let i = 0; i < bill.orgs.length; i++) {
               if (bill.orgs[i].organizationType === issue.dataValues.catCode) {
