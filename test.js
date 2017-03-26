@@ -310,6 +310,12 @@ const issues = new Promise((resolve, reject) => {
 
 const allData = new Promise((resolve, reject) => {
 
+
+
+//////////When this runs 'last index' of 0 will only run through the first slice
+//////////adjusting 'last index' up will activate each additional slice
+//////////also slice one can be corrected, as indicated in the comment
+
   getMembers()
   .then((members) => {
     //cannot run on all members at once. set up slices for multiple calls.
