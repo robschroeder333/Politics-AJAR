@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { DropDownMenu, MenuItem, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
+import { FaMinusCircle } from 'react-icons/lib/fa';
 
 import Issue from '../components/Issue.jsx';
-import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues'
+import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues';
 
 const styles = {
   block: {

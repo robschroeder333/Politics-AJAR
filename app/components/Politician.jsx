@@ -12,8 +12,9 @@ const Politician = (props) => {
     <Link to="#">
       <div className="row" style={style}>
         <div className="col-sm-2">
-          <img src="https://i.ytimg.com/vi/jkZf_J3wqYc/maxresdefault.jpg"
-          style={{height: '50px', width: '100px'}}
+          <img
+            src="https://i.ytimg.com/vi/jkZf_J3wqYc/maxresdefault.jpg"
+            style={{height: '50px', width: '100px'}}
           />
         </div>
         <div className="col-sm-4">

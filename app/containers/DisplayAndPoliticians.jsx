@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
+import Sidebar from 'react-sidebar';
+import { FlatButton, AppBar } from 'material-ui';
 import Politicians from './Politicians';
 import Issues from './Issues';
-
-import Sidebar from 'react-sidebar';
-import RaisedButton from 'material-ui/RaisedButton';
-import { FlatButton } from 'material-ui'
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -147,14 +145,14 @@ class DisplayAndPoliticians extends Component {
 					docked={this.state.sidebarDocked}
 					styles={navbarStyle}
 				>
-						<RaisedButton
-							label="Toggle"
-							onClick={this.handleToggle}
-						/>
-						<Politicians
-							handleToggle={this.handleToggle}
-							politicians={politicians}
-						/>
+					<AppBar
+						title="Render All Politicians"
+						onLeftIconButtonTouchTap={this.handleToggle}
+					/>
+					<Politicians
+						handleToggle={this.handleToggle}
+						politicians={politicians}
+					/>
 				</Sidebar>
 			</div>
 		)

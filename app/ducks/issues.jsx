@@ -65,8 +65,6 @@ const initialState = { // Will add a new key with a new object for each addition
 const reducer = (state = initialState, action) => {
 
 	const newState = Object.assign({}, state)
-	// console.log('Entering the reducer, this is the issue object', newState.issues) // For some reason if I get rid of this, everything breaks.
-	// console.log('Still in reducer of issues.jsx, rendering the store', store)
 
 	switch (action.type){
 
@@ -102,22 +100,24 @@ const reducer = (state = initialState, action) => {
 		case CHANGE_SCORE_WEIGHT:
 		for (let issue in newState.issues) {
 			if (newState.issues[issue].id === action.issueId) {
-			if (action.score === 25 || action.score === 75) {
-				newState.issues[issue].score = action.score;
-				newState.issues[issue].weight = 2;
-				break;
+				if (action.score === 25 || action.score === 75) {
+					newState.issues[issue].score = action.score;
+					newState.issues[issue].weight = 2;
+					break;
+				}
+				else if (action.score === 50) {
+					newState.issues[issue].score = 50
+					newState.issues[issue].weight = 1;
+					break;
+				}
+				else if (action.score === 0 || action.score === 100) {
+					newState.issues[issue].score = action.score;
+					newState.issues[issue].weight = 4;
+					break;
+				}
+		  } else {
+				console.log('other issue hit', newState.issues[issue])
 			}
-			else if (action.score === 50){
-				newState.issues[issue].score = 50
-				newState.issues[issue].weight = 1;
-				break;
-			}
-			else if (action.score === 0 || action.score === 100) {
-				newState.issues[issue].score = action.score;
-				newState.issues[issue].weight = 4;
-				break;
-			}
-		  }
 		}
 		return newState;
 
