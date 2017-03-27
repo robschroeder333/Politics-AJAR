@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getPoliticians } from '../ducks/politicians';
 import Politician from '../components/Politician.jsx'
 
 class Politicians extends Component {
@@ -9,7 +8,7 @@ class Politicians extends Component {
   }
 
   render() {
-    const {politicians} = this.props
+    const {politicians} = this.props.politicians
     return (
       <div>
 

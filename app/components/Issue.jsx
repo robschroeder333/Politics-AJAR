@@ -15,7 +15,6 @@ const muiTheme = getMuiTheme({
     handleFillColor: '#00bcd4',
   },
 });
-console.log('mui', muiTheme)
 
 const Issue = (props) => {
   return (

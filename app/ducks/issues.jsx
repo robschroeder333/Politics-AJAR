@@ -1,39 +1,18 @@
- import axios from 'axios';
+import axios from 'axios';
 import store from '../store';
-import {getPoliticians} from './politicians'
+import {getPoliticians} from './politicians';
 
 
 /* -----------------    ACTIONS     ------------------ */
-const MODIFY_INCLUDED_ISSUE = "MODIFY_INCLUDED_ISSUE"; // will change included to its opposite
-const CHANGE_SCORE_WEIGHT = "CHANGE_SCORE_WEIGHT"; 
-const ADD_ISSUE = "ADD_ISSUE";
-const ISSUE_CHANGE = "ISSUE_CHANGE";
-const SCORE_CHANGE = "SCORE_CHANGE";
+const ADD_ISSUE = 'ADD_ISSUE';
+const ISSUE_CHANGE = 'ISSUE_CHANGE';
+const MODIFY_INCLUDED_ISSUE = 'MODIFY_INCLUDED_ISSUE';
 const DELETE_ISSUE = 'DELETE_ISSUE';
+const CHANGE_SCORE_WEIGHT = 'CHANGE_SCORE_WEIGHT';
+const SCORE_CHANGE = 'SCORE_CHANGE';
 
 
 /* ------------   ACTION CREATORS     ----------------- */
-// At this point, focus solely on what actions will be sent from the React Components to change
-// the score and action needs an ID to be added, just like for the politicians on the side.
-
-export const modifyIncludedIssue = (issueId, linkId) => ({
-	type: MODIFY_INCLUDED_ISSUE,
-	issueId,
-	linkId
-})
-
-
-export const modifyScoreAndWeight = (issueId, score) => ({
-	type: CHANGE_SCORE_WEIGHT,
-	issueId,
-	score
-})
-
-export const deleteIssue = (issueId, linkId) => ({
-	type: DELETE_ISSUE,
-	issueId,
-	linkId
-})
 
 export const addIssue = () => ({
 	type: ADD_ISSUE
@@ -41,8 +20,13 @@ export const addIssue = () => ({
 
 export const issueChange = (index, value) => ({
 	type: ISSUE_CHANGE,
-	index, 
+	index,
 	value
+})
+
+export const modifyIncludedIssue = (issueId, linkId) => ({
+	type: MODIFY_INCLUDED_ISSUE,
+	issueId, linkId
 })
 
 export const scoreChange = (index, newValue) => ({
@@ -51,13 +35,25 @@ export const scoreChange = (index, newValue) => ({
 	newValue
 })
 
+export const deleteIssue = (issueId, linkId) => ({
+	type: DELETE_ISSUE,
+	issueId,
+	linkId
+})
+
+export const modifyScoreAndWeight = (issueId, score) => ({
+	type: CHANGE_SCORE_WEIGHT,
+	issueId,
+	score
+})
+
 
 export const getScoreForPoliticians = () => {
   return (dispatch, getState) => {
     const state = getState()
-	let politiciansArray = state.politicians.politicians;
-	let issues = state.issues.issues
-	let politiciansWithScore;
+		let politiciansArray = state.politicians.politicians;
+		let issues = state.issues.issues
+		let politiciansWithScore;
 
     return politiciansWithScore = politiciansArray.map(politician => {
     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
@@ -66,18 +62,18 @@ export const getScoreForPoliticians = () => {
     	const polId = politician.ppid
     	let totalScore = 0;
     	let totalWeight = 0;
-    	let totalAgreementScore = 0;
+    	let totalAgrzeementScore = 0;
     	for (let issue in issues) {
-    		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included) 
+    		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
     		if (indIssue[issue].included === true) {
     			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
     			let rightScore;
-				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  // 
+				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
 	    		.then(response => {
-	    			let arrayOfScore = response.data 
-	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
+	    			let arrayOfScore = response.data
+	    			// console.log('this is the catscore', response.data, politician.fullName, issue)
 	    			if (arrayOfScore[0] === null) {
-	    				rightScore = 0; // why does the array return null? 
+	    				rightScore = 0; // why does the array return null?
 	    			}
 	    			else {
 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
@@ -91,7 +87,7 @@ export const getScoreForPoliticians = () => {
 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
 	    			totalScore += rightScore * indIssue[issue].weight;
 	    			// console.log('this is totalScore', totalScore)
-	    			totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
+	    			totalAgreementScore += Number(totalScore / totalWeight) === totalScore / totalWeight ? (totalScore / totalWeight) : 0 ;  // what to put if the politician has no
 					// console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
 					// console.log('this is the final politician', politiciansArray)
 
@@ -114,7 +110,7 @@ export const getScoreForPoliticians = () => {
 
 /* -------------       REDUCER     ------------------- */
 
-const initialState = { 
+const initialState = {
 	issueNumber: 0,
 	issueValues: {},
 	issues: {
@@ -127,75 +123,75 @@ const initialState = {
 				link: null,
 			},
 			'Construction & Public Works': {
-				id:3,
+				id: 3,
 				score: 0,
 				weight: 0,
 				included: false,
 				categoryId: 2,
-          
+
 			},
       'Communication & Electronics': {
         id: 4,
-        score: 0, 
+        score: 0,
         weight: 0,
         included: false,
         categoryId: 3
     },
      'Defense': {
-				id:5,
+				id: 5,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 4 
+				categoryId: 4
 			},
 			'Energy & Environment': {
-				id:6,
+				id: 6,
 				score: 100,
 				weight: 4,
-				included: true,
-				categoryId: 5 
+				included: false,
+				categoryId: 5
 			},
 			'Finance, Insurance & Real Estate': {
-				id:7,
+				id: 7,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 6 
+				categoryId: 6
 			},
 			'General commerce': {
-				id:8,
+				id: 8,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 7 
+				categoryId: 7
 			},
 			'Health, Education & Human Resources': {
-				id:9,
+				id: 9,
 				score: 0,
 				weight: 4,
-				included: true,
-				categoryId: 8 
+				included: false,
+				categoryId: 8
 			},
 			'Ideological & Single Issue': {
-				id:10,
+				id: 10,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 9 
+				categoryId: 9
 			},
 			'Legal Services': {
-				id:11,
+				id: 11,
 				score: 0,
 				weight: 4,
-				included: true,
-				categoryId: 10 
+				included: false,
+				categoryId: 10
 			},
 			'Labor Unions': {
-				id:12,
+				id: 12,
 				score: 0,
 				weight: 0,
 				included: false,
-				categoryId: 11 
+				categoryId: 11
 			}
 	}
 }
@@ -205,8 +201,16 @@ const reducer = (state = initialState, action) => {
 
 	const newState = Object.assign({}, state)
 
-
 	switch (action.type){
+
+		case ADD_ISSUE:
+			newState.issueNumber = newState.issueNumber + 1;
+			newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
+			return newState;
+
+		case ISSUE_CHANGE:
+			newState.issueValues[action.index] = {value: action.value, slidebar: 50};
+			return newState;
 
 		case MODIFY_INCLUDED_ISSUE:
 			for (let issue in newState.issues) {
@@ -222,63 +226,56 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].weight = 0;
 				}
 			}
+			return newState;
 
+		case SCORE_CHANGE:
+			newState.issueValues[action.index].slidebar = action.newValue;
 			return newState;
 
 		case DELETE_ISSUE:
+			// iterate though issues and uninclude it
 			for (let issue in newState.issues) {
 				if (newState.issues[issue].link === action.linkId) {
 					newState.issues[issue].included = false;
 					newState.issues[issue].link = null;
 					newState.issues[issue].score = null;
-					newState.issues[issue].weight = 0;
-				} else if (newState.issues[issue].included && newState.issues[issue].link >= action.linkId) {
+				} else if ( newState.issues[issue].included && newState.issues[issue].link >= action.linkId) {
 					newState.issues[issue].link--;
 				}
 			}
+			let newIssueValues = {};
+			let num = 0
+			for (let prop in newState.issueValues) {
+				if (+prop !== action.linkId) newIssueValues[++num] = newState.issueValues[+prop]
+			}
+			newState.issueValues = newIssueValues;
+			newState.issueNumber--;
 			return newState;
 
 		case CHANGE_SCORE_WEIGHT:
-		for (let issue in newState.issues) {
-			if (newState.issues[issue].id === action.issueId) {
-				if (action.score === 25 || action.score === 75) {
-					newState.issues[issue].score = action.score;
-					newState.issues[issue].weight = 2;
-					break;
-				}
-				else if (action.score === 50) {
-					newState.issues[issue].score = 50
-					newState.issues[issue].weight = 1;
-					break;
-				}
-				else if (action.score === 0 || action.score === 100) {
-					newState.issues[issue].score = action.score;
-					newState.issues[issue].weight = 4;
-					break;
-				}
-		  } else {
-				console.log('other issue hit', newState.issues[issue])
+			for (let issue in newState.issues) {
+				if (newState.issues[issue].id === action.issueId) {
+					if (action.score === 25 || action.score === 75) {
+						newState.issues[issue].score = action.score;
+						newState.issues[issue].weight = 2;
+						break;
+					}
+					else if (action.score === 50) {
+						newState.issues[issue].score = 50
+						newState.issues[issue].weight = 1;
+						break;
+					}
+					else if (action.score === 0 || action.score === 100) {
+						newState.issues[issue].score = action.score;
+						newState.issues[issue].weight = 4;
+						break;
+					}
+			  }
 			}
-		}
-		return newState;
+			return newState;
 
-		case ADD_ISSUE:
-		newState.issueNumber = newState.issueNumber + 1;
-		newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
-		return newState;
-
-		case ISSUE_CHANGE:
-		newState.issueValues[action.index] = {value: action.value, slidebar: 50};
-		console.log(newState);
-		return newState;
-
-		case SCORE_CHANGE:
-		newState.issueValues[action.index].slidebar = action.newValue;
-		console.log(newState)
-		return newState;
-
-		default: 
-		return state
+		default:
+			return state
 	}
 }
 
