@@ -56,8 +56,8 @@ const seedCats = (categories) => {
   // console.log(uniqueCategories)
   return db.Promise.map(uniqueCategories,
     (cat) => {
-      db.model('cats').create(cat);
-    })
+      return db.model('cats').create(cat);
+    });
 };
 
 let billDupeCounter = 0;

@@ -249,10 +249,11 @@ const getMembersPositions = (memberId) => {
 
       //below is how we tie in the organizations that are involved with a bill
       const positionsWithOrgs = positions.map(bill => {
+        // console.log(bill)
         return getAllOrganizationsForBill(bill.prefix, bill.number)
         .then(orgsArray => {
           bill.orgs = orgsArray;
-          console.log(orgsArray)
+          // console.log(orgsArray)
           return bill;
         })
         .catch(err => console.log(err));
@@ -320,7 +321,7 @@ const allData = new Promise((resolve, reject) => {
   .then((members) => {
     //cannot run on all members at once. set up slices for multiple calls.
     const memberPieces = [];
-    memberPieces.push(members.slice(0, 5));//0  ///// correct 5 to 50
+    memberPieces.push(members.slice(0, 50));//0  ///// correct 5 to 50
     memberPieces.push(members.slice(50, 100));//1
     memberPieces.push(members.slice(100, 150));//2
     memberPieces.push(members.slice(150, 200));//3
