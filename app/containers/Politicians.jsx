@@ -9,7 +9,7 @@ class Politicians extends Component {
   }
 
   render() {
-    const {politicians} = this.props
+    const {politicians} = this.props.politicians
     return (
       <div>
 

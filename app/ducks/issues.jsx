@@ -66,7 +66,7 @@ export const getScoreForPoliticians = () => {
     	const polId = politician.ppid
     	let totalScore = 0;
     	let totalWeight = 0;
-    	let totalAgreementScore = 0;
+    	// let totalAgreementScore = 0;
     	for (let issue in issues) {
     		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included) 
     		if (indIssue[issue].included === true) {
@@ -75,9 +75,9 @@ export const getScoreForPoliticians = () => {
 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  // 
 	    		.then(response => {
 	    			let arrayOfScore = response.data 
-	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
+	    			console.log('this is the catscore', response.data, politician.fullName, issue)  
 	    			if (arrayOfScore[0] === null) {
-	    				rightScore = 0; // why does the array return null? 
+	    				rightScore = 50; // why does the array return null? 
 	    			}
 	    			else {
 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
@@ -91,7 +91,7 @@ export const getScoreForPoliticians = () => {
 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
 	    			totalScore += rightScore * indIssue[issue].weight;
 	    			// console.log('this is totalScore', totalScore)
-	    			totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
+	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
 					// console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
 					// console.log('this is the final politician', politiciansArray)
 
@@ -134,14 +134,14 @@ const initialState = {
 				categoryId: 2,
           
 			},
-      'Communication & Electronics': {
-        id: 4,
-        score: 0, 
-        weight: 0,
-        included: false,
-        categoryId: 3
-    },
-     'Defense': {
+		    'Communication & Electronics': {
+		        id: 4,
+		        score: 0, 
+		        weight: 0,
+		        included: false,
+		        categoryId: 3
+		    },
+		    'Defense': {
 				id:5,
 				score: 0,
 				weight: 0,
@@ -150,8 +150,8 @@ const initialState = {
 			},
 			'Energy & Environment': {
 				id:6,
-				score: 100,
-				weight: 4,
+				score: 0,
+				weight: 0,
 				included: true,
 				categoryId: 5 
 			},
@@ -172,8 +172,8 @@ const initialState = {
 			'Health, Education & Human Resources': {
 				id:9,
 				score: 0,
-				weight: 4,
-				included: true,
+				weight: 0,
+				included: false,
 				categoryId: 8 
 			},
 			'Ideological & Single Issue': {
@@ -187,7 +187,7 @@ const initialState = {
 				id:11,
 				score: 0,
 				weight: 4,
-				included: true,
+				included: false,
 				categoryId: 10 
 			},
 			'Labor Unions': {
