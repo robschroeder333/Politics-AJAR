@@ -105,6 +105,7 @@ class DisplayAndPoliticians extends Component {
 	}
 
 	render(){
+		console.log('this', this.props)
 		let sidebarContent = (
 			<div style={buttonStyle}>
 				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />

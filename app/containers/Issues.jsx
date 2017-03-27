@@ -82,8 +82,8 @@ class Issues extends Component {
 
   render() {
     const {issues} = this.props.issues;
-    console.log(this.state);
-    console.log('Issues component rendering, these  are issues', issues)
+    // console.log(this.state);
+    // console.log('Issues component rendering, these  are issues', issues)
     return (
       <div style={styles.block}>
         <Checkbox  style={styles.checkbox} />
