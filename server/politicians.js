@@ -20,7 +20,7 @@ router.get('/:id/:catId', function(req, res, next) {
 		where: {ppid: req.params.id}
 	})
 	.then(member => {
-		console.log('this is member', member)
+		console.log('this is member', member.firstName)
 		return member.getCatScore(req.params.catId, 2000, 2017)
 	})
 	.then(response => {

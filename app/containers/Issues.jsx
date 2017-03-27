@@ -94,7 +94,6 @@ class Issues extends Component {
              labelStyle={{color: 'black', fontWeight: 'bold'}}
            >
            <MenuItem value={1} primaryText="Select Issue" disabled={true} />
-<!--              {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )} -->
               {
                 //TODO: FIX slider reverts to 50 from 0 when another is changed
                 Object.keys(issues).map((issue) => {
@@ -119,8 +118,8 @@ class Issues extends Component {
 
            <FaMinusCircle
               style={styles.delete}
-              value={this.state.issueValues[i].value}
-              onClick={() => {this.handleDeleteIssue(i, this.state.issueValues[i].value)}}
+              value={issueValues[i].value}
+              onClick={() => {this.handleDeleteIssue(i, issueValues[i].value)}}
             />         
           
            <Issue
@@ -128,12 +127,6 @@ class Issues extends Component {
              handleChange={(evt, newValue) => this.handleChange(i, newValue)}
            />
          </div>
-
-
-
-
-
-
        )
       }
     return issuesList;
