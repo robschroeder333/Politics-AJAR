@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import Sidebar from 'react-sidebar';
+import { FlatButton, AppBar } from 'material-ui';
 import Politicians from './Politicians';
 import Issues from './Issues';
-
-import Sidebar from 'react-sidebar';
-import RaisedButton from 'material-ui/RaisedButton';
-import { MenuItem, FlatButton, DropDownMenu } from 'material-ui'
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -107,14 +105,26 @@ class DisplayAndPoliticians extends Component {
 	render(){
 		let sidebarContent = (
 			<div style={buttonStyle}>
-				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
-				<FlatButton label="House"  onClick={() => this.onClick('house')} backgroundColor={this.state.houseClickedColor} labelStyle={this.state.houseText} />
-
+				<FlatButton
+					label="Senate"
+					onClick={() => this.onClick('senate')}
+					backgroundColor={this.state.senateClickedColor}
+					labelStyle={this.state.senateText}
+				/>
+				<FlatButton
+					label="House"
+					onClick={() => this.onClick('house')}
+					backgroundColor={this.state.houseClickedColor}
+					labelStyle={this.state.houseText}
+				/>
+			<hr />
 				<Issues />
 			</div>
 		)
 		let {politicians} = this.props
 		let {senateSelected, houseSelected} = this.state
+
+		console.log('this', this.props)
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
@@ -135,9 +145,16 @@ class DisplayAndPoliticians extends Component {
 					open={this.state.sidebarOpen}
 					onSetOpen={this.onSetSidebarOpen}
 					docked={this.state.sidebarDocked}
-					styles={navbarStyle}>
-						<RaisedButton label="Toggle"  onClick={this.handleToggle} />
-						<Politicians handleToggle={this.handleToggle} politicians={politicians} />
+					styles={navbarStyle}
+				>
+					<AppBar
+						title="Render All Politicians"
+						onLeftIconButtonTouchTap={this.handleToggle}
+					/>
+					<Politicians
+						handleToggle={this.handleToggle}
+						politicians={politicians}
+					/>
 				</Sidebar>
 			</div>
 		)
@@ -150,5 +167,6 @@ const mapStateToProps = ({politicians}) => {
     politicians
   }
 }
+
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)

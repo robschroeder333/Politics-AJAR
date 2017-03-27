@@ -11,7 +11,7 @@ module.exports = {
   context: __dirname,
   devtool: 'source-map',
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.jsx', '.scss', '.js', '.json']
   },
   module: {
     plugins: process.env.NODE_ENV === 'production' ? [
@@ -32,3 +32,4 @@ module.exports = {
     ]
   },
 };
+

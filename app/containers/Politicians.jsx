@@ -12,9 +12,10 @@ class Politicians extends Component {
     const {politicians} = this.props
     return (
       <div>
-        <h3 className="text-center">Render all politicians</h3>
 
-        <ul className="text-left">
+        <ul
+          className="text-left"
+          style={{listStyle: 'none'}}>
           {politicians.map(politician => {
               return (
                 <li key={politician.id}>
