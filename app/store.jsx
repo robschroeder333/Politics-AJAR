@@ -4,6 +4,7 @@ import createLogger from 'redux-logger'
 import thunkMiddleware from 'redux-thunk'
 
 import { getAllPoliticians } from './ducks/politicians.jsx';
+import {getScoreForPoliticians} from './ducks/issues.jsx';
 
 // logs state changes in chrome console
 const logger = createLogger({collapsed: true})
