@@ -6,6 +6,9 @@ import {getPoliticians} from './politicians'
 /* -----------------    ACTIONS     ------------------ */
 const MODIFY_INCLUDED_ISSUE = "MODIFY_INCLUDED_ISSUE"; // will change included to its opposite
 const CHANGE_SCORE_WEIGHT = "CHANGE_SCORE_WEIGHT"; 
+const ADD_ISSUE = "ADD_ISSUE";
+const ISSUE_CHANGE = "ISSUE_CHANGE";
+const SCORE_CHANGE = "SCORE_CHANGE";
 
 /* ------------   ACTION CREATORS     ----------------- */
 // At this point, focus solely on what actions will be sent from the React Components to change 
@@ -22,6 +25,22 @@ export const modifyScoreAndWeight = (issueId, score) => ({
 	issueId,
 	score
 }) 
+
+export const addIssue = () => ({
+	type: ADD_ISSUE
+})
+
+export const issueChange = (index, value) => ({
+	type: ISSUE_CHANGE,
+	index, 
+	value
+})
+
+export const scoreChange = (index, newValue) => ({
+	type: SCORE_CHANGE,
+	index,
+	newValue
+})
 
 
 export const getScoreForPoliticians = () => {
@@ -73,7 +92,6 @@ export const getScoreForPoliticians = () => {
 	    		.then(() => dispatch(getPoliticians(politiciansArray)))
     		}
     	}
-    // }
     })
 
     // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
@@ -87,7 +105,9 @@ export const getScoreForPoliticians = () => {
 
 /* -------------       REDUCER     ------------------- */
 
-const initialState = { // Will add a new key with a new object for each additional issue.
+const initialState = { 
+	issueNumber: 0,
+	issueValues: {},
 	issues: {
 			'Agriculture': {
 				id: 2, // Fixed. Used to find which issue to change when slider or menu on the UI is modified.
@@ -173,7 +193,7 @@ const initialState = { // Will add a new key with a new object for each addition
 const reducer = (state = initialState, action) => {
 
 	const newState = Object.assign({}, state)
-	// console.log('Entering the reducer, this is the issue object', newState.issues) // For some reason if I get rid of this, everything breaks.
+	console.log('Entering the reducer, this is the issue object', newState) // For some reason if I get rid of this, everything breaks.
 	// console.log('Still in reducer of issues.jsx, rendering the store', store)
 
 	switch (action.type){
@@ -213,6 +233,21 @@ const reducer = (state = initialState, action) => {
 			}
 		  }
 		}
+		return newState;
+
+		case ADD_ISSUE:
+		newState.issueNumber = newState.issueNumber + 1;
+		newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
+		return newState;
+
+		case ISSUE_CHANGE:
+		newState.issueValues[action.index] = {value: action.value, slidebar: 50};
+		console.log(newState);
+		return newState;
+
+		case SCORE_CHANGE:
+		newState.issueValues[action.index].slidebar = action.newValue;
+		console.log(newState)
 		return newState;
 
 		default: 

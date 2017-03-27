@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider } from 'material-ui';
+// import { Slider } from 'react-toolbox/lib/slider';
 
 const sliderStyle = {
   width: '70%',
@@ -26,3 +27,6 @@ const Issue = (props) => {
 // defaultValue={props.slidebar}
 
 export default Issue;
+
+
+  // <Slider pinned snaps min={0} max={100} step={25} editable value={props.value ? props.value : 50} onChange={props.handleChange} />

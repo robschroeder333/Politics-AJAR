@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { DropDownMenu, MenuItem, Checkbox, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight} from '../ducks/issues'
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange} from '../ducks/issues'
 
 const styles = {
   block: {
@@ -18,9 +18,6 @@ class Issues extends Component {
   constructor(props) {
     super(props);
     this.state = {
-            value: 1,
-            valueOfSecondMenu: 1,
-            slidebar: 50,
             issueValues: {},
             IssueNumber: 0
     }
@@ -31,47 +28,47 @@ class Issues extends Component {
   }
 
   handleChange(index, newValue) {
-    const itemValue = this.state.issueValues[index].value
-    const updatedIssueValues = Object.assign({}, this.state.issueValues);
-    updatedIssueValues[index] = { value: itemValue, slidebar: newValue };
-    this.setState({issueValues: updatedIssueValues})
+    this.props.scoreChange(index, newValue)
+    const itemValue = this.props.issues.issueValues[index].value
+    // const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    // updatedIssueValues[index] = { value: itemValue, slidebar: newValue };
+    // this.setState({issueValues: updatedIssueValues})
     this.props.changeScore(itemValue, newValue)
   }
 
   handleMenuChange(index, value) {
-    const updatedIssueValues = Object.assign({}, this.state.issueValues);
-    updatedIssueValues[index] = {value: value, slidebar: 50};
-    this.setState({issueValues: updatedIssueValues})
+    this.props.issueChange(index, value)
+    // const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    // updatedIssueValues[index] = {value: value, slidebar: 50};
+    // this.setState({issueValues: updatedIssueValues})
     this.props.includeOrNot(value)
   }
 
 
   handleChangeIssueNumbers() {
-    let stateChanges = {};
-    stateChanges.IssueNumber = this.state.IssueNumber+1;
-    stateChanges.issueValues = Object.assign({}, this.state.issueValues);
-    stateChanges.issueValues[this.state.IssueNumber+1] = { value: 1, slidebar: 50 };
-    
+    this.props.addIssue()
+    // let stateChanges = {};
+    // stateChanges.IssueNumber = this.state.IssueNumber+1;
+    // stateChanges.issueValues = Object.assign({}, this.state.issueValues);
+    // stateChanges.issueValues[this.state.IssueNumber+1] = { value: 1, slidebar: 50 };
 
-     this.setState(stateChanges)
-     // this.state[this.props.issues[issue]
-     console.log('state true', this.state)
+     // this.setState(stateChanges)
    }
 
    renderIssues() {
-    const {issues} = this.props.issues;
+    const {issues, issueValues, issueNumber} = this.props.issues;
     let issuesList = [];
 
-    for (let i = 1; i <= this.state.IssueNumber; i++) {
+    for (let i = 1; i <= issueNumber; i++) {
       issuesList.push(
           <div key={i}>
-           <DropDownMenu value={this.state.issueValues[i].value} onChange={(event, index, value) => this.handleMenuChange(i, value)}>
+           <DropDownMenu value={issueValues[i].value} autoWidth={true} onChange={(event, index, value) => this.handleMenuChange(i, value)} maxHeight={300} labelStyle={{color: 'black', fontWeight: 'bold'}}>
            <MenuItem value={1} primaryText="Select Issue" />
              {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
            </DropDownMenu>
 
            <Issue
-             value={this.state.issueValues[i].slidebar}
+             value={issueValues[i].slidebar}
              handleChange={(evt, newValue) => this.handleChange(i, newValue)}
            />
          </div>
@@ -81,7 +78,7 @@ class Issues extends Component {
    }
 
   render() {
-    const {issues} = this.props.issues;
+    const {issues, issueValues, issueNumber} = this.props.issues;
     return (
       <div style={styles.block}>
         <Checkbox  style={styles.checkbox} />
@@ -102,9 +99,11 @@ class Issues extends Component {
 }
 
 /* REDUX CONTAINER */
-const mapStateToProps = ({issues}) => {
+const mapStateToProps = ({issues, issueValues, issueNumber}) => {
   return {
-    issues
+    issues,
+    issueValues,
+    issueNumber
   }
 }
 
@@ -114,7 +113,17 @@ const mapDispatchToProps = (dispatch) => ({
   },
   changeScore(issueId, score){ 
     dispatch(modifyScoreAndWeight(issueId, score))
+  },
+  addIssue(){
+    dispatch(addIssue())
+  },
+  issueChange(index, value){
+    dispatch(issueChange(index, value))
+  },
+  scoreChange(index, newValue){
+    dispatch(scoreChange(index, newValue))
   }
 })
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Issues);
