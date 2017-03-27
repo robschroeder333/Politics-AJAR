@@ -9,6 +9,6 @@ const IssueBills = db.define('issue_bills', {
 	forOrAgainst: {
     	type: Sequelize.ENUM('for', 'against'),
   	}
-});
+}); 
 
 module.exports = IssueBills;

@@ -196,5 +196,5 @@ const Member = db.define('members', {
       }
     }}
 });
-
+ 
 module.exports = Member;
