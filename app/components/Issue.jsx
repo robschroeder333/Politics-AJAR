@@ -37,3 +37,6 @@ const Issue = (props) => {
 }
 
 export default Issue;
+
+
+  // <Slider pinned snaps min={0} max={100} step={25} editable value={props.value ? props.value : 50} onChange={props.handleChange} />

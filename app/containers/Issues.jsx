@@ -5,7 +5,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import { FaMinusCircle } from 'react-icons/lib/fa';
 
 import Issue from '../components/Issue.jsx';
-import { modifyIncludedIssue, modifyScoreAndWeight, deleteIssue } from '../ducks/issues';
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue} from '../ducks/issues'
+
 
 const styles = {
   block: {
@@ -36,62 +37,64 @@ class Issues extends Component {
   }
 
   handleChange(index, newValue) {
-    const itemValue = this.state.issueValues[index].value
-    const updatedIssueValues = Object.assign({}, this.state.issueValues);
-    updatedIssueValues[index] = { value: itemValue, slidebar: newValue };
-    this.setState({issueValues: updatedIssueValues})
+    this.props.scoreChange(index, newValue)
+    const itemValue = this.props.issues.issueValues[index].value
+    // const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    // updatedIssueValues[index] = { value: itemValue, slidebar: newValue };
+    // this.setState({issueValues: updatedIssueValues})
     this.props.changeScore(itemValue, newValue)
   }
 
   handleMenuChange(index, value) {
-    const updatedIssueValues = Object.assign({}, this.state.issueValues);
-    updatedIssueValues[index] = {value: value, slidebar: 50};
-    this.setState({issueValues: updatedIssueValues})
-    this.props.includeOrNot(value, index)
+    this.props.issueChange(index, value)
+    // const updatedIssueValues = Object.assign({}, this.state.issueValues);
+    // updatedIssueValues[index] = {value: value, slidebar: 50};
+    // this.setState({issueValues: updatedIssueValues})
+    this.props.includeOrNot(value)
+
   }
 
   handleChangeIssueNumbers() {
-    let stateChanges = {};
-    stateChanges.IssueNumber = this.state.IssueNumber + 1;
-    stateChanges.issueValues = Object.assign({}, this.state.issueValues);
-    stateChanges.issueValues[this.state.IssueNumber + 1] = { value: 1, slidebar: 50 };
+    this.props.addIssue()
+    // let stateChanges = {};
+    // stateChanges.IssueNumber = this.state.IssueNumber+1;
+    // stateChanges.issueValues = Object.assign({}, this.state.issueValues);
+    // stateChanges.issueValues[this.state.IssueNumber+1] = { value: 1, slidebar: 50 };
 
-    this.setState(stateChanges)
-  }
-
-  handleDeleteIssue(index, value) {
-    const issueValues = this.state.issueValues;
-    let newIssueValues = {};
-    let num = 0
-    for (let prop in issueValues) {
-      if (issueValues.hasOwnProperty) {
-        if (+prop !== index) newIssueValues[++num] = issueValues[+prop]
+     // this.setState(stateChanges)
+   }
+        
+    handleDeleteIssue(index, value) {
+      const issueValues = this.state.issueValues;
+      let newIssueValues = {};
+      let num = 0
+      for (let prop in issueValues) {
+        if (issueValues.hasOwnProperty) {
+          if (+prop !== index) newIssueValues[++num] = issueValues[+prop]
+        }
       }
+      // deletes the dropdown issue component
+      this.setState({issueValues: newIssueValues, IssueNumber: --this.state.IssueNumber});
+      // dispatched and removes link to issue
+      this.props.removeIssue(value, index)
     }
-    // deletes the dropdown issue component
-    this.setState({issueValues: newIssueValues, IssueNumber: --this.state.IssueNumber});
-    // dispatched and removes link to issue
-    this.props.removeIssue(value, index)
-  }
-
+        
    renderIssues() {
-    const { issues } = this.props.issues;
+    const {issues, issueValues, issueNumber} = this.props.issues;
     let issuesList = [];
-    for (let i = 1; i <= this.state.IssueNumber; i++) {
+
+    for (let i = 1; i <= issueNumber; i++) {
       issuesList.push(
-        <div key={i}>
-          <div style={styles.dropdown}>
-            <DropDownMenu
-              style={styles.dropdown}
-              value={this.state.issueValues[i].value}
-              onChange={(event, index, value) =>  this.handleMenuChange(i, value)}
-            >
-              <MenuItem
-                className="col-sm-12"
-                value={1}
-                primaryText="Select Issue"
-                disabled={true}
-              />
+          <div key={i}>
+           <DropDownMenu 
+             value={issueValues[i].value} 
+             autoWidth={true} 
+             onChange={(event, index, value) => this.handleMenuChange(i, value)} 
+             maxHeight={300} 
+             labelStyle={{color: 'black', fontWeight: 'bold'}}
+           >
+           <MenuItem value={1} primaryText="Select Issue" disabled={true} />
+<!--              {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )} -->
               {
                 //TODO: FIX slider reverts to 50 from 0 when another is changed
                 Object.keys(issues).map((issue) => {
@@ -111,27 +114,33 @@ class Issues extends Component {
                   )
                 })
               }
-            </DropDownMenu>
+             
+           </DropDownMenu>
 
-            <FaMinusCircle
+           <FaMinusCircle
               style={styles.delete}
               value={this.state.issueValues[i].value}
               onClick={() => {this.handleDeleteIssue(i, this.state.issueValues[i].value)}}
-            />
-          </div>
-          <Issue
-            value={this.state.issueValues[i].slidebar}
-            handleChange={(evt, newValue) => this.handleChange(i, newValue)}
-          />
-        </div>
+            />         
+          
+           <Issue
+             value={issueValues[i].slidebar}
+             handleChange={(evt, newValue) => this.handleChange(i, newValue)}
+           />
+         </div>
+
+
+
+
+
+
        )
       }
     return issuesList;
    }
 
   render() {
-    const {issues} = this.props.issues;
-    console.log('Issues component rendering, these  are issues', issues)
+    const {issues, issueValues, issueNumber} = this.props.issues;
 
     return (
       <div style={styles.block}>
@@ -152,23 +161,35 @@ class Issues extends Component {
 }
 
 /* REDUX CONTAINER */
-const mapStateToProps = ({issues}) => {
+const mapStateToProps = ({issues, issueValues, issueNumber}) => {
   return {
-    issues
+    issues,
+    issueValues,
+    issueNumber
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  includeOrNot(issueId, linkId){  // dispatched if an issue is selected in drop down menu
-    dispatch(modifyIncludedIssue(issueId, linkId)) // in order to turn the include to true and be
-    // able to use the issue in the calculation later
+  includeOrNot(issueId){  
+    dispatch(modifyIncludedIssue(issueId)) 
   },
-  changeScore(issueId, score){ // disptached in order to change the score/importance of each issue
-    dispatch(modifyScoreAndWeight(issueId, score)) // for the user within the array
-  }, // dispatched when the slider moves
+  changeScore(issueId, score){ 
+    dispatch(modifyScoreAndWeight(issueId, score))
+  },
+  addIssue(){
+    dispatch(addIssue())
+  },
+  issueChange(index, value){
+    dispatch(issueChange(index, value))
+  },
+  scoreChange(index, newValue){
+    dispatch(scoreChange(index, newValue))
+  }, 
   removeIssue(issueId, linkId) {
     dispatch(deleteIssue(issueId, linkId))
   }
 })
 
+
 export default connect(mapStateToProps, mapDispatchToProps)(Issues);
+

@@ -12,6 +12,7 @@ class Politicians extends Component {
     const {politicians} = this.props
     return (
       <div>
+
         <ul
           className="text-left"
           style={{listStyle: 'none'}}>

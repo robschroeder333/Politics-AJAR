@@ -124,6 +124,8 @@ class DisplayAndPoliticians extends Component {
 		let {politicians} = this.props
 		let {senateSelected, houseSelected} = this.state
 
+		console.log('this', this.props)
+
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
 		}
@@ -165,5 +167,6 @@ const mapStateToProps = ({politicians}) => {
     politicians
   }
 }
+
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)
