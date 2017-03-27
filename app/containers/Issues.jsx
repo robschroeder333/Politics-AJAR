@@ -82,8 +82,6 @@ class Issues extends Component {
 
   render() {
     const {issues} = this.props.issues;
-    // console.log(this.state);
-    // console.log('Issues component rendering, these  are issues', issues)
     return (
       <div style={styles.block}>
         <Checkbox  style={styles.checkbox} />
@@ -111,13 +109,12 @@ const mapStateToProps = ({issues}) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  includeOrNot(issueId){  // dispatched if an issue is selected in drop down menu
-    dispatch(modifyIncludedIssue(issueId)) // in order to turn the include to true and be
-    // able to use the issue in the calculation later
+  includeOrNot(issueId){  
+    dispatch(modifyIncludedIssue(issueId)) 
   },
-  changeScore(issueId, score){ // disptached in order to change the score/importance of each issue
-    dispatch(modifyScoreAndWeight(issueId, score)) // for the user within the array
-  } // dispatched when the slider moves
+  changeScore(issueId, score){ 
+    dispatch(modifyScoreAndWeight(issueId, score))
+  }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Issues);

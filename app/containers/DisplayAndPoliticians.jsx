@@ -6,6 +6,8 @@ import Issues from './Issues';
 import Sidebar from 'react-sidebar';
 import RaisedButton from 'material-ui/RaisedButton';
 import { MenuItem, FlatButton, DropDownMenu } from 'material-ui'
+import {getScoreForPoliticians} from '../ducks/issues'
+
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -105,7 +107,6 @@ class DisplayAndPoliticians extends Component {
 	}
 
 	render(){
-		console.log('this', this.props)
 		let sidebarContent = (
 			<div style={buttonStyle}>
 				<FlatButton label="Senate" onClick={() => this.onClick('senate')} backgroundColor={this.state.senateClickedColor}  labelStyle={this.state.senateText} />
@@ -116,6 +117,8 @@ class DisplayAndPoliticians extends Component {
 		)
 		let {politicians} = this.props
 		let {senateSelected, houseSelected} = this.state
+
+		console.log('this', this.props)
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
@@ -152,4 +155,10 @@ const mapStateToProps = ({politicians}) => {
   }
 }
 
-export default connect(mapStateToProps)(DisplayAndPoliticians)
+const mapDispatchToProps = (dispatch) => ({
+	getNewPoliticians() {
+		dispatch(getScoreForPoliticians())
+	}
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(DisplayAndPoliticians)

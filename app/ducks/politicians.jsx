@@ -6,47 +6,44 @@ import {getScoreForPoliticians, addScoreToPoliticians} from './issues'
 const GET_POLITICIANS = 'GET_POLITICIANS'
 
 /* ------------   ACTION CREATORS     ----------------- */
-
 export const getPoliticians = (politicians) => ({
   type: GET_POLITICIANS,
   politicians
 })
 
-
-// after this, politicians will be added as a property to the state, as an array 
-// full of politicians object
-
 export const getAllPoliticians = () => {
-  return dispatch => {
+  return (dispatch, getState) => {
     axios.get('/api/politicians')
     .then(response => {
+      console.log('this is response data', response.data)
       dispatch(getPoliticians(response.data))
     })
     .then(() => {
+      console.log('this is state', getState())
       dispatch(getScoreForPoliticians())
     })
-    // .then(() => {
-    //   dispatch(addScoreToPoliticians())
-    // })
     .catch(err => console.error(err))
   }
 }
 
 
+const initialState = {
+  politicians: []
+}
+
 /* -------------       REDUCER     ------------------- */
 
-const reducer = (state = [] , action) => { // state = []
+const reducer = (state = initialState , action) => { // state = []
 
   let newState = Object.assign({}, state)
 
   switch (action.type){
 
     case GET_POLITICIANS:
-    // console.log('in reducer, this is array', action.politicians)
-      return action.politicians
-    // newState.politicians = action.politicians
-    // console.log('this is the new state', newState) // state comes back as {politicians: Array[8]}
-    // return newState
+    newState.politicians = action.politicians;
+    // console.log('in reducer, this is array', action.politicians, 'and', newState)
+    return newState;
+    // return action.politicians
 
     default:
       return state;

@@ -15,7 +15,10 @@ router.get('/', function(req, res, next) {
 })
 
 router.get('/:id/:catId', function(req, res, next) {
-	Member.findById(req.params.id)
+	console.log(req.params.id, req.params.catId)
+	Member.findOne({
+		where: {ppid: req.params.id}
+	})
 	.then(member => {
 		console.log('this is member', member)
 		return member.getCatScore(req.params.catId, 2000, 2017)

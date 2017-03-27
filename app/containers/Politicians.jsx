@@ -15,7 +15,7 @@ class Politicians extends Component {
         <h3 className="text-center">Render all politicians</h3>
 
         <ul className="text-left">
-          {politicians.map(politician => {
+          {politicians.politicians.map(politician => {
               return (
                 <li key={politician.id}>
                   <Politician politician={politician} />

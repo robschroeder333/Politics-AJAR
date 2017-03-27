@@ -8,6 +8,7 @@ const style = {
 
 const Politician = (props) => {
   const politician = props.politician;
+
   return (
     <Link to="#">
       <div className="row" style={style}>
@@ -21,6 +22,7 @@ const Politician = (props) => {
           <h6>{politician.partyName}</h6>
           <h6>{politician.chamberName}</h6>
           <h6>{politician.state}</h6>
+          <h6> {politician.totalAgreementScore} </h6>
         </div>
       </div>
     </Link>
