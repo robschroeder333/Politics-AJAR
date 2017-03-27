@@ -235,7 +235,7 @@ const getMembersPositions = (memberId) => {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
               prefix: billObj.billType,
-              number: billObj.billNum,
+              number: billObj.billNum.toString(),
               name: vote.bill.title,
               question: vote.question,
               position: vote.position,
@@ -268,6 +268,7 @@ const getMembersPositions = (memberId) => {
 const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
   if (nextI === lastI + 1) {
     console.log("Finished Processing");
+
     //store data as variable (array)
     resolve(accReturn);
 
@@ -307,8 +308,12 @@ const issues = new Promise((resolve, reject) => {
   });
 });
 
-
 const allData = new Promise((resolve, reject) => {
+
+
+//////////When this runs 'last index' of 0 will only run through the first slice
+//////////adjusting 'last index' up will activate each additional slice
+//////////also slice one can be corrected, as indicated in the comment
 
   getMembers()
   .then((members) => {

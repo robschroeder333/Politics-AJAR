@@ -1,30 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { DropDownMenu, MenuItem, Checkbox, FloatingActionButton } from 'material-ui';
+import { DropDownMenu, MenuItem, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import { FaMinusCircle } from 'react-icons/lib/fa';
+
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange} from '../ducks/issues'
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue} from '../ducks/issues'
+
 
 const styles = {
   block: {
     maxWidth: 250
   },
-  checkbox: {
-    marginBottom: 16
-  }
+  delete: {
+    marginTop: '20px',
+    color: 'red',
+    display: 'inline'
+  },
+  dropdown: {
+    display: 'inline'
+  },
 }
 
 class Issues extends Component {
   constructor(props) {
     super(props);
     this.state = {
-            issueValues: {},
-            IssueNumber: 0
+      issueValues: {},
+      IssueNumber: 0
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleMenuChange = this.handleMenuChange.bind(this);
     this.handleChangeIssueNumbers =  this.handleChangeIssueNumbers.bind(this);
     this.renderIssues =  this.renderIssues.bind(this);
+    this.handleDeleteIssue = this.handleDeleteIssue.bind(this);
   }
 
   handleChange(index, newValue) {
@@ -42,8 +51,8 @@ class Issues extends Component {
     // updatedIssueValues[index] = {value: value, slidebar: 50};
     // this.setState({issueValues: updatedIssueValues})
     this.props.includeOrNot(value)
-  }
 
+  }
 
   handleChangeIssueNumbers() {
     this.props.addIssue()
@@ -54,7 +63,22 @@ class Issues extends Component {
 
      // this.setState(stateChanges)
    }
-
+        
+    handleDeleteIssue(index, value) {
+      const issueValues = this.state.issueValues;
+      let newIssueValues = {};
+      let num = 0
+      for (let prop in issueValues) {
+        if (issueValues.hasOwnProperty) {
+          if (+prop !== index) newIssueValues[++num] = issueValues[+prop]
+        }
+      }
+      // deletes the dropdown issue component
+      this.setState({issueValues: newIssueValues, IssueNumber: --this.state.IssueNumber});
+      // dispatched and removes link to issue
+      this.props.removeIssue(value, index)
+    }
+        
    renderIssues() {
     const {issues, issueValues, issueNumber} = this.props.issues;
     let issuesList = [];
@@ -62,16 +86,54 @@ class Issues extends Component {
     for (let i = 1; i <= issueNumber; i++) {
       issuesList.push(
           <div key={i}>
-           <DropDownMenu value={issueValues[i].value} autoWidth={true} onChange={(event, index, value) => this.handleMenuChange(i, value)} maxHeight={300} labelStyle={{color: 'black', fontWeight: 'bold'}}>
-           <MenuItem value={1} primaryText="Select Issue" />
-             {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
+           <DropDownMenu 
+             value={issueValues[i].value} 
+             autoWidth={true} 
+             onChange={(event, index, value) => this.handleMenuChange(i, value)} 
+             maxHeight={300} 
+             labelStyle={{color: 'black', fontWeight: 'bold'}}
+           >
+           <MenuItem value={1} primaryText="Select Issue" disabled={true} />
+<!--              {Object.keys(issues).map((issue, index) => <MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )} -->
+              {
+                //TODO: FIX slider reverts to 50 from 0 when another is changed
+                Object.keys(issues).map((issue) => {
+                  return (
+                    (issues[issue].included)
+                    ? <MenuItem
+                      value={issues[issue].id}
+                      key={issues[issue].id}
+                      primaryText={issue}
+                      disabled
+                    />
+                    : <MenuItem
+                      value={issues[issue].id}
+                      key={issues[issue].id}
+                      primaryText={issue}
+                    />
+                  )
+                })
+              }
+             
            </DropDownMenu>
 
+           <FaMinusCircle
+              style={styles.delete}
+              value={this.state.issueValues[i].value}
+              onClick={() => {this.handleDeleteIssue(i, this.state.issueValues[i].value)}}
+            />         
+          
            <Issue
              value={issueValues[i].slidebar}
              handleChange={(evt, newValue) => this.handleChange(i, newValue)}
            />
          </div>
+
+
+
+
+
+
        )
       }
     return issuesList;
@@ -79,9 +141,9 @@ class Issues extends Component {
 
   render() {
     const {issues, issueValues, issueNumber} = this.props.issues;
+
     return (
       <div style={styles.block}>
-        <Checkbox  style={styles.checkbox} />
 
         <div>
           { this.renderIssues() }
@@ -122,8 +184,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   scoreChange(index, newValue){
     dispatch(scoreChange(index, newValue))
+  }, 
+  removeIssue(issueId, linkId) {
+    dispatch(deleteIssue(issueId, linkId))
   }
 })
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(Issues);
+
