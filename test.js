@@ -252,12 +252,13 @@ const getMembersPositions = (memberId) => {
         return getAllOrganizationsForBill(bill.prefix, bill.number)
         .then(orgsArray => {
           bill.orgs = orgsArray;
+          console.log(orgsArray)
           return bill;
         })
         .catch(err => console.log(err));
       })
       return Promise.all(positionsWithOrgs)
-      // .then((newposwithorgs) => console.log(newposwithorgs));
+
   })
   .catch(err => console.log(err));
 };
