@@ -5,6 +5,8 @@
 const Sequelize = require('sequelize');
 const db = require('../_db.js');
 const Issue = require('./issue.js');
+const Bill = require('./bill.js');
+const IssueBill = require('./issue_bill.js');
 const Vote = require('./vote.js');
 const Cat = require('./cat.js');
 
@@ -58,23 +60,35 @@ const Member = db.define('members', {
   instanceMethods: {
     getIssueScore (issueId, startYear, endYear) {
       //called on member instance, issue id required.
-      //startYear and endYear are optional,
+      //startYear and endYear will be optional,
       //and limit score calculation to bills between specified years
+      //year functionality temporarily removed
       if (startYear === undefined){ startYear = 2000; }
       if (endYear === undefined){ endYear = 2016; }
       const mId = this.id;
-      return Issue.findById(issueId)
-      .then(issue => issue.getIssue_bills({where:
-        {
-          year: {
-            $between: [startYear, endYear]
-          }
+      const forOrAgaisntArr = {};
+      return IssueBill.findAll({
+        where: {
+          issueId: issueId
         }
-      }))
-      .then(bills => {
-        const billArr = [];
-        bills.forEach(bill => billArr.push(bill.id));
-          return billArr;
+        // ,
+        // include: [{
+        //     model: Bill,
+        //     where: {
+        //       year: {
+        //         $between: [startYear, endYear]
+        //       }
+        //   }
+        // }
+        // ]
+      })
+      .then(issueBills => {
+          const issueBillArr = [];
+          issueBills.forEach(issueBill => {
+            issueBillArr.push(issueBill.billId);
+            forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;
+          });
+          return issueBillArr;
         })
       .then(bIds => {
         const voteArr = [];
@@ -92,7 +106,14 @@ const Member = db.define('members', {
         let voteScore = 0;
         if (votes.length !== 0){
           votes.forEach(vote => {
-            if (vote.position === 'yes') {voteScore++;}
+            {
+              if (forOrAgaisntArr[vote.billId] === 'for'){
+                if (vote.position === 'yes') {voteScore++;}
+              }
+              else if (forOrAgaisntArr[vote.billId] === 'against'){
+                if (vote.position === 'no') {voteScore++;}
+              }
+            }
           });
         }
         return (votes.length !== 0) ? [voteScore, votes.length] : [0, 0];
@@ -104,18 +125,15 @@ const Member = db.define('members', {
       //called on member instance, issue id required.
       //startYear and endYear are optional,
       //and limit score calculation to bills between specified years
+      //year functionality removed for now
       const member = this;
-      const mId = this.id;
 
       return Cat.findById(catId)
       .then(cat => cat.getIssue_cats())
       .then(issues => {
         let arr = [];
         issues.forEach(issue => {
-          // let inArr = [];
-          // inArr.push(member.getIssueScore(issue.id, startYear, endYear));
           arr.push(issue.getIssue_cats());
-          // arr.push(Promise.all(inArr));
         });
         return Promise.all(arr);
       })
@@ -137,12 +155,10 @@ const Member = db.define('members', {
         let memberScore = 0;
         for (let i = 0; i < scores.length; i++){
           if (scores[i][0] === '-'){
-            // console.log(scores[i])
             score += (scores[i][1][1] - scores[i][1][0]);
             voteCount += scores[i][1][1];
           }
           else {
-            // console.log(scores[i]);
             score += scores[i][1][0];
             voteCount += scores[i][1][1];
           }
@@ -180,5 +196,5 @@ const Member = db.define('members', {
       }
     }}
 });
-
+ 
 module.exports = Member;
