@@ -283,14 +283,18 @@ const getMembersPositions = (memberId) => {
       //below is how we tie in the organizations that are involved with a bill
       const positionsWithOrgs = Promise.map(positions, bill => {
         // console.log(bill)
-        return getAllOrganizationsForBill(bill.prefix, bill.number)
-        .then(orgsArray => {
-          bill.orgs = orgsArray;
-          // console.log(orgsArray)
-          return bill;
-        })
-        .catch(err => console.log(err));
-      }, {concurrency: 1});
+        if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
+          return getAllOrganizationsForBill(bill.prefix, bill.number)
+          .then(orgsArray => {
+            bill.orgs = orgsArray;
+            // console.log(orgsArray)
+            return bill;
+          })
+          .catch(err => console.log(err));
+        } else {
+          return new Promise((resolve, reject) => resolve());
+        }
+    }, {concurrency: 1});
 
       // const positionsWithOrgs = new Promise((resolve, reject) => {
       //   return combineOrgsToBills(positions, positions.length, 0, [], resolve, reject);
@@ -370,7 +374,7 @@ const allData = new Promise((resolve, reject) => {
     memberPieces.push(members.slice(500));//10
 
     //(array, last index, next index, memoization array)
-    doCombine(memberPieces, 0, 0, [], resolve, reject);
+    doCombine(memberPieces, 3, 2, [], resolve, reject);
   })
   .catch(err => console.log(err));
 });

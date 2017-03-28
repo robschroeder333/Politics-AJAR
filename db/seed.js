@@ -64,14 +64,20 @@ let billDupeCounter = 0;
 
 const seedBills = (billsArray) => db.Promise.map(billsArray,
   (bill) => {
-    const formattedBill = {
+
+    if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
+      const formattedBill = {
       prefix: bill.prefix,
       number: bill.number,
       name: bill.name,
       year: bill.year,
       session: bill.session
-    };
-    return db.model('bills').create(formattedBill).catch(() => billDupeCounter++)
+      };
+      return db.model('bills').create(formattedBill).catch(() => billDupeCounter++)
+    } else {
+      return new Promise((resolve, reject) => resolve());
+    }
+
 })
 
 // const seedBills = () => db.Promise.map([
@@ -174,6 +180,13 @@ const memberInfoSeeded = issuesAndMembersReady
   .then(() => {
     return seedMembersInfo(data);
   })
+  .then(memberInfoSeeded => {
+    Member.findAll()
+    .then((membersArray) => {
+      membersArray.map(member => member.setMember_info(member.id));
+    })
+    return memberInfoSeeded;
+  })
   .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
 
 const billsSeeded = issuesAndMembersReady
@@ -267,6 +280,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
   .then(() => {
     const completingMemberAssociations = data.map(member => {
       const arrayOfAssociationPromises = member.positions.map((bill) => {
+       if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
         let targetBill = Bill.findOne({where: {
           prefix: bill.prefix,
           number: bill.number,
@@ -306,7 +320,10 @@ const associatingIssuesToBills = associatingIssuesToCategories
           return Promise.all(addedIssues);
 
         })
-      })
+      } else {
+        return new Promise((resolve, reject) => resolve());
+      }
+    })
       return Promise.all(arrayOfAssociationPromises);
     });
     return Promise.all(completingMemberAssociations);
@@ -324,11 +341,15 @@ const associatingIssuesToBills = associatingIssuesToCategories
         }});
 
       const arrayOfAssociationPromises = member.positions.map((bill) => {
-        return Bill.findOne({where: {
-          prefix: bill.prefix,
-          number: bill.number,
-          session: bill.session
-        }});
+        if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
+          return Bill.findOne({where: {
+            prefix: bill.prefix,
+            number: bill.number,
+            session: bill.session
+          }});
+        } else {
+          return new Promise((resolve, reject) => resolve());
+        }
       });
       const arrayForBills = Promise.all(arrayOfAssociationPromises);
       return Promise.all([targetMember, arrayForBills])
@@ -337,7 +358,11 @@ const associatingIssuesToBills = associatingIssuesToCategories
 
         const addedBills = fetchedBills.map((bill, i) => {
           // console.log(member.positions[i].position)
-         return fetchedMember.addBill_vote(bill, {position: member.positions[i].position});
+          if (member.positions[i].position) {
+          return fetchedMember.addBill_vote(bill, {position: member.positions[i].position});
+          } else {
+            return new Promise((resolve, reject) => resolve());
+          }
         });
         return Promise.all(addedBills);
       })
