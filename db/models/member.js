@@ -122,13 +122,22 @@ const Member = db.define('members', {
       .catch(error => console.error(error));
     },
     getCatScore (catId, startYear, endYear) {
-      //called on member instance, issue id required.
+      //called on member instance, category id required.
       //startYear and endYear are optional,
       //and limit score calculation to bills between specified years
       //year functionality removed for now
+      //catId can either be the cats id or catOrder
       const member = this;
+      const findCat = function (input){
+        if (typeof input === 'string'){
+          return Cat.findOne({where: {catOrder: input}});
+        }
+        else {
+          Cat.findById(input);
+        }
+      };
 
-      return Cat.findById(catId)
+      return findCat(catId)
       .then(cat => cat.getIssue_cats())
       .then(issues => {
         let arr = [];
