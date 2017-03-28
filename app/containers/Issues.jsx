@@ -8,16 +8,15 @@ import Issue from '../components/Issue.jsx';
 import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue} from '../ducks/issues';
 
 const styles = {
-  block: {
-    maxWidth: 250
-  },
   delete: {
-    marginTop: '20px',
+    marginTop: 20,
     color: 'red',
-    display: 'inline'
+    display: 'inline-block',
   },
   dropdown: {
-    display: 'inline'
+    display: 'inline-block',
+    float: 'left',
+    width: '80%'
   },
 }
 
@@ -78,6 +77,7 @@ class Issues extends Component {
            onChange={(event, index, value) => this.handleIssueChange(i, value)}
            maxHeight={300}
            labelStyle={{color: 'black', fontWeight: 'bold'}}
+           style={styles.dropdown}
          >
            <MenuItem
              value={1}
@@ -135,7 +135,8 @@ class Issues extends Component {
         <FloatingActionButton
           mini={true}
           secondary={true}
-          onClick={this.handleAddIssue}>
+          onClick={this.handleAddIssue}
+        >
           <ContentAdd />
         </FloatingActionButton>
       </div>

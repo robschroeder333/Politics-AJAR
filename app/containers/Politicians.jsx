@@ -10,12 +10,10 @@ const styles = {
     justifyContent: 'space-around',
   },
   gridList: {
-    width: '100%',
-    height: '100%',
     overflowY: 'auto',
   },
   gridTile: {
-    margin: '2%'
+    margin: '2%',
   }
 }
 
@@ -25,17 +23,20 @@ class Politicians extends Component {
   }
 
   render() {
-    const {politicians} = this.props.politicians
+    const {politicians} = this.props
     return (
       <div>
         <GridList
-          cellHeight={'100%'}
-          cellWidth={'100%'}
-          cols={2}
+          style={styles.gridList}
+          cellHeight={'auto'}
+          cols={3}
         >
           {politicians.map(politician => {
               return (
-                <GridTile key={politician.id}>
+                <GridTile
+                  style={styles.GridTile}
+                  key={politician.id}
+                >
                   <Politician
                     politician={politician}
                   />

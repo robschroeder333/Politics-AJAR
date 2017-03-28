@@ -6,7 +6,8 @@ const style = {
   margin: 20,
   display: 'inline-block',
   padding: '2%',
-  width: '80%'
+  width: '80%',
+  height: '80%'
 };
 
 const Politician = (props) => {
@@ -18,11 +19,14 @@ const Politician = (props) => {
         style={style}
         zDepth={2}
       >
+        <div>
         <img
-          src="https://i.ytimg.com/vi/jkZf_J3wqYc/maxresdefault.jpg"
-          style={{height: '50px', width: '100px'}}
+          className="img-fluid"
+          src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
+          style={{maxWidth: '25%', float: 'left'}}
         />
-        <div style={{float: 'right', paddingLeft: '2%'}}>
+      </div>
+        <div style={{display: 'inline-block', paddingLeft: '2%'}}>
           <h3>{politician.fullName}</h3>
           <h6>{politician.chamberName} | {politician.partyName}</h6>
           <h6>{politician.state}</h6>

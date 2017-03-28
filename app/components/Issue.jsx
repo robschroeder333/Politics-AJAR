@@ -20,6 +20,15 @@ const Issue = (props) => {
   return (
     <div>
       <form>
+        {/* <Slider
+          pinned
+          snaps
+          min={0}
+          max={10}
+          step={1}
+          editable
+          value={this.state.slider3}
+        /> */}
         <MuiThemeProvider muiTheme={muiTheme}>
           <Slider
             step={25}
