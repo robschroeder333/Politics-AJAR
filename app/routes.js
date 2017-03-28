@@ -12,7 +12,7 @@ import Homepage from './containers/Homepage'
 export default () => (
   <Router history={browserHistory}>
     <Route path="/" component={App}>
-      <IndexRedirect to="/displayPoliticians" />
+      <IndexRedirect to="/home" />
       <Route path="/home" component={Homepage} />
       <Route path="/displayPoliticians" component={DisplayAndPoliticians} />
       <Route path="/politicians" component={Politicians} />
