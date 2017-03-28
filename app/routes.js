@@ -6,6 +6,7 @@ import Politicians from './containers/Politicians'
 import Politician from './components/Politician';
 import DisplayAndPoliticians from './containers/DisplayAndPoliticians'
 import Homepage from './containers/Homepage'
+import About from './containers/About'
 
 
 
@@ -17,6 +18,7 @@ export default () => (
       <Route path="/displayPoliticians" component={DisplayAndPoliticians} />
       <Route path="/politicians" component={Politicians} />
       <Route path="/politician" component={Politician} />
+      <Route path="/about" component={About} />
     </Route>
   </Router>
 );

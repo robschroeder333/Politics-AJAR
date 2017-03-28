@@ -10,6 +10,8 @@ const ADD_ISSUE = "ADD_ISSUE";
 const ISSUE_CHANGE = "ISSUE_CHANGE";
 const SCORE_CHANGE = "SCORE_CHANGE";
 const DELETE_ISSUE = 'DELETE_ISSUE';
+const STATE_CHANGE = 'STATE_CHANGE';
+const HIDE_STATE = 'HIDE_STATE';
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -51,6 +53,15 @@ export const scoreChange = (index, newValue) => ({
 	newValue
 })
 
+export const stateChange = (state) => ({
+	type: STATE_CHANGE,
+	state
+})
+
+
+export const hideState = () => ({
+	type: HIDE_STATE
+})
 
 export const getScoreForPoliticians = () => {
   return (dispatch, getState) => {
@@ -58,11 +69,11 @@ export const getScoreForPoliticians = () => {
 	let politiciansArray = state.politicians.politicians;
 	let issues = state.issues.issues
 	let politiciansWithScore;
-
     return politiciansWithScore = politiciansArray.map(politician => {
     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
     	// console.log('this is politician', politician)
-    	const indIssue = state.issues.issues
+    	// const indIssue = state.issues.issues
+    	
     	const polId = politician.ppid
     	let totalScore = 0;
     	let totalWeight = 0;
@@ -111,6 +122,8 @@ export const getScoreForPoliticians = () => {
 
   }
 }
+
+
 
 /* -------------       REDUCER     ------------------- */
 
@@ -197,7 +210,59 @@ const initialState = {
 				included: false,
 				categoryId: 11 
 			}
-	}
+	},
+	states: { 'AK': 'Alaska',
+			  'AL': 'Alabama',
+			  'AR': 'Arkansas',
+			  'AZ': 'Arizona',
+			  'CA': 'California',
+			  'CO': 'Colorado',
+			  'CT': 'Connecticut',
+			  'DE': 'Delaware',
+			  'FL': 'Florida',
+			  'GA': 'Georgia',
+			  'HI': 'Hawaii',
+			  'IA': 'Iowa',
+			  'ID': 'Idaho',
+			  'IL': 'Illinois',
+			  'IN': 'Indiana',
+			  'KS': 'Kansas',
+			  'KY': 'Kentucky',
+			  'LA': 'Louisiana',
+			  'MA': 'Massachusetts',
+			  'MD': 'Maryland',
+			  'ME': 'Maine',
+			  'MI': 'Michigan',
+			  'MN': 'Minnesota',
+			  'MO': 'Missouri',
+			  'MS': 'Mississippi',
+			  'MT': 'Montana',
+			  'NC': 'North Carolina',
+			  'ND': 'North Dakota',
+			  'NE': 'Nebraska',
+			  'NH': 'New Hampshire',
+			  'NJ': 'New Jersey',
+			  'NM': 'New Mexico',
+			  'NV': 'Nevada',
+			  'NY': 'New York',
+			  'OH': 'Ohio',
+			  'OK': 'Oklahoma',
+			  'OR': 'Oregon',
+			  'PA': 'Pennsylvania',
+			  'RI': 'Rhode Island',
+			  'SC': 'South Carolina',
+			  'SD': 'South Dakota',
+			  'TN': 'Tennessee',
+			  'TX': 'Texas',
+			  'UT': 'Utah',
+			  'VA': 'Virginia',
+			  'VT': 'Vermont',
+			  'WA': 'Washington',
+			  'WI': 'Wisconsin',
+			  'WV': 'West Virginia',
+			  'WY': 'Wyoming' },
+	selectedState: 'AA',
+	displayState: true
 }
 
 
@@ -275,6 +340,14 @@ const reducer = (state = initialState, action) => {
 		case SCORE_CHANGE:
 		newState.issueValues[action.index].slidebar = action.newValue;
 		console.log(newState)
+		return newState;
+
+		case STATE_CHANGE: 
+		newState.selectedState = action.state;
+		return newState;
+
+		case HIDE_STATE:
+		newState.displayState = false;
 		return newState;
 
 		default: 
