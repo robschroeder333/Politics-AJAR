@@ -374,7 +374,7 @@ const allData = new Promise((resolve, reject) => {
     memberPieces.push(members.slice(500));//10
 
     //(array, last index, next index, memoization array)
-    doCombine(memberPieces, 3, 0, [], resolve, reject);
+    doCombine(memberPieces, 10, 0, [], resolve, reject);
   })
   .catch(err => console.log(err));
 });
