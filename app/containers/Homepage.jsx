@@ -81,7 +81,7 @@ class Homepage extends Component {
           <div key={i}>
            <DropDownMenu value={issueValues[i].value} autoWidth={true} onChange={(event, index, value) => this.handleMenuChange(i, value)} maxHeight={300} labelStyle={{color: 'white', fontWeight: 'bold', fontSize: '25px'}}>
            <MenuItem value={1} primaryText="Select Issue" />
-             {Object.keys(issues).map((issue, index) =><MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
+             {Object.keys(issues).sort().map((issue, index) =><MenuItem value={issues[issue].id} key={issues[issue].id} primaryText={issue} /> )}
            </DropDownMenu>
 
            <div  >
@@ -103,9 +103,6 @@ class Homepage extends Component {
            </div>
 
          </div>
-
-
-  
        )
       }
     return issuesList;

@@ -12,6 +12,7 @@ const SCORE_CHANGE = "SCORE_CHANGE";
 const DELETE_ISSUE = 'DELETE_ISSUE';
 const STATE_CHANGE = 'STATE_CHANGE';
 const HIDE_STATE = 'HIDE_STATE';
+const GET_ISSUES = 'GET_ISSUES'
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -61,6 +62,11 @@ export const stateChange = (state) => ({
 
 export const hideState = () => ({
 	type: HIDE_STATE
+})
+
+export const getIssues = (issues) => ({
+	type: GET_ISSUES,
+	issues
 })
 
 export const getScoreForPoliticians = () => {
@@ -124,93 +130,37 @@ export const getScoreForPoliticians = () => {
 }
 
 
+export const getAllIssues = () => {
+	return (dispatch, getState) => {
+		let issues = {}
+		axios.get('/api/issues')
+		.then(response => {
+			// console.log('this is the response', response.data)
+			  response.data.map((issue, index) => {
+				issues[issue[0]] = {
+					id: ((issue[1].charCodeAt(0) - 64) * 100) + Number(issue[1].slice(1)),
+					score: null,
+					weight: 0,
+					included: false,
+					categoryId: issue[1],
+					link: null
+				}
+			})
+			  return issues;
+		})
+		.then(finalIssues => {
+			dispatch(getIssues(finalIssues))
+		})
+	}
+}
+
 
 /* -------------       REDUCER     ------------------- */
 
 const initialState = { 
 	issueNumber: 0,
 	issueValues: {},
-	issues: {
-			'Agriculture': {
-				id: 2, // Fixed. Used to find which issue to change when slider or menu on the UI is modified.
-				score: null, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
-				weight: 0, // Flexible. Will change at the same time as score is changed
-				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
-				categoryId: 1, // Id will be hard coded depending on the iD in the database.
-				link: null,
-			},
-			'Construction & Public Works': {
-				id:3,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 2,
-          
-			},
-		    'Communication & Electronics': {
-		        id: 4,
-		        score: 0, 
-		        weight: 0,
-		        included: false,
-		        categoryId: 3
-		    },
-		    'Defense': {
-				id:5,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 4 
-			},
-			'Energy & Environment': {
-				id:6,
-				score: 0,
-				weight: 0,
-				included: true,
-				categoryId: 5 
-			},
-			'Finance, Insurance & Real Estate': {
-				id:7,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 6 
-			},
-			'General commerce': {
-				id:8,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 7 
-			},
-			'Health, Education & Human Resources': {
-				id:9,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 8 
-			},
-			'Ideological & Single Issue': {
-				id:10,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 9 
-			},
-			'Legal Services': {
-				id:11,
-				score: 0,
-				weight: 4,
-				included: false,
-				categoryId: 10 
-			},
-			'Labor Unions': {
-				id:12,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 11 
-			}
-	},
+	issues: {},
 	states: { 'AK': 'Alaska',
 			  'AL': 'Alabama',
 			  'AR': 'Arkansas',
@@ -348,6 +298,10 @@ const reducer = (state = initialState, action) => {
 
 		case HIDE_STATE:
 		newState.displayState = false;
+		return newState;
+
+		case GET_ISSUES: 
+		newState.issues = action.issues;
 		return newState;
 
 		default: 
