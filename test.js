@@ -263,7 +263,8 @@ const getMembersPositions = (memberId) => {
   .then((response) => {
     let positions = response.data.results[0].votes.map(vote => {
           if (vote.bill.title !== undefined
-              && vote.question.toLowerCase().includes('passage')) {
+              // && vote.question.toLowerCase().includes('passage')
+              ) {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
               prefix: billObj.billType,
@@ -369,7 +370,7 @@ const allData = new Promise((resolve, reject) => {
     memberPieces.push(members.slice(500));//10
 
     //(array, last index, next index, memoization array)
-    doCombine(memberPieces, 3, 0, [], resolve, reject);
+    doCombine(memberPieces, 0, 0, [], resolve, reject);
   })
   .catch(err => console.log(err));
 });

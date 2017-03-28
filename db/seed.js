@@ -281,11 +281,11 @@ const associatingIssuesToBills = associatingIssuesToCategories
         .then(([fetchedBill, fetchedIssues]) => {
           // console.log(fetchedBill.dataValues);
           const notNullIssues = fetchedIssues.filter(issue => {
-          //  console.log("issue id: ", issue.dataValues.id);
+          //  console.log("issue id: ", issue.dataValues);
            return !!issue;
           });
           // console.log('length is: ', notNullIssues.length);
-          if (notNullIssues.length === 0){
+          if (notNullIssues.length === 0 || fetchedBill === null){
             return new Promise((resolve, reject) => resolve());
           }
           const addedIssues = notNullIssues.map(issue => {

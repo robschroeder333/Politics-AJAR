@@ -4,7 +4,7 @@ const axios = require('axios');
 const Promise = require('bluebird');
 
 const hbills = [];
-for (let i = 1; i < 620; i++){
+for (let i = 1; i < 20; i++){
   hbills.push('h' + i);
 }
 // console.log(hbills);
