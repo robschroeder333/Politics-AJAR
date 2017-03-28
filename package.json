@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha ./tests/**/*.js --compilers js:babel-register",
     "start": "webpack -w --progress & nodemon app.js",
-    "build-css": "node-sass -w public/sass/layout.scss -o public/style"
+    "build-css": "node-sass -w public/sass/layout.scss -o public/style",
+    "seed": "node ./db/seed.js"
   },
   "author": "Team AJAR",
   "license": "ISC",

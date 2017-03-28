@@ -180,13 +180,13 @@ const memberInfoSeeded = issuesAndMembersReady
   .then(() => {
     return seedMembersInfo(data);
   })
-  // .then(memberInfoSeeded => {
-  //   Member.findAll()
-  //   .then((membersArray) => {
-  //     membersArray.map(member => member.setMember_info(member.id));
-  //   })
-  //   return memberInfoSeeded;
-  // })
+  .then(memberInfoSeeded => {
+    Member.findAll()
+    .then((membersArray) => {
+      membersArray.map(member => member.setMember_info(member.id));
+    })
+    return memberInfoSeeded;
+  })
   .then(memberInfo => console.log(`Seeded ${memberInfo.length} memberInfo OK`))
 
 const billsSeeded = issuesAndMembersReady
