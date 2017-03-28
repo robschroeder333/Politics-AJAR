@@ -6,7 +6,7 @@ import thunkMiddleware from 'redux-thunk'
 import { getAllPoliticians } from './ducks/politicians.jsx';
 import {getAllIssues} from './ducks/issues.jsx';
 
-import { loadState, saveState } from './localStorage';
+import { loadState, saveState } from './sessionStorage';
 import throttle from 'lodash/throttle';
 
 // logs state changes in chrome console
@@ -19,12 +19,11 @@ const persistedState = loadState();
 
 const store = createStore(
   rootReducer,
-  loadState,
+  persistedState,
   composeEnhancers(
     applyMiddleware(logger, thunkMiddleware)
   )
 );
-console.log(loadState);
 
 store.subscribe(throttle(() => {
 	// saveState(store.getState());
