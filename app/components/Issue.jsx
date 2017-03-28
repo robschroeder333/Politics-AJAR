@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider } from 'material-ui';
+// import { Slider } from 'react-toolbox';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 
 const sliderStyle = {

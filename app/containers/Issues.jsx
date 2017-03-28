@@ -55,13 +55,6 @@ class Issues extends Component {
 // DELETE_ISSUE
   handleDeleteIssue(index, value) {
     this.props.removeIssue(value, index);
-
-    const issueValues = this.state.issueValues;
-    let newIssueValues = {};
-    let num = 0
-    for (let prop of issueValues) {
-      if (+prop !== index) newIssueValues[++num] = issueValues[+prop]
-    }
   }
 
   renderIssues() {

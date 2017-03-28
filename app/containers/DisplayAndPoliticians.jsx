@@ -173,12 +173,10 @@ class DisplayAndPoliticians extends Component {
 	}
 }
 
-
 const mapStateToProps = ({politicians}) => {
   return {
     politicians
   }
 }
-
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)

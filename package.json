@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha ./tests/**/*.js --compilers js:babel-register",
     "start": "webpack -w --progress & nodemon app.js",
-    "build-css": "node-sass -w public/sass/layout.scss -o public/style"
+    "build-css": "node-sass -w public/sass/layout.scss -o public/style",
+    "toolbox": "react-toolbox-themr"
   },
   "author": "Team AJAR",
   "license": "ISC",
@@ -19,8 +20,8 @@
     "express": "^4.14.0",
     "material-ui": "^0.17.1",
     "morgan": "^1.3.0",
-    "node-sass": "^4.5.0",
     "nodemon": "^1.11.0",
+    "path": "^0.12.7",
     "pg": "^6.1.4",
     "pg-hstore": "^2.3.2",
     "react": "^15.3.2",
@@ -33,17 +34,23 @@
     "react-sidebar": "^2.3.0",
     "react-tap-event-plugin": "^2.0.1",
     "react-toolbox": "^2.0.0-beta.7",
+    "react-toolbox-themr": "^1.0.2",
     "redux": "^3.6.0",
     "redux-logger": "^2.7.0",
     "redux-thunk": "^2.1.0",
     "sequelize": "^3.30.2",
-    "webpack": "^2.3.2"
+    "webpack": "^1.13.2"
   },
   "devDependencies": {
+    "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
+    "css-loader": "^0.27.3",
+    "extract-text-webpack-plugin": "^2.1.0",
     "mocha": "^3.2.0",
     "node-sass": "^4.5.1",
     "sass-loader": "^6.0.3",
-    "sinon": "^1.17.7"
+    "sinon": "^1.17.7",
+    "style-loader": "^0.16.0",
+    "toolbox-loader": "0.0.3"
   }
 }

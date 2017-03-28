@@ -29,9 +29,10 @@ class Politicians extends Component {
         <GridList
           style={styles.gridList}
           cellHeight={'auto'}
-          cols={3}
+          cols={2}
         >
-          {politicians.map(politician => {
+          {
+            politicians.map(politician => {
               return (
                 <GridTile
                   style={styles.GridTile}
