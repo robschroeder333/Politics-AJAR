@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import Sidebar from 'react-sidebar';
-import { FlatButton, AppBar } from 'material-ui';
+import { FlatButton, AppBar, DropDownMenu, MenuItem } from 'material-ui';
 import Politicians from './Politicians';
 import Issues from './Issues';
+import { stateChange } from '../ducks/issues';
+import { selectPoliticianByState } from '../ducks/reducers';
+
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -75,7 +78,9 @@ class DisplayAndPoliticians extends Component {
 			senateText: {color: 'white'},
 			houseText: {color: 'white'}
 		}
-		this.handleToggle = this.handleToggle.bind(this)
+		this.handleToggle = this.handleToggle.bind(this);
+	    this.handleStateChange = this.handleStateChange.bind(this);
+
 	}
 
 	onSetSidebarOpen(open) {
@@ -102,8 +107,27 @@ class DisplayAndPoliticians extends Component {
 		}
 	}
 
+
+   handleStateChange(value){
+    this.props.stateChange(value)
+   }
+
+
 	render(){
+		let {politicians} = this.props
+		console.log('politicians', politicians)
+		let {selectedState, states} = this.props.issues
+		let {senateSelected, houseSelected} = this.state
 		let sidebarContent = (
+			<div>
+
+				<div style={{textAlign: 'center'}}>
+			        <DropDownMenu value={selectedState} autoWidth={true} maxHeight={250} labelStyle={{color: 'black', fontWeight: 'bold', fontSize: '25px'}} onChange={(event, index, value) => this.handleStateChange(value)}  >
+			        <MenuItem value={'AA'} primaryText='Select your state' />
+			        {Object.keys(states).sort().map( (state) => <MenuItem value={state} primaryText={states[state]} key={state}  /> )}
+			        </DropDownMenu>
+		        </div>
+
 			<div style={buttonStyle}>
 				<FlatButton
 					label="Senate"
@@ -119,12 +143,13 @@ class DisplayAndPoliticians extends Component {
 				/>
 			<hr />
 				<Issues />
+			<hr /> 
 			</div>
+			</div>
+			
 		)
-		let {politicians} = this.props
-		let {senateSelected, houseSelected} = this.state
 
-		// console.log('this', this.props)
+		console.log('this is the selected state', selectedState)
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
@@ -138,6 +163,8 @@ class DisplayAndPoliticians extends Component {
 		else {
 			politicians = []
 		}
+
+		console.log(politicians)
 		return (
 			<div>
 				<Sidebar
@@ -163,11 +190,22 @@ class DisplayAndPoliticians extends Component {
 }
 
 
-const mapStateToProps = ({politicians}) => {
+const mapStateToProps = (state) => {
   return {
-    politicians
+    politicians: selectPoliticianByState(state),
+    issues: state.issues
   }
 }
 
+const mapDispatchToProps = (dispatch) => ({
+	  stateChange(state) {
+   		 dispatch(stateChange(state))
+  	  }
+})
 
-export default connect(mapStateToProps)(DisplayAndPoliticians)
+
+export default connect(mapStateToProps, mapDispatchToProps)(DisplayAndPoliticians)
+
+
+
+

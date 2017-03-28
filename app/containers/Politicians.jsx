@@ -9,7 +9,8 @@ class Politicians extends Component {
   }
 
   render() {
-    const {politicians} = this.props.politicians
+    const {politicians} = this.props
+    console.log(politicians, 'politicians array')
     return (
       <div>
 

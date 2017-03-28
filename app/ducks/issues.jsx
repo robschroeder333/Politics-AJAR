@@ -271,9 +271,7 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].weight = 4;
 					break;
 				}
-		  } else {
-				console.log('other issue hit', newState.issues[issue])
-			}
+		 	} 
 		}
 		return newState;
 
