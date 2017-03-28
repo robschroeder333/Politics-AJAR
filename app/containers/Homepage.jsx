@@ -49,6 +49,7 @@ class Homepage extends Component {
     this.handleMenuChange = this.handleMenuChange.bind(this);
     this.handleChangeIssueNumbers =  this.handleChangeIssueNumbers.bind(this);
     this.renderIssues =  this.renderIssues.bind(this);
+    this.handleStateChange = this.handleStateChange.bind(this);
   }
 
   handleChange(index, newValue) {
@@ -198,4 +199,3 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
-

@@ -1,31 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router';
-
+import { Paper } from 'material-ui';
 
 const style = {
-  marginLeft: '0%'
-}
+  margin: 20,
+  display: 'inline-block',
+  padding: '2%',
+  width: '80%',
+  height: '80%'
+};
 
 const Politician = (props) => {
   const politician = props.politician;
 
   return (
     <Link to="#">
-      <div className="row" style={style}>
-        <div className="col-sm-2">
-          <img
-            src="https://i.ytimg.com/vi/jkZf_J3wqYc/maxresdefault.jpg"
-            style={{height: '50px', width: '100px'}}
-          />
-        </div>
-        <div className="col-sm-4">
-          <h3>{politician.fullName}</h3>
-          <h6>{politician.partyName}</h6>
-          <h6>{politician.chamberName}</h6>
-          <h6>{politician.state}</h6>
-          <h6> {politician.totalAgreementScore} </h6>
-        </div>
+      <Paper
+        style={style}
+        zDepth={2}
+      >
+        <div>
+        <img
+          className="img-fluid"
+          src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
+          style={{maxWidth: '25%', float: 'left'}}
+        />
       </div>
+        <div style={{display: 'inline-block', paddingLeft: '2%'}}>
+          <h3>{politician.fullName}</h3>
+          <h6>{politician.chamberName} | {politician.partyName}</h6>
+          <h6>{politician.state}</h6>
+          <h6>{politician.totalAgreementScore}</h6>
+        </div>
+      </Paper>
     </Link>
   )
 }
