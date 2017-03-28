@@ -6,7 +6,7 @@ const Member = db.model('members');
 const Vote = db.model('votes');
 const Bill = db.model('bills');
 const Cat = db.model('cats');
-
+var Promise = require('bluebird');
 //Api data
 const allData = require('../test');
 
@@ -56,8 +56,8 @@ const seedCats = (categories) => {
   // console.log(uniqueCategories)
   return db.Promise.map(uniqueCategories,
     (cat) => {
-      db.model('cats').create(cat);
-    })
+      return db.model('cats').create(cat);
+    });
 };
 
 let billDupeCounter = 0;
@@ -213,6 +213,56 @@ const associatingIssuesToCategories = categoriesSeeded
     return Promise.all(connectedIssuesWithCategories);
   })
 
+// const associatingIssuesToBills = associatingIssuesToCategories
+//   .then(() => {
+//     const completingMemberAssociations = data.map(member => {
+//       const arrayOfAssociationPromises = member.positions.map((bill) => {
+//         let targetBill = Bill.findOne({where: {
+//           prefix: bill.prefix,
+//           number: bill.number,
+//           session: bill.session
+//         }})
+//         const issuePromises = bill.orgs.map((org) => {
+//           // console.log(org);
+//           return Issue.findOne({where: {catCode: org.organizationType}});
+//         })
+//         const fetchingIssues = Promise.all(issuePromises)
+//         return Promise.all([targetBill, fetchingIssues])
+//           .then(([fetchedBill, fetchedIssues]) => {
+//             // console.log(fetchedBill.dataValues);
+//             // console.log(fetchedIssues)
+//             const notNullIssues = fetchedIssues.filter(issue => !!issue);
+
+//             const addedIssues = Promise.map(notNullIssues, issue => {
+//               let issuePosition = '';
+//               for (let i = 0; i < bill.orgs.length; i++) {
+//                 if (bill.orgs[i].organizationType === issue.dataValues.catCode) {
+//                   if (bill.orgs[i].disposition.toLowerCase() === 'support') {
+//                     issuePosition = 'for';
+//                   } else if (bill.orgs[i].disposition.toLowerCase() === 'oppose') {
+//                     issuePosition = 'against';
+//                   } else {
+//                     console.log("disposition, unknown")
+//                   }
+//                 }
+//               //add issuePosition as value passed into the options object
+
+//                 return fetchedBill.addIssue_bills(issue, {forOrAgainst: issuePosition})
+//               }
+//             }, {concurrency: 1})
+
+//             // return Promise.all(addedIssues);
+//             return addedIssues;
+//           })
+//       })
+//       return Promise.all(arrayOfAssociationPromises);
+//     });
+//     return Promise.all(completingMemberAssociations);
+//   })
+
+
+
+
 const associatingIssuesToBills = associatingIssuesToCategories
   .then(() => {
     const completingMemberAssociations = data.map(member => {
@@ -230,7 +280,14 @@ const associatingIssuesToBills = associatingIssuesToCategories
         return Promise.all([targetBill, fetchingIssues])
         .then(([fetchedBill, fetchedIssues]) => {
           // console.log(fetchedBill.dataValues);
-          const notNullIssues = fetchedIssues.filter(issue => issue);
+          const notNullIssues = fetchedIssues.filter(issue => {
+          //  console.log("issue id: ", issue.dataValues);
+           return !!issue;
+          });
+          // console.log('length is: ', notNullIssues.length);
+          if (notNullIssues.length === 0 || fetchedBill === null){
+            return new Promise((resolve, reject) => resolve());
+          }
           const addedIssues = notNullIssues.map(issue => {
             let issuePosition = '';
             for (let i = 0; i < bill.orgs.length; i++) {
@@ -254,6 +311,9 @@ const associatingIssuesToBills = associatingIssuesToCategories
     });
     return Promise.all(completingMemberAssociations);
   })
+
+
+
 
   const associatingMembersToBills = associatingIssuesToBills
   .then(() => {
@@ -360,4 +420,4 @@ const associatingIssuesToBills = associatingIssuesToCategories
   // // .then(members => console.log(`Seeded ${members.length} members OK`))
 
   .catch(error => console.error(error))
-  .then(() => db.close());
+  // .then(() => db.close());
