@@ -20,8 +20,8 @@ const seedIssues = (issues) => db.Promise.map(issues,
     return db.model('issues').create(formattedIssue);
 });
 // const seedIssues = () => db.Promise.map([
-// 	{catCode: 'J6100', name: 'Anti-Guns'},
-// 	{catCode: 'J6200', name: 'Pro-Guns'}
+//  {catCode: 'J6100', name: 'Anti-Guns'},
+//  {catCode: 'J6200', name: 'Pro-Guns'}
 // ], issue => db.model('issues').create(issue));
 
 // const mapCatData = {
@@ -75,11 +75,11 @@ const seedBills = (billsArray) => db.Promise.map(billsArray,
 })
 
 // const seedBills = () => db.Promise.map([
-// 	{prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
-// 	{prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
-// 	{prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
-// 	{prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
-// 	{prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
+//  {prefix: 'H', number: '101', session: '115', name: 'Pro-Gun Bill of 2016', year: 2016},
+//  {prefix: 'H', number: '102', session: '115', name: 'Another Pro-Gun Bill of 2016', year: 2016},
+//  {prefix: 'H', number: '103', session: '115', name: 'A third Pro-Gun Bill of 2016', year: 2016},
+//  {prefix: 'H', number: '104', session: '115', name: 'An Anti-Gun Bill of 2016', year: 2015},
+//  {prefix: 'H', number: '105', session: '115', name: 'A second Anti-Gun Bill of 2016', year: 2016},
 //   {prefix: 'H', number: '105', session: '115', name: 'A duplicate bill', year: 2016},
 //   {prefix: 'H', number: '105', session: '115', name: 'Another duplicate bill', year: 2016}
 // ], bill => db.model('bills').create(bill).catch(() => console.error('You made a duplicate request')))
@@ -106,8 +106,8 @@ const seedMembers = (members) => db.Promise.map(members,
 })
 
 // const seedMembers = () => db.Promise.map([
-// 	{firstName: 'Rosa', middleName: null, lastName: 'DeLauro', ppid: 'D000216', party: 'D', chamber: 'house', state: 'CT', district: '3', electionYear: '2018'},
-// 	{firstName: 'Lloyd', middleName: null, lastName: 'Doggett', ppid: 'D000399', party: 'D', chamber: 'house', state: 'TX', district: '35', electionYear: '2018'},
+//  {firstName: 'Rosa', middleName: null, lastName: 'DeLauro', ppid: 'D000216', party: 'D', chamber: 'house', state: 'CT', district: '3', electionYear: '2018'},
+//  {firstName: 'Lloyd', middleName: null, lastName: 'Doggett', ppid: 'D000399', party: 'D', chamber: 'house', state: 'TX', district: '35', electionYear: '2018'},
 //   {firstName: 'Darth', middleName: null, lastName: 'Vader-Mitchell', ppid: 'Z666999', party: 'I', chamber: 'senate', state: 'NY', district: '69', electionYear: '2020'},
 //   {firstName: 'Luke', middleName: null, lastName: 'SkyWalker', ppid: 'Z666999', party: 'D', chamber: 'senate', state: 'MI', district: '89', electionYear: '2020'},
 //   {firstName: 'Naruto', middleName: null, lastName: 'Johnuzaki', ppid: 'A123456', party: 'I', chamber: 'senate', state: 'NY', district: '69', electionYear: '2020'},
