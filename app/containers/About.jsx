@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {Paper, AppBar} from 'material-ui';
 import {Link} from 'react-router';
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router';
 
 
 const style = {
@@ -73,7 +73,7 @@ class About extends Component {
 		   		 zDepth={2} 
 		   		 circle={true}
 		   		 children={
-		   		 	<h4> Jonhathan Fuchs </h4>
+		   		 	<h4> Jonathan Fuchs </h4>
 		   		 }
 		   	/>
 		   	</a>
