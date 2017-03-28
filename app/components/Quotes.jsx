@@ -1,5 +1,4 @@
 import React from 'react';
-import {Carousel} from 'react-bootstrap'
 
 const styles = {
 	quote: {
@@ -10,13 +9,15 @@ const styles = {
 }
 
 const QuotesComponent = () => (
-
+<div>
 <div style={styles.quote} >
 <h5>
 	A community is like a ship; everyone ought to be prepared to take the helm. 
 </h5>
 	<h6> - Henrik Ibsen </h6>
 </div>
+</div>
+
 
 )
 

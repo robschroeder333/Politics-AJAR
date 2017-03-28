@@ -63,8 +63,8 @@ const Member = db.define('members', {
       //startYear and endYear will be optional,
       //and limit score calculation to bills between specified years
       //year functionality temporarily removed
-      if (startYear === undefined){ startYear = 2000; }
-      if (endYear === undefined){ endYear = 2016; }
+      if (startYear === undefined) { startYear = 2000; }
+      if (endYear === undefined) { endYear = 2017; }
       const mId = this.id;
       const forOrAgaisntArr = {};
       return IssueBill.findAll({
