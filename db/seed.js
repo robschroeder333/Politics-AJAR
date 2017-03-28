@@ -8,7 +8,7 @@ const Bill = db.model('bills');
 const Cat = db.model('cats');
 var Promise = require('bluebird');
 //Api data
-const allData = require('../test');
+const allData = require('../apiData');
 
 //Seed functions
 const seedIssues = (issues) => db.Promise.map(issues,
@@ -23,25 +23,6 @@ const seedIssues = (issues) => db.Promise.map(issues,
 // 	{catCode: 'J6100', name: 'Anti-Guns'},
 // 	{catCode: 'J6200', name: 'Pro-Guns'}
 // ], issue => db.model('issues').create(issue));
-
-// const mapCatData = {
-//   'A': 1,
-//   'B': 2,
-//   'C': 3,
-//   'D': 4,
-//   'E': 5,
-//   'F': 6,
-//   'G': 7,
-//   'H': 8,
-//   'J': 9,
-//   'K': 10,
-//   'L': 11,
-//   'M': 12,
-//   'T': 13,
-//   'X': 14,
-//   'Y': 15,
-//   'Z': 16
-// };
 
 const seedCats = (categories) => {
   let uniqueCategories = [];
