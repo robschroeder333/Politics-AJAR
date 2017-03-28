@@ -150,7 +150,7 @@ class DisplayAndPoliticians extends Component {
 					<AppBar
 						title="Render All Politicians"
 						onLeftIconButtonTouchTap={this.handleToggle}
-						style={{backgroundColor: '#596cff'}}
+						style={{backgroundColor: '#7f8eff'}}
 					/>
 					<Politicians
 						handleToggle={this.handleToggle}

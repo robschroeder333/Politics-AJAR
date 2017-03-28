@@ -122,7 +122,7 @@ class Homepage extends Component {
       title = ""
       style={{backgroundColor: 'white'}}
       iconStyleLeft={{backgroundColor: 'white'}}
-      iconElementRight={<Link to="/about"><FlatButton label="About" style={{color:'#596cff', fontSize: 30, fontWeight: 'bold'}} /></Link>}
+      iconElementRight={<Link to="/about"><FlatButton label="About" style={{color:'#7f8eff', fontSize: 30, fontWeight: 'bold'}} /></Link>}
       />
 
       	<h1 style={styles.title}> POLITICS AJAR </h1> 
