@@ -121,7 +121,7 @@ const Member = db.define('members', {
       })
       .catch(error => console.error(error));
     },
-    getCatScore (catId, startYear, endYear) {
+    getMemberCatScore (catId, startYear, endYear) {
       //called on member instance, category id required.
       //startYear and endYear are optional,
       //and limit score calculation to bills between specified years
@@ -173,11 +173,15 @@ const Member = db.define('members', {
           }
         }
         memberScore = (score / voteCount) * 100;
-
-        return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
+        return memberScore;
+        // return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
 
       })
       .catch(error => console.error(error));
+    },
+    getCatScore(catId, startYear, endYear) {
+      const memberScore = this.getMemberCatScore(catId, startYear, endYear);
+      return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
     }
   },
   getterMethods: {

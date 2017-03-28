@@ -94,7 +94,7 @@ class Homepage extends Component {
            </div>
 
            <div>
-            <Link to="/displayPoliticians" >
+            <Link to="/politicians" >
                  <FlatButton
                 label="SUBMIT"
                 backgroundColor="white"

@@ -151,6 +151,8 @@ export const getAllIssues = () => {
 
 /* -------------       REDUCER     ------------------- */
 
+// let inititialselectedState = store.issues.selectedState ? store.issues.selectedState : 'AA';
+
 const initialState = {
 	issueNumber: 0,
 	issueValues: {},

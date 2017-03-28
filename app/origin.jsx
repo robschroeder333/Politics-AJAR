@@ -11,7 +11,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 injectTapEventPlugin();
 
-
 ReactDOM.render(
 <MuiThemeProvider>
   <Provider store={store}>
