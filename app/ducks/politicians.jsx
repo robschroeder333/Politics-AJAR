@@ -18,7 +18,6 @@ export const getAllPoliticians = () => {
       dispatch(getPoliticians(response.data))
     })
     .then(() => {
-      console.log('this is state, politicians: ', getState())
       dispatch(getScoreForPoliticians())
     })
     .catch(err => console.error(err))
