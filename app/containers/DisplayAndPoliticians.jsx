@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import Sidebar from 'react-sidebar';
 import { FlatButton, AppBar, DropDownMenu, MenuItem } from 'material-ui';
@@ -10,6 +11,7 @@ import { selectPoliticianByState } from '../ducks/reducers';
 
 const buttonStyle = {
 	textAlign: 'center',
+	display: 'block',
 	paddingTop: 200
 }
 
@@ -144,12 +146,11 @@ class DisplayAndPoliticians extends Component {
 			<hr />
 				<Issues />
 			<hr /> 
+
 			</div>
 			</div>
 			
 		)
-
-		console.log('this is the selected state', selectedState)
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
@@ -175,8 +176,16 @@ class DisplayAndPoliticians extends Component {
 					styles={navbarStyle}
 				>
 					<AppBar
-						title="Render All Politicians"
+						title="Render"
 						onLeftIconButtonTouchTap={this.handleToggle}
+						iconElementRight={
+							<Link to="/about">
+								<FlatButton
+									label="About"
+									style={{color: '#C3C3C3 ', fontSize: 30, fontWeight: 'bold'}}
+								/>
+							</Link>
+						}
 						style={{backgroundColor: '#7f8eff'}}
 					/>
 					<Politicians
@@ -191,6 +200,7 @@ class DisplayAndPoliticians extends Component {
 
 
 const mapStateToProps = (state) => {
+
   return {
     politicians: selectPoliticianByState(state),
     issues: state.issues
@@ -205,6 +215,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(DisplayAndPoliticians)
+
 
 
 

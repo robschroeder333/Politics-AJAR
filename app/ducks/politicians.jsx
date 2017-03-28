@@ -29,7 +29,7 @@ const initialState = {
 
 /* -------------       REDUCER     ------------------- */
 
-const reducer = (state = initialState , action) => { // state = []
+const reducer = (state = initialState, action) => { // state = []
 
   let newState = Object.assign({}, state)
 
@@ -38,7 +38,6 @@ const reducer = (state = initialState , action) => { // state = []
     case GET_POLITICIANS:
     newState.politicians = action.politicians;
     return newState;
-    // return action.politicians
 
     default:
       return state;
