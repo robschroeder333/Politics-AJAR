@@ -1,31 +1,45 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router'
 
-const Profile = (props) => {
-  const politician = props.politician;
-  console.log('props in profile', this)
-  return (
-    <div>
-      {/* <img
-        className="img-fluid"
-        src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
-        style={{maxWidth: '25%', float: 'left'}}
-      /> */}
-      {/* <h3>{politician.fullName}</h3>
-      <h6>{politician.chamberName} | {politician.partyName}</h6>
-      <h6>{politician.state}</h6>
-      <h6>{politician.totalAgreementScore}</h6> */}
+class Profile extends Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    const politician = this.props.politician;
+    console.log('props', this.props)
+    return (
+      <div>
+        <img
+          className="img-fluid"
+          src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
+          style={{maxWidth: '25%', float: 'left'}}
+        />
+        <h1>{politician.fullName}</h1>
+        <h2>{politician.chamberName} | {politician.partyName}</h2>
+        <h2>{politician.state}</h2>
+        <h2>{politician.totalAgreementScore}</h2>
 
-      <div style={{float: 'right'}}>
-        <a href="">Twitter</a>
-        <a href="">Facebook</a>
-        <a href="">Website</a>
+        <div style={{float: 'right'}}>
+          <a href="">@twitterHandle</a>
+          <a href="">facebook.com/generalPalpateen</a>
+          <a href="">bigbrother.gov/gotcha</a>
+        </div>
+        <h6>77 7th Street</h6>
+        <h6>New York, NY 11111</h6>
+        <h6>(555) 555-5555</h6>
+
+
       </div>
-      <h6>Office Address</h6>
-      <h6>Phone</h6>
-
-
-    </div>
-  )
+    )
+  }
 }
 
-export default Profile;
+const mapStateToProps = ({politicians}) => {
+  return {
+    politicians
+  }
+}
+
+export default connect(mapStateToProps)(Profile);

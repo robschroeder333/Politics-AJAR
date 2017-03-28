@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Sidebar } from 'react-sidebar';
 import { AppBar, FlatButton } from 'material-ui';
-import Profile from '../components/Profile';
+import { getSinglePolitician } from '../ducks/singlePolitician.jsx';
 
 const navbarStyle = {
 	 root: {
@@ -58,29 +58,44 @@ const navbarStyle = {
 class PoliticianProfile extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-
-    }
     this.handleToggle = this.handleToggle.bind(this);
+		this.handleChange = this.handleChange.bind(this);
   }
 
   handleToggle() {
     this.setState({sidebarDocked: !this.state.sidebarDocked})
   }
 
+	handleChange(politician) {
+		console.log('props', this.props)
+		this.props.setPolitician(politician)
+
+	}
+
   render() {
+		const props = this.props.politicians;
+		let politician = {};
+		// filter for politician matching the ppid to pass down to the profile component
+		props.politicians.filter((member) => {
+			if (member.ppid === this.props.params.id) {
+				politician = member
+			}
+		})
+		console.log('politician', politician)
+		this.handleChange(politician)
+
     return (
       <div>
-        <Sidebar
+        {/* <Sidebar
 					sidebar={sidebarContent}
 					open={this.state.sidebarOpen}
 					onSetOpen={this.onSetSidebarOpen}
 					docked={this.state.sidebarDocked}
 					styles={navbarStyle}
-				>
+				> */}
           <AppBar
             title="Politics AJAR"
-            onLeftIconButtonTouchTap={this.handleToggle}
+            // onLeftIconButtonTouchTap={this.handleToggle}
             iconElementRight={
               <Link to="/about">
                 <FlatButton
@@ -90,9 +105,11 @@ class PoliticianProfile extends Component {
               </Link>
             }
             />
-          {console.log('props in politicians profile container', this.props)}
-          <Profile />
-        </Sidebar>
+						{politician.ppid}
+          {/* <Profile
+						politician={politician}
+					/> */}
+        {/* </Sidebar> */}
       </div>
     )
   }
@@ -100,4 +117,16 @@ class PoliticianProfile extends Component {
 
 /* REDUX CONTAINER */
 
-export default connect()(PoliticianProfile);
+const mapDispatchToProps = (dispatch) => ({
+		setPolitician(politician){
+			dispatch(getSinglePolitician(politician))
+		}
+})
+
+const mapStateToProps = ({politicians}) => {
+  return {
+    politicians
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PoliticianProfile);

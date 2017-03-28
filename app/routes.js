@@ -12,7 +12,7 @@ export default () => (
       <IndexRedirect to="/displayPoliticians" />
       <Route path="/home" component={Homepage} />
       <Route path="/displayPoliticians" component={DisplayAndPoliticians} />
-      <Route path="/politician" component={PoliticianProfile} />
+      <Route path="/politicians/:id" component={PoliticianProfile} />
     </Route>
   </Router>
 );
