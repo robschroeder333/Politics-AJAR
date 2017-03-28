@@ -3,6 +3,7 @@
 const axios = require('axios');
 const keys = require('./keys.js');//add this file (have it export the api keys) and add to gitignore
 const fs = require('fs');
+var Promise = require('bluebird');
 
 //KEYS
 const MAPLIGHTapikey = keys.mapLight;
@@ -141,7 +142,7 @@ const getMembersDistrict = (memberId) => {
     }
   })
   .then((response) => {
-    // console.log(response.data.results[0] && response.data.results[0].roles[0].chamber === "House");
+    // console.log(response.data.results);
     if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House") {
       // console.log(response.data.results[0].roles[0].district)
       return response.data.results[0].roles[0].district;
@@ -217,6 +218,37 @@ const billNumberFormatter = (billNumberString) => {
   })
 };
 
+
+
+
+const combineOrgsToBills = (billsArray, lastI, nextI, accReturn, resolve, reject) => {
+  if (nextI === lastI + 1) {
+    console.log("Finished Processing that members batch of bills");
+
+    //store data as variable (array)
+    resolve(accReturn);
+
+    //write data to text file
+    // fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
+    //   if (err) throw err;
+    //   console.log('Save Complete');
+    // });
+  } else {
+    console.log("Processing bill: ", nextI);
+    // console.log(billsArray[0])
+    const currentBill = billsArray[nextI];
+    getAllOrganizationsForBill(currentBill.prefix, currentBill.number)
+    .then((finalMembers) => {
+      accReturn = accReturn.concat(finalMembers);
+      setTimeout(() => combineOrgsToBills(billsArray, lastI, nextI + 1, accReturn, resolve, reject), nextI * 60 * 1000);
+    })
+    .catch(reject);
+  }
+};
+
+
+
+
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
 const getMembersPositions = (memberId) => {
   // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
@@ -231,7 +263,8 @@ const getMembersPositions = (memberId) => {
   .then((response) => {
     let positions = response.data.results[0].votes.map(vote => {
           if (vote.bill.title !== undefined
-              && vote.question.toLowerCase().includes('passage')) {
+              // && vote.question.toLowerCase().includes('passage')
+              ) {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
               prefix: billObj.billType,
@@ -248,21 +281,26 @@ const getMembersPositions = (memberId) => {
       positions = positions.filter(ele => ele !== undefined);
 
       //below is how we tie in the organizations that are involved with a bill
-      const positionsWithOrgs = positions.map(bill => {
+      const positionsWithOrgs = Promise.map(positions, bill => {
+        // console.log(bill)
         return getAllOrganizationsForBill(bill.prefix, bill.number)
         .then(orgsArray => {
           bill.orgs = orgsArray;
+          // console.log(orgsArray)
           return bill;
         })
         .catch(err => console.log(err));
-      })
-      return Promise.all(positionsWithOrgs)
-      // .then((newposwithorgs) => console.log(newposwithorgs));
+      }, {concurrency: 1});
+
+      // const positionsWithOrgs = new Promise((resolve, reject) => {
+      //   return combineOrgsToBills(positions, positions.length, 0, [], resolve, reject);
+      // });
+
+      return Promise.all(positionsWithOrgs);
+
   })
   .catch(err => console.log(err));
 };
-
-
 
 //combines all slices of the arrayOfMembers recursively (combining individual member to their votes)
 const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
@@ -319,7 +357,7 @@ const allData = new Promise((resolve, reject) => {
   .then((members) => {
     //cannot run on all members at once. set up slices for multiple calls.
     const memberPieces = [];
-    memberPieces.push(members.slice(0, 5));//0  ///// correct 5 to 50
+    memberPieces.push(members.slice(0, 50));//0  ///// correct 5 to 50
     memberPieces.push(members.slice(50, 100));//1
     memberPieces.push(members.slice(100, 150));//2
     memberPieces.push(members.slice(150, 200));//3

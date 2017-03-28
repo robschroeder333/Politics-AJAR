@@ -10,6 +10,9 @@ const MODIFY_INCLUDED_ISSUE = 'MODIFY_INCLUDED_ISSUE';
 const DELETE_ISSUE = 'DELETE_ISSUE';
 const CHANGE_SCORE_WEIGHT = 'CHANGE_SCORE_WEIGHT';
 const SCORE_CHANGE = 'SCORE_CHANGE';
+const STATE_CHANGE = 'STATE_CHANGE';
+const HIDE_STATE = 'HIDE_STATE';
+const GET_ISSUES = 'GET_ISSUES'
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -47,22 +50,35 @@ export const modifyScoreAndWeight = (issueId, score) => ({
 	score
 })
 
+export const stateChange = (state) => ({
+	type: STATE_CHANGE,
+	state
+})
+
+export const hideState = () => ({
+	type: HIDE_STATE
+})
+
+export const getIssues = (issues) => ({
+	type: GET_ISSUES,
+	issues
+})
 
 export const getScoreForPoliticians = () => {
   return (dispatch, getState) => {
     const state = getState()
-		let politiciansArray = state.politicians.politicians;
-		let issues = state.issues.issues
-		let politiciansWithScore;
+    let politiciansArray = state.politicians.politicians;
+    let issues = state.issues.issues
+    let politiciansWithScore;
 
     return politiciansWithScore = politiciansArray.map(politician => {
     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
     	// console.log('this is politician', politician)
-    	const indIssue = state.issues.issues
+    	// const indIssue = state.issues.issues
+    	
     	const polId = politician.ppid
     	let totalScore = 0;
     	let totalWeight = 0;
-    	let totalAgrzeementScore = 0;
     	for (let issue in issues) {
     		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
     		if (indIssue[issue].included === true) {
@@ -70,10 +86,10 @@ export const getScoreForPoliticians = () => {
     			let rightScore;
 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
 	    		.then(response => {
-	    			let arrayOfScore = response.data
-	    			// console.log('this is the catscore', response.data, politician.fullName, issue)
+	    			let arrayOfScore = response.data 
+	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
 	    			if (arrayOfScore[0] === null) {
-	    				rightScore = 0; // why does the array return null?
+	    				rightScore = 50; // why does the array return null? 
 	    			}
 	    			else {
 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
@@ -87,9 +103,9 @@ export const getScoreForPoliticians = () => {
 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
 	    			totalScore += rightScore * indIssue[issue].weight;
 	    			// console.log('this is totalScore', totalScore)
-	    			totalAgreementScore += Number(totalScore / totalWeight) === totalScore / totalWeight ? (totalScore / totalWeight) : 0 ;  // what to put if the politician has no
-					// console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
-					// console.log('this is the final politician', politiciansArray)
+	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
+            // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
+            // console.log('this is the final politician', politiciansArray)
 
 					return politician.totalAgreementScore = totalScore/totalWeight;
 					// console.log('this is the array', arrayOfScores)
@@ -108,92 +124,89 @@ export const getScoreForPoliticians = () => {
   }
 }
 
+
+export const getAllIssues = () => {
+	return (dispatch, getState) => {
+		let issues = {}
+		axios.get('/api/issues')
+		.then(response => {
+			// console.log('this is the response', response.data)
+			  response.data.map((issue, index) => {
+				issues[issue[0]] = {
+					id: ((issue[1].charCodeAt(0) - 64) * 100) + Number(issue[1].slice(1)),
+					score: null,
+					weight: 0,
+					included: false,
+					categoryId: issue[1],
+					link: null
+				}
+			})
+			  return issues;
+		})
+		.then(finalIssues => {
+			dispatch(getIssues(finalIssues))
+		})
+	}
+}
+
 /* -------------       REDUCER     ------------------- */
 
 const initialState = {
 	issueNumber: 0,
 	issueValues: {},
-	issues: {
-			'Agriculture': {
-				id: 2, // Fixed. Used to find which issue to change when slider or menu on the UI is modified.
-				score: null, // Flexible. Is tracked in order to select the  index to get the right Agreement Score from the returned array.
-				weight: 0, // Flexible. Will change at the same time as score is changed
-				included: false, // Flexible. Will change when receives modifyIncludedIssue action above.
-				categoryId: 1, // Id will be hard coded depending on the iD in the database.
-				link: null,
-			},
-			'Construction & Public Works': {
-				id: 3,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 2,
-
-			},
-      'Communication & Electronics': {
-        id: 4,
-        score: 0,
-        weight: 0,
-        included: false,
-        categoryId: 3
-    },
-     'Defense': {
-				id: 5,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 4
-			},
-			'Energy & Environment': {
-				id: 6,
-				score: 100,
-				weight: 4,
-				included: false,
-				categoryId: 5
-			},
-			'Finance, Insurance & Real Estate': {
-				id: 7,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 6
-			},
-			'General commerce': {
-				id: 8,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 7
-			},
-			'Health, Education & Human Resources': {
-				id: 9,
-				score: 0,
-				weight: 4,
-				included: false,
-				categoryId: 8
-			},
-			'Ideological & Single Issue': {
-				id: 10,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 9
-			},
-			'Legal Services': {
-				id: 11,
-				score: 0,
-				weight: 4,
-				included: false,
-				categoryId: 10
-			},
-			'Labor Unions': {
-				id: 12,
-				score: 0,
-				weight: 0,
-				included: false,
-				categoryId: 11
-			}
-	}
+	issues: {},
+	states: { 'AK': 'Alaska',
+			  'AL': 'Alabama',
+			  'AR': 'Arkansas',
+			  'AZ': 'Arizona',
+			  'CA': 'California',
+			  'CO': 'Colorado',
+			  'CT': 'Connecticut',
+			  'DE': 'Delaware',
+			  'FL': 'Florida',
+			  'GA': 'Georgia',
+			  'HI': 'Hawaii',
+			  'IA': 'Iowa',
+			  'ID': 'Idaho',
+			  'IL': 'Illinois',
+			  'IN': 'Indiana',
+			  'KS': 'Kansas',
+			  'KY': 'Kentucky',
+			  'LA': 'Louisiana',
+			  'MA': 'Massachusetts',
+			  'MD': 'Maryland',
+			  'ME': 'Maine',
+			  'MI': 'Michigan',
+			  'MN': 'Minnesota',
+			  'MO': 'Missouri',
+			  'MS': 'Mississippi',
+			  'MT': 'Montana',
+			  'NC': 'North Carolina',
+			  'ND': 'North Dakota',
+			  'NE': 'Nebraska',
+			  'NH': 'New Hampshire',
+			  'NJ': 'New Jersey',
+			  'NM': 'New Mexico',
+			  'NV': 'Nevada',
+			  'NY': 'New York',
+			  'OH': 'Ohio',
+			  'OK': 'Oklahoma',
+			  'OR': 'Oregon',
+			  'PA': 'Pennsylvania',
+			  'RI': 'Rhode Island',
+			  'SC': 'South Carolina',
+			  'SD': 'South Dakota',
+			  'TN': 'Tennessee',
+			  'TX': 'Texas',
+			  'UT': 'Utah',
+			  'VA': 'Virginia',
+			  'VT': 'Vermont',
+			  'WA': 'Washington',
+			  'WI': 'Wisconsin',
+			  'WV': 'West Virginia',
+			  'WY': 'Wyoming' },
+	selectedState: 'AA',
+	displayState: true
 }
 
 
@@ -274,8 +287,21 @@ const reducer = (state = initialState, action) => {
 			}
 			return newState;
 
-		default:
-			return state
+
+		case STATE_CHANGE: 
+		newState.selectedState = action.state;
+		return newState;
+
+		case HIDE_STATE:
+		newState.displayState = false;
+		return newState;
+
+		case GET_ISSUES: 
+		newState.issues = action.issues;
+		return newState;
+
+		default: 
+		return state
 	}
 }
 

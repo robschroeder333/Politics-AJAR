@@ -13,6 +13,13 @@ const Cat = db.define('cats', {
       notEmpty: true
     }
     // 'name' is the common English name of category.
+  },
+  catOrder: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   }
 },
 {

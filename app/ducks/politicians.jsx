@@ -15,6 +15,7 @@ export const getAllPoliticians = () => {
   return (dispatch, getState) => {
     axios.get('/api/politicians')
     .then(response => {
+      // console.log('this is response data', response.data)
       dispatch(getPoliticians(response.data))
     })
     .then(() => {

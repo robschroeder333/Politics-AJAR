@@ -162,7 +162,8 @@ class DisplayAndPoliticians extends Component {
 								/>
 							</Link>
 						}
-						/>
+						style={{backgroundColor: '#7f8eff'}}
+					/>
 					<Politicians
 						handleToggle={this.handleToggle}
 						politicians={politicians}

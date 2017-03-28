@@ -6,7 +6,7 @@ const Member = db.model('members');
 const Vote = db.model('votes');
 const Bill = db.model('bills');
 const Cat = db.model('cats');
-
+var Promise = require('bluebird');
 //Api data
 const allData = require('../test');
 
@@ -24,43 +24,41 @@ const seedIssues = (issues) => db.Promise.map(issues,
 // 	{catCode: 'J6200', name: 'Pro-Guns'}
 // ], issue => db.model('issues').create(issue));
 
-const mapCatData = {
-  'A': 1,
-  'B': 2,
-  'C': 3,
-  'D': 4,
-  'E': 5,
-  'F': 6,
-  'G': 7,
-  'H': 8,
-  'J': 9,
-  'K': 10,
-  'L': 11,
-  'M': 12,
-  'T': 13,
-  'X': 14,
-  'Y': 15,
-  'Z': 16
-};
+// const mapCatData = {
+//   'A': 1,
+//   'B': 2,
+//   'C': 3,
+//   'D': 4,
+//   'E': 5,
+//   'F': 6,
+//   'G': 7,
+//   'H': 8,
+//   'J': 9,
+//   'K': 10,
+//   'L': 11,
+//   'M': 12,
+//   'T': 13,
+//   'X': 14,
+//   'Y': 15,
+//   'Z': 16
+// };
 
-const seedCats = () => db.Promise.map([
-  {name: 'Agriculture'},
-  {name: 'Construction & Public Works'},
-  {name: 'Communication & Electronics'},
-  {name: 'Defense'},
-  {name: 'Energy, Natural Rescources and Environment'},
-  {name: 'Finance, Insurance & Real Estate'},
-  {name: 'General commerce'},
-  {name: 'Health, Education, & Human Rescources'},
-  {name: 'Ideological & Single Issue'},
-  {name: 'Legal Services'},
-  {name: 'Labor Unions'},
-  {name: 'Manufacturing'},
-  {name: 'Transportation'},
-  {name: 'Other'},
-  {name: 'Unknown'},
-  {name: 'General Politics'}
-], cat => db.model('cats').create(cat));
+const seedCats = (categories) => {
+  let uniqueCategories = [];
+  let visitedCategories = {};
+  for (let i = 0; i < categories.length; i++) {
+    // console.log(categories[i].Catorder)
+    if (visitedCategories[categories[i].Catorder] === undefined) {
+      visitedCategories[categories[i].Catorder] = categories[i].Catorder;
+      uniqueCategories.push({catOrder: categories[i].Catorder, name: categories[i].Industry});
+    }
+  }
+  // console.log(uniqueCategories)
+  return db.Promise.map(uniqueCategories,
+    (cat) => {
+      return db.model('cats').create(cat);
+    });
+};
 
 let billDupeCounter = 0;
 
@@ -144,10 +142,14 @@ const seedMembersInfo = (members) => db.Promise.map(members,
 // ], memberInfo => db.model('member_info').create(memberInfo))
 
 var data;
+var issuesData;
 
 const issuesSeeded = db.sync({force: true})
   .then(() => allData.getIssues())
-  .then((issues) => seedIssues(issues))
+  .then((issues) => {
+    issuesData = issues;
+    return seedIssues(issues);
+  })
   .then(issues => console.log(`Seeded ${issues.length} issues OK`))
 
 // const seedIssuesUsingAsyncFn = async function () {
@@ -185,7 +187,7 @@ const billsSeeded = issuesAndMembersReady
   .then(bills => console.log(`Seeded ${bills.length - billDupeCounter} bills OK`))
 
 const categoriesSeeded = billsSeeded
-  .then(seedCats)
+  .then(() => seedCats(issuesData))
   .then(cat => console.log(`Seeded ${cat.length} catagories OK`))
 
 const associatingIssuesToCategories = categoriesSeeded
@@ -194,11 +196,72 @@ const associatingIssuesToCategories = categoriesSeeded
   })
   .then(fetchedIssues => {
     const connectedIssuesWithCategories = fetchedIssues.map(issue => {
-      const firstCharOfCode = issue.dataValues.catCode[0];
-      return issue.addIssue_cat(mapCatData[firstCharOfCode], {plusOrMinus: '+'})
-    })
+      const issueCatcode = issue.dataValues.catCode;
+      let index = -1;
+      for (let i = 0, len = issuesData.length; i < len; i++) {
+        if (issuesData[i].Catcode === issueCatcode) {
+          index = i;
+          break;
+        }
+      }
+      const fetchingCategory = Cat.findOne({where: {catOrder: issuesData[index].Catorder}});
+      Promise.all([fetchingCategory])
+      .then(([fetchedCategory]) => {
+        return issue.addIssue_cat(fetchedCategory, {plusOrMinus: '+'})
+      });
+    });
     return Promise.all(connectedIssuesWithCategories);
   })
+
+// const associatingIssuesToBills = associatingIssuesToCategories
+//   .then(() => {
+//     const completingMemberAssociations = data.map(member => {
+//       const arrayOfAssociationPromises = member.positions.map((bill) => {
+//         let targetBill = Bill.findOne({where: {
+//           prefix: bill.prefix,
+//           number: bill.number,
+//           session: bill.session
+//         }})
+//         const issuePromises = bill.orgs.map((org) => {
+//           // console.log(org);
+//           return Issue.findOne({where: {catCode: org.organizationType}});
+//         })
+//         const fetchingIssues = Promise.all(issuePromises)
+//         return Promise.all([targetBill, fetchingIssues])
+//           .then(([fetchedBill, fetchedIssues]) => {
+//             // console.log(fetchedBill.dataValues);
+//             // console.log(fetchedIssues)
+//             const notNullIssues = fetchedIssues.filter(issue => !!issue);
+
+//             const addedIssues = Promise.map(notNullIssues, issue => {
+//               let issuePosition = '';
+//               for (let i = 0; i < bill.orgs.length; i++) {
+//                 if (bill.orgs[i].organizationType === issue.dataValues.catCode) {
+//                   if (bill.orgs[i].disposition.toLowerCase() === 'support') {
+//                     issuePosition = 'for';
+//                   } else if (bill.orgs[i].disposition.toLowerCase() === 'oppose') {
+//                     issuePosition = 'against';
+//                   } else {
+//                     console.log("disposition, unknown")
+//                   }
+//                 }
+//               //add issuePosition as value passed into the options object
+
+//                 return fetchedBill.addIssue_bills(issue, {forOrAgainst: issuePosition})
+//               }
+//             }, {concurrency: 1})
+
+//             // return Promise.all(addedIssues);
+//             return addedIssues;
+//           })
+//       })
+//       return Promise.all(arrayOfAssociationPromises);
+//     });
+//     return Promise.all(completingMemberAssociations);
+//   })
+
+
+
 
 const associatingIssuesToBills = associatingIssuesToCategories
   .then(() => {
@@ -217,7 +280,14 @@ const associatingIssuesToBills = associatingIssuesToCategories
         return Promise.all([targetBill, fetchingIssues])
         .then(([fetchedBill, fetchedIssues]) => {
           // console.log(fetchedBill.dataValues);
-          const notNullIssues = fetchedIssues.filter(issue => issue);
+          const notNullIssues = fetchedIssues.filter(issue => {
+          //  console.log("issue id: ", issue.dataValues);
+           return !!issue;
+          });
+          // console.log('length is: ', notNullIssues.length);
+          if (notNullIssues.length === 0 || fetchedBill === null){
+            return new Promise((resolve, reject) => resolve());
+          }
           const addedIssues = notNullIssues.map(issue => {
             let issuePosition = '';
             for (let i = 0; i < bill.orgs.length; i++) {
@@ -241,6 +311,9 @@ const associatingIssuesToBills = associatingIssuesToCategories
     });
     return Promise.all(completingMemberAssociations);
   })
+
+
+
 
   const associatingMembersToBills = associatingIssuesToBills
   .then(() => {
@@ -347,4 +420,4 @@ const associatingIssuesToBills = associatingIssuesToCategories
   // // .then(members => console.log(`Seeded ${members.length} members OK`))
 
   .catch(error => console.error(error))
-  .then(() => db.close());
+  // .then(() => db.close());
