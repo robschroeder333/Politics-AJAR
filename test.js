@@ -283,7 +283,7 @@ const getMembersPositions = (memberId) => {
       //below is how we tie in the organizations that are involved with a bill
       const positionsWithOrgs = Promise.map(positions, bill => {
         // console.log(bill)
-        if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
+        // if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
           return getAllOrganizationsForBill(bill.prefix, bill.number)
           .then(orgsArray => {
             bill.orgs = orgsArray;
@@ -291,9 +291,9 @@ const getMembersPositions = (memberId) => {
             return bill;
           })
           .catch(err => console.log(err));
-        } else {
-          return new Promise((resolve, reject) => resolve());
-        }
+        // } else {
+        //   return new Promise((resolve, reject) => resolve([]));
+        // }
     }, {concurrency: 1});
 
       // const positionsWithOrgs = new Promise((resolve, reject) => {
@@ -324,7 +324,7 @@ const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
     combineMembersToVotes(memberPieces[nextI])
     .then((finalMembers) => {
       accReturn = accReturn.concat(finalMembers);
-      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject), nextI * 60 * 1000);
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject),/* nextI */ 60 * 1000);
     })
     .catch(reject);
   }
@@ -374,7 +374,7 @@ const allData = new Promise((resolve, reject) => {
     memberPieces.push(members.slice(500));//10
 
     //(array, last index, next index, memoization array)
-    doCombine(memberPieces, 3, 2, [], resolve, reject);
+    doCombine(memberPieces, 3, 0, [], resolve, reject);
   })
   .catch(err => console.log(err));
 });
