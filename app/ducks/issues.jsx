@@ -266,27 +266,36 @@ const reducer = (state = initialState, action) => {
 			return newState;
 
 		case CHANGE_SCORE_WEIGHT:
-			for (let issue in newState.issues) {
-				if (newState.issues[issue].id === action.issueId) {
-					if (action.score === 25 || action.score === 75) {
-						newState.issues[issue].score = action.score;
-						newState.issues[issue].weight = 2;
-						break;
-					}
-					else if (action.score === 50) {
-						newState.issues[issue].score = 50
-						newState.issues[issue].weight = 1;
-						break;
-					}
-					else if (action.score === 0 || action.score === 100) {
-						newState.issues[issue].score = action.score;
-						newState.issues[issue].weight = 4;
-						break;
-					}
-			  }
-			}
-			return newState;
+		for (let issue in newState.issues) {
+			if (newState.issues[issue].id === action.issueId) {
+				if (action.score === 25 || action.score === 75) {
+					newState.issues[issue].score = action.score;
+					newState.issues[issue].weight = 2;
+					break;
+				}
+				else if (action.score === 50) {
+					newState.issues[issue].score = 50
+					newState.issues[issue].weight = 1;
+					break;
+				}
+				else if (action.score === 0 || action.score === 100) {
+					newState.issues[issue].score = action.score;
+					newState.issues[issue].weight = 4;
+					break;
+				}
+		 	} 
+		}
+		return newState;
 
+		case ADD_ISSUE:
+		newState.issueNumber = newState.issueNumber + 1;
+		newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
+		return newState;
+
+		case ISSUE_CHANGE:
+		newState.issueValues[action.index] = {value: action.value, slidebar: 50};
+		console.log(newState);
+		return newState;
 
 		case STATE_CHANGE: 
 		newState.selectedState = action.state;
