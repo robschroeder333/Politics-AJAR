@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider } from 'material-ui';
+// import { Slider } from 'react-toolbox';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 
 const sliderStyle = {
@@ -15,12 +16,20 @@ const muiTheme = getMuiTheme({
     handleFillColor: '#00bcd4',
   },
 });
-console.log('mui', muiTheme)
 
 const Issue = (props) => {
   return (
     <div>
       <form>
+        {/* <Slider
+          pinned
+          snaps
+          min={0}
+          max={10}
+          step={1}
+          editable
+          value={this.state.slider3}
+        /> */}
         <MuiThemeProvider muiTheme={muiTheme}>
           <Slider
             step={25}

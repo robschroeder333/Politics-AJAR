@@ -19,7 +19,7 @@ export const getAllPoliticians = () => {
       dispatch(getPoliticians(response.data))
     })
     .then(() => {
-      console.log('this is state', getState())
+      console.log('this is state, politicians: ', getState())
       dispatch(getScoreForPoliticians())
     })
     .catch(err => console.error(err))
@@ -33,7 +33,7 @@ const initialState = {
 
 /* -------------       REDUCER     ------------------- */
 
-const reducer = (state = initialState , action) => { // state = []
+const reducer = (state = initialState, action) => { // state = []
 
   let newState = Object.assign({}, state)
 
@@ -43,7 +43,6 @@ const reducer = (state = initialState , action) => { // state = []
     newState.politicians = action.politicians;
     // console.log('in reducer, this is array', action.politicians, 'and', newState)
     return newState;
-    // return action.politicians
 
     default:
       return state;

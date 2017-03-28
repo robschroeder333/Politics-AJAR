@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import Sidebar from 'react-sidebar';
 import { FlatButton, AppBar } from 'material-ui';
@@ -7,6 +8,7 @@ import Issues from './Issues';
 
 const buttonStyle = {
 	textAlign: 'center',
+	display: 'block',
 	paddingTop: 200
 }
 
@@ -104,27 +106,29 @@ class DisplayAndPoliticians extends Component {
 
 	render(){
 		let sidebarContent = (
-			<div style={buttonStyle}>
-				<FlatButton
-					label="Senate"
-					onClick={() => this.onClick('senate')}
-					backgroundColor={this.state.senateClickedColor}
-					labelStyle={this.state.senateText}
-				/>
-				<FlatButton
-					label="House"
-					onClick={() => this.onClick('house')}
-					backgroundColor={this.state.houseClickedColor}
-					labelStyle={this.state.houseText}
-				/>
-			<hr />
-				<Issues />
+			<div>
+				<div style={buttonStyle}>
+					<FlatButton
+						label="Senate"
+						onClick={() => this.onClick('senate')}
+						backgroundColor={this.state.senateClickedColor}
+						labelStyle={this.state.senateText}
+					/>
+					<FlatButton
+						label="House"
+						onClick={() => this.onClick('house')}
+						backgroundColor={this.state.houseClickedColor}
+						labelStyle={this.state.houseText}
+					/>
+				<hr />
+				</div>
+				<div style={{display: 'block', textAlign: 'center'}}>
+					<Issues />
+				</div>
 			</div>
 		)
-		let {politicians} = this.props
+		let {politicians} = this.props.politicians
 		let {senateSelected, houseSelected} = this.state
-
-		// console.log('this', this.props)
 
 		if (senateSelected && !houseSelected){
 			politicians = politicians.filter(politician => politician.chamber.match('senate'))
@@ -148,8 +152,16 @@ class DisplayAndPoliticians extends Component {
 					styles={navbarStyle}
 				>
 					<AppBar
-						title="Render All Politicians"
+						title="Render"
 						onLeftIconButtonTouchTap={this.handleToggle}
+						iconElementRight={
+							<Link to="/about">
+								<FlatButton
+									label="About"
+									style={{color: '#C3C3C3 ', fontSize: 30, fontWeight: 'bold'}}
+								/>
+							</Link>
+						}
 						style={{backgroundColor: '#7f8eff'}}
 					/>
 					<Politicians
@@ -162,12 +174,10 @@ class DisplayAndPoliticians extends Component {
 	}
 }
 
-
 const mapStateToProps = ({politicians}) => {
   return {
     politicians
   }
 }
-
 
 export default connect(mapStateToProps)(DisplayAndPoliticians)
