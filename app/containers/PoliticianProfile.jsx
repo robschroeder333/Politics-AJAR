@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Sidebar from 'react-sidebar';
 import { AppBar, FlatButton } from 'material-ui';
-import { getSinglePolitician } from '../ducks/singlePolitician.jsx';
+import { getSinglePolitician, getPoliticianInfo } from '../ducks/singlePolitician.jsx';
 import Profile from '../components/Profile.jsx';
 import Issues from './Issues.jsx';
+
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -163,6 +164,7 @@ class PoliticianProfile extends Component {
 						}
 					/>
 					{this.handleChange(politician)}
+					{this.props.getInfo('M000934')}
 					<Profile />
 				</Sidebar>
       </div>
@@ -175,6 +177,9 @@ class PoliticianProfile extends Component {
 const mapDispatchToProps = (dispatch) => ({
 		setPolitician(politician){
 			dispatch(getSinglePolitician(politician))
+		},
+		getInfo(id){
+			dispatch(getPoliticianInfo(id))
 		}
 })
 

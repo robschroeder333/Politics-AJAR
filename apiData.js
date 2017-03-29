@@ -260,16 +260,16 @@ const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
     resolve(accReturn);
 
     //write data to text file
-    // fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
-    //   if (err) throw err;
-    //   console.log('Save Complete');
-    // });
+    fs.writeFile('backup.json', JSON.stringify(accReturn), (err) => {
+      if (err) throw err;
+      console.log('Save Complete');
+    });
   } else {
     console.log("Processing batch: ", nextI);
     combineMembersToVotes(memberPieces[nextI])
     .then((finalMembers) => {
       accReturn = accReturn.concat(finalMembers);
-      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject),/* nextI */ 60 * 1000);
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject),/* nextI */ 90 * 1000);
     })
     .catch(reject);
   }
@@ -331,14 +331,14 @@ const allData = new Promise((resolve, reject) => {
 // getAllOrganizationsForBill("h", 7);
 // getAllBills();
 
-const membersAndVotes = () => {
-  return allData;
-};
+// const membersAndVotes = () => {
+//   return allData;
+// };
 const categories = () => {
   return issues;
 };
 
 module.exports = {
-  getData: membersAndVotes,
+  // getData: membersAndVotes,
   getIssues: categories
 };

@@ -72,14 +72,14 @@ class Profile extends Component {
             <h2>{politician.totalAgreementScore}</h2>
 
             <div style={styles.address}>
-              <h6>77 7th Street</h6>
-              <h6>New York, NY 11111</h6>
-              <h6>(555) 555-5555</h6>
+              <h6>{politician.info.office}</h6>
+              <h6>Washington, D.C. 20510</h6>
+              <h6>{politician.info.phone}</h6>
             </div>
             <div style={styles.websites}>
-              <h6><a href="">@twitterHandle</a></h6>
-              <h6><a href="">facebook.com/generalPalpateen</a></h6>
-              <h6><a href="">bigbrother.gov/gotcha</a></h6>
+              <h6><a href={`https://twitter.com/${politician.info.twitter}?lang=en`}>{`@${politician.info.twitter}`}</a></h6>
+              <h6><a href={`https://www.facebook.com/${politician.info.facebook}/`}>{`facebook.com/${politician.info.facebook}`}</a></h6>
+              <h6><a href={politician.info.website}>website</a></h6>
             </div>
           </div>
         </div>
