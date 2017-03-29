@@ -56,8 +56,6 @@ class Profile extends Component {
   }
 
   render() {
-    console.log('this.props', this.props)
-    console.log('this.props.singlePolitician', this.props.singlePolitician)
     const politician = this.props.singlePolitician;
     return (
       <div style={styles.content}>
@@ -74,7 +72,7 @@ class Profile extends Component {
             <h2>{politician.totalAgreementScore}</h2>
 
             <div style={styles.address}>
-              
+              <h6>{politician.info.office}</h6>
               <h6>Washington, D.C. 20510</h6>
               <h6>{politician.info.phone}</h6>
             </div>
@@ -101,4 +99,3 @@ const mapStateToProps = ({singlePolitician, issues}) => {
 }
 
 export default connect(mapStateToProps)(Profile);
-// {*<h6>{politician.info.office}</h6>*}

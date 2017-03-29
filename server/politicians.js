@@ -14,6 +14,18 @@ router.get('/', function(req, res, next) {
   .catch(next)
 })
 
+router.get('/:id', (req, res, next) => {
+	Member.findOne({
+		where: {ppid: req.params.id}
+	})
+	.then((member) => {
+		member.getMember_info()
+		.then(memberInfo => {
+			res.send(memberInfo);
+		})
+	})
+});
+
 router.get('/:id/:catId', function(req, res, next) {
 	console.log(req.params.id, req.params.catId)
 	Member.findOne({
