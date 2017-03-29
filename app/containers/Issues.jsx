@@ -5,7 +5,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import { FaMinusCircle } from 'react-icons/lib/fa';
 
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue} from '../ducks/issues';
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState} from '../ducks/issues'
 
 const styles = {
   delete: {
@@ -138,11 +138,14 @@ class Issues extends Component {
 }
 
 /* REDUX CONTAINER */
-const mapStateToProps = ({issues, issueValues, issueNumber}) => {
+const mapStateToProps = ({issues, issueValues, issueNumber, states, selectedState, displayState}) => {
   return {
     issues,
     issueValues,
-    issueNumber
+    issueNumber,
+    states,
+    selectedState,
+    displayState
   }
 }
 
@@ -162,8 +165,11 @@ const mapDispatchToProps = (dispatch) => ({
   removeIssue(issueId, linkId) {
     dispatch(deleteIssue(issueId, linkId))
   },
-  changeScore(issueId, score){
-    dispatch(modifyScoreAndWeight(issueId, score))
+  stateChange(state) {
+    dispatch(stateChange(state))
+  },
+  hideState(){
+    dispatch(hideState())
   }
 })
 
