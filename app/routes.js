@@ -1,7 +1,7 @@
 import React from 'react';
 import { Router, Route, browserHistory, IndexRedirect } from 'react-router';
 
-import App from './components/App'
+import App from './components/App';
 import PoliticianProfile from './containers/PoliticianProfile';
 import DisplayAndPoliticians from './containers/DisplayAndPoliticians'
 import Homepage from './containers/Homepage'

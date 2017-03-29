@@ -12,9 +12,8 @@ const style = {
 
 const Politician = (props) => {
   const politician = props.politician;
-
   return (
-    <Link to="#">
+    <Link to={`/politicians/${politician.ppid}`}>
       <Paper
         style={style}
         zDepth={2}

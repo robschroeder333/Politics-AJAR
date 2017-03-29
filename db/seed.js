@@ -8,7 +8,9 @@ const Bill = db.model('bills');
 const Cat = db.model('cats');
 var Promise = require('bluebird');
 //Api data
-const allData = require('../apiData');
+// const allData = require('../apiData');
+const allDataIssues = require('../apiData').getIssues();
+const allData = require('../backup');
 
 //Seed functions
 const seedIssues = (issues) => db.Promise.map(issues,
@@ -128,11 +130,13 @@ const seedMembersInfo = (members) => db.Promise.map(members,
 //     {twitter: 'RepLloydDoggett', facebook: 'lloyddoggett', website: 'https://doggett.house.gov', phone: '202-225-4865', office: '', memberId: 2}
 // ], memberInfo => db.model('member_info').create(memberInfo))
 
+
+
 var data;
 var issuesData;
 
 const issuesSeeded = db.sync({force: true})
-  .then(() => allData.getIssues())
+  .then(() => allDataIssues)
   .then((issues) => {
     issuesData = issues;
     return seedIssues(issues);
@@ -148,7 +152,8 @@ const issuesSeeded = db.sync({force: true})
 
 // const issuesSeeded = seedIssuesUsingAsyncFn()
 
-const membersSeeded = allData.getData()
+// const membersSeeded = allData.getData()
+const membersSeeded = allData
   .then((members) => {
     data = members;
     return seedMembers(members);

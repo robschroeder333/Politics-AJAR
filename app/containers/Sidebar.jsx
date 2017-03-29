@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Sidebar from 'react-sidebar';
-import { AppBar, FlatButton } from 'material-ui';
-import { getSinglePolitician, getPoliticianInfo } from '../ducks/singlePolitician.jsx';
-import Profile from '../components/Profile.jsx';
-import Issues from './Issues.jsx';
-
+import { FlatButton, AppBar } from 'material-ui';
+import Issues from './Issues';
 
 const buttonStyle = {
 	textAlign: 'center',
@@ -64,9 +60,10 @@ const navbarStyle = {
 	 }
 }
 
-class PoliticianProfile extends Component {
-  constructor(props) {
-    super(props);
+class SidebarComponent extends Component {
+
+	constructor(props){
+		super(props);
 		this.state = {
 			sidebarOpen: false,
 			sidebarDocked: true,
@@ -79,8 +76,8 @@ class PoliticianProfile extends Component {
 			houseText: {color: 'white'}
 		}
 		this.handleToggle = this.handleToggle.bind(this)
-		this.handleChange = this.handleChange.bind(this);
-  }
+	}
+
 	onSetSidebarOpen(open) {
 		this.setState({sidebarOpen: open})
 	}
@@ -105,12 +102,7 @@ class PoliticianProfile extends Component {
 		}
 	}
 
-	handleChange(politician) {
-		this.props.setPolitician(politician)
-	}
-
-  render() {
-
+	render(){
 		let sidebarContent = (
 			<div>
 				<div style={buttonStyle}>
@@ -134,17 +126,9 @@ class PoliticianProfile extends Component {
 			</div>
 		)
 
-		const props = this.props.politicians;
-		let politician = {};
-		// filter for politician matching the ppid to pass down to the profile component
-		props.politicians.filter((member) => {
-			if (member.ppid === this.props.params.id) {
-				politician = member
-			}
-		})
-    return (
-      <div>
-        <Sidebar
+		return (
+			<div>
+				<Sidebar
 					sidebar={sidebarContent}
 					open={this.state.sidebarOpen}
 					onSetOpen={this.onSetSidebarOpen}
@@ -152,7 +136,7 @@ class PoliticianProfile extends Component {
 					styles={navbarStyle}
 				>
 					<AppBar
-						title="Politics AJAR"
+						title="Render"
 						onLeftIconButtonTouchTap={this.handleToggle}
 						iconElementRight={
 							<Link to="/about">
@@ -162,31 +146,11 @@ class PoliticianProfile extends Component {
 								/>
 							</Link>
 						}
-					/>
-					{this.handleChange(politician)}
-					{this.props.getInfo('M000934')}
-					<Profile />
+						/>
 				</Sidebar>
-      </div>
-    )
-  }
+			</div>
+		)
+	}
 }
 
-/* REDUX CONTAINER */
-
-const mapDispatchToProps = (dispatch) => ({
-		setPolitician(politician){
-			dispatch(getSinglePolitician(politician))
-		},
-		getInfo(id){
-			dispatch(getPoliticianInfo(id))
-		}
-})
-
-const mapStateToProps = ({politicians}) => {
-  return {
-    politicians
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PoliticianProfile);
+export default SidebarComponent;
