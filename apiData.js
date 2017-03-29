@@ -35,27 +35,16 @@ const getAllBills = () => {
 
 //For getting list of all organizations (support/opposition) relating to one bill
 const getAllOrganizationsForBill = (billType, billNum) => {
-  // const billType = 'hj';/*  'h' House Bill (i.e. H.R.)
-  //                           'hr' House Resolution (i.e. H.Res.)
-  //                           'hj' House Joint Resolution (i.e. H.J.Res.)
-  //                           'hc' House Concurrent Resolution (i.e. H.Con.Res.)
-  //                           's' Senate Bill (i.e. S.)
-  //                           'sr' Senate Resolution (i.e. S.Res.)
-  //                           'sj' Senate Joint Resolution (i.e. S.J.Res.)
-  //                           'sc' Senate Concurrent Resolution (i.e. S.Con.Res.) */
-  // const billNum = 38;//130;
-
   return axios.get(
     `http://maplight.org/services_open_api/map.bill_positions_v1.json/?apikey=${MAPLIGHTapikey}&jurisdiction=${jurisdiction}&session=${congressNum}&prefix=${billType}&number=${billNum}`)
   .then((response) => {
     const organizations = response.data.bill.organizations.map(organization => ({
         name: organization.name,
         disposition: organization.disposition,
-        organizationType: organization.catcode //this can be used to determine the stance of the bill itself (i think) site: http://www.opensecrets.org/downloads/crp/CRP_Categories.txt
+        organizationType: organization.catcode
       })
     );
     return organizations;
-    // console.log(organizations);
   })
   .catch(err => console.log(err));
 };
@@ -65,7 +54,7 @@ const getAllOrganizationsForBill = (billType, billNum) => {
 
 //For getting list of members
 const getMembers = () => {
-  let chamber = 'senate'; // 'house' or 'senate'
+  let chamber = 'senate';
 
   return axios.get(
     `https://api.propublica.org/congress/v1/${congressNum}/${chamber}/members.json`,{
@@ -93,10 +82,6 @@ const getMembers = () => {
       });
     });
     allMembers = officialsS;
-    // console.log(response.data.results[0].members);
-    // console.log(officials)
-    // roles does not exist. election year is available under next_election
-    // find out if distrit is only in house
   })
   .then(() => {
     chamber = 'house';
@@ -132,19 +117,16 @@ const getMembers = () => {
   .catch(err => console.log(err));
 };
 
-
 const getMembersDistrict = (memberId) => {
 
- return axios.get(
+  return axios.get(
     `https://api.propublica.org/congress/v1/members/${memberId}.json`,{
     headers: {
       'X-API-Key': PROPUBLICAapikey
     }
   })
   .then((response) => {
-    // console.log(response.data.results);
     if (response.data.results[0] && response.data.results[0].roles[0].chamber === "House") {
-      // console.log(response.data.results[0].roles[0].district)
       return response.data.results[0].roles[0].district;
     } else {
       return null;
@@ -153,35 +135,8 @@ const getMembersDistrict = (memberId) => {
   .catch(err => console.log(err));
 };
 
-//only adds district right now
-const combineMembersToVotes = (arrayOfMembers) => {
-// console.log(arrayOfMembers);
-  let membersWithDistrict = arrayOfMembers.map((member) => {
-
-    return getMembersDistrict(member.ppid)
-    .then((district) => {
-      member.district = district;
-    })
-    .then(() => {
-      return getMembersPositions(member.ppid)
-      .then((positions) => {
-        member.positions = positions;
-        // console.log(member);
-        return member;//this is correct!!!!!!!!!!!!!!!
-      })
-      .catch(err => console.log(err));
-    })
-    .catch(err => console.log(err));
-  });
-
-  // console.log("testing ",membersWithDistrict[0]);
-  return Promise.all(membersWithDistrict);
-
-};
-
 //converts the bills measure info from propublica to maplight
 const billNumberFormatter = (billNumberString) => {
-  // console.log(billNumberString);
   const splitBill = billNumberString.split('.');
   const number = splitBill.pop();
   const tempType = splitBill.join('').toUpperCase();
@@ -215,27 +170,15 @@ const billNumberFormatter = (billNumberString) => {
   return ({
     billType: newType,
     billNum: parseInt(number, 10)
-  })
+  });
 };
-
-
-
 
 const combineOrgsToBills = (billsArray, lastI, nextI, accReturn, resolve, reject) => {
   if (nextI === lastI + 1) {
     console.log("Finished Processing that members batch of bills");
-
-    //store data as variable (array)
-    resolve(accReturn);
-
-    //write data to text file
-    // fs.writeFile('backup.txt', JSON.stringify(accReturn), (err) => {
-    //   if (err) throw err;
-    //   console.log('Save Complete');
-    // });
+    resolve(accReturn);//store data as variable (array)
   } else {
     console.log("Processing bill: ", nextI);
-    // console.log(billsArray[0])
     const currentBill = billsArray[nextI];
     getAllOrganizationsForBill(currentBill.prefix, currentBill.number)
     .then((finalMembers) => {
@@ -246,13 +189,8 @@ const combineOrgsToBills = (billsArray, lastI, nextI, accReturn, resolve, reject
   }
 };
 
-
-
-
 //For getting a single member's positions on all bills they have voted on (mapped for tighter formatting)
 const getMembersPositions = (memberId) => {
-  // const memberId = 'C000984';//'C000984'//Representative Cummings [D] Maryland, district 7
-                             //'S000033'//Senator Sanders [D] Vermont
 
   return axios.get(
     `https://api.propublica.org/congress/v1/members/${memberId}/votes.json`,{
@@ -262,9 +200,7 @@ const getMembersPositions = (memberId) => {
   })
   .then((response) => {
     let positions = response.data.results[0].votes.map(vote => {
-          if (vote.bill.title !== undefined
-              // && vote.question.toLowerCase().includes('passage')
-              ) {
+          if (vote.bill.title !== undefined) {
             const billObj = billNumberFormatter(vote.bill.number);
             return ({
               prefix: billObj.billType,
@@ -278,28 +214,41 @@ const getMembersPositions = (memberId) => {
             });
           }
       });
+
       positions = positions.filter(ele => ele !== undefined);
 
       //below is how we tie in the organizations that are involved with a bill
       const positionsWithOrgs = Promise.map(positions, bill => {
-        // console.log(bill)
-        return getAllOrganizationsForBill(bill.prefix, bill.number)
-        .then(orgsArray => {
-          bill.orgs = orgsArray;
-          // console.log(orgsArray)
-          return bill;
-        })
-        .catch(err => console.log(err));
-      }, {concurrency: 1});
-
-      // const positionsWithOrgs = new Promise((resolve, reject) => {
-      //   return combineOrgsToBills(positions, positions.length, 0, [], resolve, reject);
-      // });
-
+          return getAllOrganizationsForBill(bill.prefix, bill.number)
+          .then(orgsArray => {
+            bill.orgs = orgsArray;
+            return bill;
+          })
+          .catch(err => console.log(err));
+    }, {concurrency: 1});
       return Promise.all(positionsWithOrgs);
-
   })
   .catch(err => console.log(err));
+};
+
+//only adds district right now
+const combineMembersToVotes = (arrayOfMembers) => {
+  let membersWithDistrict = arrayOfMembers.map((member) => {
+    return getMembersDistrict(member.ppid)
+    .then((district) => {
+      member.district = district;
+    })
+    .then(() => {
+      return getMembersPositions(member.ppid)
+      .then((positions) => {
+        member.positions = positions;
+        return member;
+      })
+      .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+  });
+  return Promise.all(membersWithDistrict);
 };
 
 //combines all slices of the arrayOfMembers recursively (combining individual member to their votes)
@@ -320,7 +269,7 @@ const doCombine = (memberPieces, lastI, nextI, accReturn, resolve, reject) => {
     combineMembersToVotes(memberPieces[nextI])
     .then((finalMembers) => {
       accReturn = accReturn.concat(finalMembers);
-      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject), nextI * 60 * 1000);
+      setTimeout(() => doCombine(memberPieces, lastI, nextI + 1, accReturn, resolve, reject),/* nextI */ 60 * 1000);
     })
     .catch(reject);
   }
@@ -357,7 +306,7 @@ const allData = new Promise((resolve, reject) => {
   .then((members) => {
     //cannot run on all members at once. set up slices for multiple calls.
     const memberPieces = [];
-    memberPieces.push(members.slice(0, 50));//0  ///// correct 5 to 50
+    memberPieces.push(members.slice(0, 50));//0
     memberPieces.push(members.slice(50, 100));//1
     memberPieces.push(members.slice(100, 150));//2
     memberPieces.push(members.slice(150, 200));//3
@@ -370,7 +319,7 @@ const allData = new Promise((resolve, reject) => {
     memberPieces.push(members.slice(500));//10
 
     //(array, last index, next index, memoization array)
-    doCombine(memberPieces, 0, 0, [], resolve, reject);
+    doCombine(memberPieces, 10, 0, [], resolve, reject);
   })
   .catch(err => console.log(err));
 });
