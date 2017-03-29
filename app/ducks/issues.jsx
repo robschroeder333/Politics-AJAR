@@ -64,6 +64,41 @@ export const getIssues = (issues) => ({
 	issues
 })
 
+export const scorePoliticiansChange = () => {
+	return (dispatch, getState) => {
+		console.log('entered 2nd action creator')
+		let state = getState();
+		console.log('state is', state)
+		let politicians = state.politicians.politicians
+		let issues = state.issues.issues
+		let politicianScore = state.issues.politicianScores
+		console.log('these are the issues', issues)
+		let selectedState = state.issues.selectedState
+		let statePoliticians = politicians.filter(politician => politician.state.match(selectedState))
+		console.log('filtered politicians are', statePoliticians)
+		let includedIssues = Object.keys(issues).filter(issue => issues[issue].included)   //.map(issue => {if (issues[issue].included === true){return issue}})
+		console.log('issues', includedIssues)
+		for (let i = 0; i<statePoliticians.length; i++) {
+			for (let j = 0; j < includedIssues.length; j++) {
+				if (statePoliticians[i] && politicianScore[statePoliticians[i].ppid] && politicianScore[statePoliticians[i].ppid][includedIssues[j]]) {
+					console.log('true')
+					//skip in this case
+				}
+				else {
+					console.log('statePoliticians[i]', statePoliticians[i])
+					if (!politicianScore[statePoliticians[i].ppid]){
+						politicianScore[statePoliticians[i].ppid] = {}
+					}
+					if (politicianScore[statePoliticians[i].ppid] === {} || !politicianScore[statePoliticians[i].ppid][includedIssues[j]]){
+						politicianScore[statePoliticians[i].ppid][includedIssues[j]] = {}//axios.get
+					}
+				}
+			}
+		}
+
+	}
+}
+
 export const getScoreForPoliticians = () => {
   return (dispatch, getState) => {
     const state = getState()
@@ -208,7 +243,10 @@ const initialState = {
 			  'WV': 'West Virginia',
 			  'WY': 'Wyoming' },
 	selectedState: 'AA',
-	displayState: true
+	displayState: true,
+	politicianScores: {
+		// ppid : { score: { Environment: 60, Taxes: 88}}
+	}
 }
 
 

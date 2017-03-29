@@ -5,7 +5,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import { FaMinusCircle } from 'react-icons/lib/fa';
 
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState} from '../ducks/issues'
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState, scorePoliticiansChange} from '../ducks/issues'
 
 const styles = {
   delete: {
@@ -167,6 +167,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   stateChange(state) {
     dispatch(stateChange(state))
+    dispatch(scorePoliticiansChange())
   },
   hideState(){
     dispatch(hideState())

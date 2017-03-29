@@ -5,7 +5,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import { FaMinusCircle } from 'react-icons/lib/fa';
 import { Link } from 'react-router';
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, stateChange, hideState} from '../ducks/issues';
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, stateChange, hideState, scorePoliticiansChange} from '../ducks/issues';
 import QuotesComponent from '../components/Quotes.jsx'
 
 let imgUrl = 'http://static2.businessinsider.com/image/577548084321f171088b5334-1190-625/the-story-of-the-only-man-who-signed-the-declaration-of-independence-and-recanted-his-signature.jpg';
@@ -192,6 +192,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   stateChange(state) {
     dispatch(stateChange(state))
+    dispatch(scorePoliticiansChange())
   },
   hideState(){
     dispatch(hideState())

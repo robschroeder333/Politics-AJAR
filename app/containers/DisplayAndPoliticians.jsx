@@ -5,7 +5,7 @@ import Sidebar from 'react-sidebar';
 import { FlatButton, AppBar, DropDownMenu, MenuItem } from 'material-ui';
 import Politicians from './Politicians';
 import Issues from './Issues';
-import { stateChange } from '../ducks/issues';
+import { stateChange, scorePoliticiansChange } from '../ducks/issues';
 import { selectPoliticianByState } from '../ducks/reducers';
 
 
@@ -210,6 +210,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
 	  stateChange(state) {
    		 dispatch(stateChange(state))
+   		 dispatch(scorePoliticiansChange())
   	  }
 })
 
