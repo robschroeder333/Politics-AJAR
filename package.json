@@ -34,7 +34,6 @@
     "react-sidebar": "^2.3.0",
     "react-tap-event-plugin": "^2.0.1",
     "react-toolbox": "^2.0.0-beta.7",
-    "react-toolbox-themr": "^1.0.2",
     "redux": "^3.6.0",
     "redux-logger": "^2.7.0",
     "redux-thunk": "^2.1.0",
@@ -44,13 +43,7 @@
   "devDependencies": {
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
-    "css-loader": "^0.27.3",
-    "extract-text-webpack-plugin": "^2.1.0",
     "mocha": "^3.2.0",
-    "node-sass": "^4.5.1",
-    "sass-loader": "^6.0.3",
-    "sinon": "^1.17.7",
-    "style-loader": "^0.16.0",
-    "toolbox-loader": "0.0.3"
+    "sinon": "^1.17.7"
   }
 }

@@ -11,9 +11,7 @@ export const getSinglePolitician = (politician) => ({
 
 /* -------------       REDUCER     ------------------- */
 
-const initialState = {
-  politician: {}
-}
+const initialState = {}
 
 const reducer = (state = initialState, action) => {
 
@@ -22,9 +20,7 @@ const reducer = (state = initialState, action) => {
   switch (action.type){
 
     case GET_SINGLE_POLITICIAN:
-      newState.politician = action.politician;
-      // newState.politicians = action.politicians;
-      console.log('in reducer for single politician', action.politician, 'and', newState)
+      newState = action.politician;
       return newState;
 
     default:
