@@ -1,7 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getPoliticians } from '../ducks/politicians';
-import Politician from '../components/Politician.jsx'
+import Politician from '../components/Politician.jsx';
+import { GridList, GridTile } from 'material-ui';
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  gridList: {
+    overflowY: 'auto',
+  },
+  gridTile: {
+    margin: '2%',
+  }
+}
 
 class Politicians extends Component {
   constructor(props) {
@@ -9,22 +23,30 @@ class Politicians extends Component {
   }
 
   render() {
-    const {politicians} = this.props.politicians
+    const {politicians} = this.props
+    console.log(politicians, 'politicians array')
     return (
       <div>
-
-        <ul
-          className="text-left"
-          style={{listStyle: 'none'}}>
-          {politicians.map(politician => {
+        <GridList
+          style={styles.gridList}
+          cellHeight={'auto'}
+          cols={2}
+        >
+          {
+            politicians.map(politician => {
               return (
-                <li key={politician.id}>
-                  <Politician politician={politician} />
-                </li>
+                <GridTile
+                  style={styles.GridTile}
+                  key={politician.id}
+                >
+                  <Politician
+                    politician={politician}
+                  />
+                </GridTile>
               )
             })
           }
-        </ul>
+        </GridList>
       </div>
     )
   }

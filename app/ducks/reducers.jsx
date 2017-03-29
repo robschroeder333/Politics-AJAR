@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import politicians from './politicians'
+import politicians, * as fromPoliticians from './politicians'
 import issues from './issues'
 
 const rootReducer = combineReducers({
@@ -8,3 +8,7 @@ const rootReducer = combineReducers({
 });
 
 export default rootReducer;
+
+export const selectPoliticianByState = (state) => {
+	return fromPoliticians.selectPoliticianByState(state.politicians, state.issues)
+}
