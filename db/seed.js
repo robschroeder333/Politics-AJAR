@@ -28,7 +28,7 @@ const seedCats = (categories) => {
   let uniqueCategories = [];
   let visitedCategories = {};
   for (let i = 0; i < categories.length; i++) {
-    // console.log(categories[i].Catorder)
+
     if (visitedCategories[categories[i].Catorder] === undefined) {
       visitedCategories[categories[i].Catorder] = categories[i].Catorder;
       uniqueCategories.push({catOrder: categories[i].Catorder, name: categories[i].Industry});
