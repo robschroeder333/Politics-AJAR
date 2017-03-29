@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Sidebar from 'react-sidebar';
 import { AppBar, FlatButton } from 'material-ui';
-import { getSinglePolitician, getPoliticianInfo } from '../ducks/singlePolitician.jsx';
+import { getSinglePolitician, getPoliticianInfo, fetchPoliticianInfo  } from '../ducks/singlePolitician.jsx';
 import Profile from '../components/Profile.jsx';
 import Issues from './Issues.jsx';
 
@@ -105,8 +105,8 @@ class PoliticianProfile extends Component {
 		}
 	}
 
-	handleChange(politician) {
-		this.props.setPolitician(politician)
+	handleChange(politician, id) {
+		this.props.setPolitician(politician, id)
 	}
 
   render() {
@@ -163,8 +163,7 @@ class PoliticianProfile extends Component {
 							</Link>
 						}
 					/>
-					{this.handleChange(politician)}
-					{this.props.getInfo('M000934')}
+					{this.handleChange(politician, politician.ppid)}
 					<Profile />
 				</Sidebar>
       </div>
@@ -175,11 +174,9 @@ class PoliticianProfile extends Component {
 /* REDUX CONTAINER */
 
 const mapDispatchToProps = (dispatch) => ({
-		setPolitician(politician){
-			dispatch(getSinglePolitician(politician))
-		},
-		getInfo(id){
-			dispatch(getPoliticianInfo(id))
+		setPolitician(politician, id){
+			dispatch(getSinglePolitician(politician)),
+			dispatch(fetchPoliticianInfo(id))
 		}
 })
 
