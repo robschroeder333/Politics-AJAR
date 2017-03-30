@@ -1,32 +1,38 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FaTwitterSquare, FaFacebookSquare, FaGlobe } from 'react-icons/lib/fa';
+let ZingChart = require('zingchart-react').core;
 
 const styles = {
   content: {
     marginTop: '5%',
-    marginLeft: '10%'
+  },
+  ticket: {
+    marginLeft: '10%',
   },
   memberInfo: {
     display: 'inline-block',
-    margin: '2%'
+    margin: '2%',
   },
   image: {
-    float: 'left'
+    float: 'left',
+    width: '125px',
+    height: '125px',
   },
   address: {
     display: 'inline-block',
-    paddingRight: '10px'
+    paddingRight: '10px',
   },
   websites: {
     borderLeft: '2px solid black',
     display: 'inline-block',
     paddingLeft: '10px',
-    hover: 'none'
+    hover: 'none',
   },
   issues: {
-    display: 'block',
-    marginTop: '8%'
+    display: 'inline-block',
+    marginTop: '8%',
+    marginLeft: '20%',
   },
   issue: {
     display: 'inline-block',
@@ -37,6 +43,11 @@ class Profile extends Component {
   constructor(props) {
     super(props)
     this.handleIssues = this.handleIssues.bind(this);
+    this.addDefaultSrc = this.addDefaultSrc.bind(this);
+  }
+
+  addDefaultSrc(evt){
+    evt.target.src = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Seal_of_the_United_States_Congress.svg'
   }
 
   handleIssues() {
@@ -44,32 +55,58 @@ class Profile extends Component {
     const issues = this.props.issues.issues;
     for (let prop in issues) {
       if (issues[prop].included && issues[prop].link) {
-        issueArray[issues[prop].link] = [prop, issues[prop]]
+        issueArray[issues[prop].link - 1] = [prop, issues[prop]]
       }
     }
-    return issueArray.map((issue) => {
-      return (
-        <div key={issue[1].link}>
-          <h3 style={styles.issue}>{issue[0]}</h3>
-          <h3 style={styles.issue}>{issue[1].score}</h3>
-        </div>
-      )
+    let xAxis = [];
+    let scoreValue = [];
+    issueArray.forEach(issue => {
+      xAxis.push(issue[0])
+      // if (issue[1].score === 0)
+      scoreValue.push(issue[1].score)
     })
+    return [xAxis, scoreValue];
   }
+
   render() {
+    let chartConfig = {
+      type: 'hbar',
+      plot: {
+        layout: 'auto'
+      },
+      title: {
+        text: 'Issue Breakdown'
+      },
+      scaleX: {
+        values: this.handleIssues()[0].reverse(),  // reverse order so issue adds to bottom
+      },
+      scaleY: {
+        labels: ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'],
+        step: 25,
+        'min-value': 0,
+        'max-value': 100
+      },
+      series: [
+        { // score values
+          values: this.handleIssues()[1].reverse()  // reverse order so score matches the reversed issue
+        }
+      ]
+    };
+
     const politician = this.props.singlePolitician;
     return (
       <div style={styles.content}>
-        <div>
+        <div style={styles.ticket}>
           <img
             className="img-fluid"
+            onError={this.addDefaultSrc}
             src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
             style={styles.image}
           />
           <div style={styles.memberInfo}>
             <h1>{politician.fullName}</h1>
             <h2>{politician.chamberName} | {politician.partyName}</h2>
-            <h2>{politician.state}</h2>
+            <h2>{this.props.issues.states[politician.state]}</h2>
             <h2>{politician.totalAgreementScore}</h2>
             {
               politician.info
@@ -104,7 +141,7 @@ class Profile extends Component {
           </div>
         </div>
         <div style={styles.issues}>
-          {this.handleIssues()}
+          <ZingChart id="chart" height="500" width="800" data={chartConfig} />
         </div>
       </div>
     )
@@ -115,7 +152,7 @@ const mapStateToProps = ({singlePolitician, issues}) => {
   return {
     singlePolitician,
     issues,
-    info : singlePolitician.info
+    info: singlePolitician.info
   }
 }
 

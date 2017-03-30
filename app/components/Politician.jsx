@@ -10,6 +10,10 @@ const style = {
   height: '80%'
 };
 
+const addDefaultSrc = (evt) => {
+  evt.target.src = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Seal_of_the_United_States_Congress.svg';
+}
+
 const Politician = (props) => {
   const politician = props.politician;
   return (
@@ -21,6 +25,7 @@ const Politician = (props) => {
         <div>
         <img
           className="img-fluid"
+          onError={addDefaultSrc}
           src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
           style={{maxWidth: '25%', float: 'left'}}
         />
