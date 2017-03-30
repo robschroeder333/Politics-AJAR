@@ -14,6 +14,7 @@ const STATE_CHANGE = 'STATE_CHANGE';
 const HIDE_STATE = 'HIDE_STATE';
 const GET_ISSUES = 'GET_ISSUES';
 const CREATE_POLITICIAN_SCORE = 'CREATE_POLITICIAN_SCORE';
+const GET_SCORES = 'GET_SCORES';
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -75,11 +76,11 @@ export const scorePoliticiansChange = () => {
 		// console.log('entered 2nd action creator')
 		let state = getState();
 		// console.log('state is', state)
-		let politicians = state.politicians.politicians
-		let issues = state.issues.issues
-		let politicianScore = state.issues.politicianScores
+		let politicians = state.politicians.politicians;
+		let issues = state.issues.issues;
+		let politicianScore = state.issues.politicianScores;
 		// console.log('these are the issues', issues)
-		let selectedState = state.issues.selectedState
+		let selectedState = state.issues.selectedState;
 		let statePoliticians = politicians.filter(politician => politician.state.match(selectedState))
 		// console.log('filtered politicians are', statePoliticians)
 		let includedIssues = Object.keys(issues).filter(issue => issues[issue].included)   //.map(issue => {if (issues[issue].included === true){return issue}})
@@ -95,20 +96,41 @@ export const scorePoliticiansChange = () => {
 					console.log('statePoliticians[i]', statePoliticians[i]);
 					if (!politicianScore[statePoliticians[i].ppid]){
 						politicianObject[statePoliticians[i].ppid] = {};
-						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = {};
+						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = [];
 						// politicianScore[statePoliticians[i].ppid] = {}
 					  // dispatch(createPolitician(statePoliticians[i].ppid, ));
 
 					}
 					else if (politicianScore[statePoliticians[i].ppid] && !politicianScore[statePoliticians[i].ppid][includedIssues[j]]){
 						// politicianScore[statePoliticians[i].ppid][includedIssues[j]] = {}//axios.get
-						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = {};
+						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = [];
 					}
 
 				}
 			}
 		}
 		dispatch(createPolitician(politicianObject));
+	}
+}
+
+export const getScores = () => {
+	return (dispatch, getState) => {
+
+		let state = getState();
+		// let politicians = state.politicians.politicians;
+		let issues = state.issues.issues; //need this for categoryId
+		let politicianScore = state.issues.politicianScores;
+		
+		let politicianId = Object.keys(politicianScore)
+		for (let i = 0; i<politicianId.length; i++){
+			for (let keys in politicianScore[politicianId]){
+				if (politicianScore[politicianId][keys].length === 0){
+					//axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`) 
+				}
+			}
+		}
+		
+
 	}
 }
 
@@ -258,7 +280,7 @@ const initialState = {
 	selectedState: 'AA',
 	displayState: true,
 	politicianScores: {
-		// ppid : { score: { Environment: 60, Taxes: 88}}
+		// ppid : { Environment: 60, Taxes: 88}}
 	}
 }
 

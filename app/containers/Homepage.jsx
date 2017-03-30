@@ -177,6 +177,7 @@ const mapStateToProps = ({issues, issueValues, issueNumber, states, selectedStat
 const mapDispatchToProps = (dispatch) => ({
   includeOrNot(issueId, linkId){  
     dispatch(modifyIncludedIssue(issueId, linkId)) 
+    dispatch(scorePoliticiansChange())
   },
   changeScore(issueId, score){ 
     dispatch(modifyScoreAndWeight(issueId, score))
