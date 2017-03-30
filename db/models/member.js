@@ -184,9 +184,9 @@ const Member = db.define('members', {
           // }
         }
         // memberScore = (score / voteCount) * 100;
-        
-        if (scores[1]){
-          
+        console.log('scores 1 is', scores[1])
+
+        if (scores[1] && scores[1][1] !== 0){
           memberScore = (scores[1][0] / scores[1][1]) * 100;
           console.log('calculated', memberScore)
             // memberScore = 50;

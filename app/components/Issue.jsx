@@ -6,7 +6,6 @@ import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 const sliderStyle = {
   width: '70%',
   margin: 'auto',
-  paddingTop: '5%'
 }
 
 const muiTheme = getMuiTheme({

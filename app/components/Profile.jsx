@@ -63,7 +63,7 @@ class Profile extends Component {
     let xAxis = [];
     let scoreValue = [];
     issueArray.forEach(issue => {
-      let issueName = issue[0].slice(0, 5) + '...'
+      let issueName = issue[0].slice(0, 3) + '...'
       xAxis.push(issueName)
       const politicianScores = this.props.issues.politicianScores[this.props.singlePolitician.ppid][issue[0]]
       // if (!politicianScores.length) scoreValue.push(Math.random() * 100)
