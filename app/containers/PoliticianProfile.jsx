@@ -162,6 +162,8 @@ class PoliticianProfile extends Component {
 								/>
 							</Link>
 						}
+						style={{backgroundColor: '#000b63'}}
+
 					/>
 					{this.handleChange(politician, politician.ppid)}
 					<Profile />

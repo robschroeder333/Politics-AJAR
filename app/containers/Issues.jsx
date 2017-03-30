@@ -78,8 +78,7 @@ class Issues extends Component {
              disabled={true}
            />
           {
-            // TODO: FIX slider reverts to 50 from 0 when another is changed
-            Object.keys(issues).map((issue) => {
+            Object.keys(issues).sort().map((issue) => {
               return (
                 (issues[issue].included)
                 ? <MenuItem
@@ -120,11 +119,7 @@ class Issues extends Component {
 
     return (
       <div style={styles.block}>
-
-        <div>
-          { this.renderIssues() }
-        </div>
-
+      
         <FloatingActionButton
           mini={true}
           secondary={true}
@@ -132,6 +127,12 @@ class Issues extends Component {
         >
           <ContentAdd />
         </FloatingActionButton>
+
+        <div>
+          { this.renderIssues() }
+        </div>
+
+
       </div>
     )
   }
