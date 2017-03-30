@@ -12,7 +12,9 @@ const CHANGE_SCORE_WEIGHT = 'CHANGE_SCORE_WEIGHT';
 const SCORE_CHANGE = 'SCORE_CHANGE';
 const STATE_CHANGE = 'STATE_CHANGE';
 const HIDE_STATE = 'HIDE_STATE';
-const GET_ISSUES = 'GET_ISSUES'
+const GET_ISSUES = 'GET_ISSUES';
+const CREATE_POLITICIAN_SCORE = 'CREATE_POLITICIAN_SCORE';
+const GET_SCORES = 'GET_SCORES';
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -64,37 +66,70 @@ export const getIssues = (issues) => ({
 	issues
 })
 
+export const createPolitician = (politicianObject) => ({
+	type: CREATE_POLITICIAN_SCORE,
+	politicianObject
+})
+
 export const scorePoliticiansChange = () => {
 	return (dispatch, getState) => {
-		console.log('entered 2nd action creator')
+		// console.log('entered 2nd action creator')
 		let state = getState();
-		console.log('state is', state)
-		let politicians = state.politicians.politicians
-		let issues = state.issues.issues
-		let politicianScore = state.issues.politicianScores
-		console.log('these are the issues', issues)
-		let selectedState = state.issues.selectedState
+		// console.log('state is', state)
+		let politicians = state.politicians.politicians;
+		let issues = state.issues.issues;
+		let politicianScore = state.issues.politicianScores;
+		// console.log('these are the issues', issues)
+		let selectedState = state.issues.selectedState;
 		let statePoliticians = politicians.filter(politician => politician.state.match(selectedState))
-		console.log('filtered politicians are', statePoliticians)
+		// console.log('filtered politicians are', statePoliticians)
 		let includedIssues = Object.keys(issues).filter(issue => issues[issue].included)   //.map(issue => {if (issues[issue].included === true){return issue}})
-		console.log('issues', includedIssues)
-		for (let i = 0; i<statePoliticians.length; i++) {
+		console.log('included issues are', includedIssues)
+		let politicianObject = politicianScore;
+		for (let i = 0; i < statePoliticians.length; i++) {
 			for (let j = 0; j < includedIssues.length; j++) {
-				if (statePoliticians[i] && politicianScore[statePoliticians[i].ppid] && politicianScore[statePoliticians[i].ppid][includedIssues[j]]) {
+				if (politicianScore[statePoliticians[i].ppid] && politicianScore[statePoliticians[i].ppid][includedIssues[j]]) {
 					console.log('true')
 					//skip in this case
 				}
 				else {
-					console.log('statePoliticians[i]', statePoliticians[i])
+					console.log('statePoliticians[i]', statePoliticians[i]);
 					if (!politicianScore[statePoliticians[i].ppid]){
-						politicianScore[statePoliticians[i].ppid] = {}
+						politicianObject[statePoliticians[i].ppid] = {};
+						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = [];
+						// politicianScore[statePoliticians[i].ppid] = {}
+					  // dispatch(createPolitician(statePoliticians[i].ppid, ));
+
 					}
-					if (politicianScore[statePoliticians[i].ppid] === {} || !politicianScore[statePoliticians[i].ppid][includedIssues[j]]){
-						politicianScore[statePoliticians[i].ppid][includedIssues[j]] = {}//axios.get
+					else if (politicianScore[statePoliticians[i].ppid] && !politicianScore[statePoliticians[i].ppid][includedIssues[j]]){
+						// politicianScore[statePoliticians[i].ppid][includedIssues[j]] = {}//axios.get
+						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = [];
 					}
+
 				}
 			}
 		}
+		dispatch(createPolitician(politicianObject));
+	}
+}
+
+export const getScores = () => {
+	return (dispatch, getState) => {
+
+		let state = getState();
+		// let politicians = state.politicians.politicians;
+		let issues = state.issues.issues; //need this for categoryId
+		let politicianScore = state.issues.politicianScores;
+		
+		let politicianId = Object.keys(politicianScore)
+		for (let i = 0; i<politicianId.length; i++){
+			for (let keys in politicianScore[politicianId]){
+				if (politicianScore[politicianId][keys].length === 0){
+					//axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`) 
+				}
+			}
+		}
+		
 
 	}
 }
@@ -245,7 +280,7 @@ const initialState = {
 	selectedState: 'AA',
 	displayState: true,
 	politicianScores: {
-		// ppid : { score: { Environment: 60, Taxes: 88}}
+		// ppid : { Environment: 60, Taxes: 88}}
 	}
 }
 
@@ -330,17 +365,7 @@ const reducer = (state = initialState, action) => {
 		}
 		return newState;
 
-		case ADD_ISSUE:
-		newState.issueNumber = newState.issueNumber + 1;
-		newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
-		return newState;
-
-		case ISSUE_CHANGE:
-		newState.issueValues[action.index] = {value: action.value, slidebar: 50};
-		console.log(newState);
-		return newState;
-
-		case STATE_CHANGE: 
+		case STATE_CHANGE:
 		newState.selectedState = action.state;
 		return newState;
 
@@ -348,8 +373,13 @@ const reducer = (state = initialState, action) => {
 		newState.displayState = false;
 		return newState;
 
-		case GET_ISSUES: 
+		case GET_ISSUES:
 		newState.issues = action.issues;
+		return newState;
+
+		case CREATE_POLITICIAN_SCORE:
+		console.log('in reducer', action.politicianObject);
+		newState.politicianScores = Object.assign({}, newState.politicianScores, action.politicianObject);
 		return newState;
 
 		default: 

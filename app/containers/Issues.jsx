@@ -158,6 +158,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   modifyIssue(issueId, linkId){
     dispatch(modifyIncludedIssue(issueId, linkId))
+    dispatch(scorePoliticiansChange())
   },
   scoreChange(index, value){
     dispatch(scoreChange(index, value))
