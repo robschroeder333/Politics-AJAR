@@ -10,6 +10,10 @@ const style = {
   height: '80%'
 };
 
+const fontStyle = {
+  fontFamily: 'Cormorant'
+}
+
 const addDefaultSrc = (evt) => {
   evt.target.src = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Seal_of_the_United_States_Congress.svg';
 }
@@ -31,7 +35,7 @@ const Politician = (props) => {
         />
       </div>
         <div style={{display: 'inline-block', paddingLeft: '2%'}}>
-          <h3>{politician.fullName}</h3>
+          <h3 style={fontStyle}>{politician.fullName}</h3>
           <h6>{politician.chamberName} | {politician.partyName}</h6>
           <h6>{politician.state}</h6>
           <h6>{politician.totalAgreementScore}</h6>

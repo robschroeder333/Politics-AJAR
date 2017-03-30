@@ -85,8 +85,9 @@ const Member = db.define('members', {
       .then(issueBills => {
           const issueBillArr = [];
           issueBills.forEach(issueBill => {
+          if (issueBill !== null) {
             issueBillArr.push(issueBill.billId);
-            forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;
+            forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;}
           });
           return issueBillArr;
         })
@@ -109,9 +110,15 @@ const Member = db.define('members', {
             {
               if (forOrAgaisntArr[vote.billId] === 'for'){
                 if (vote.position === 'yes') {voteScore++;}
+                else {
+                  voteScore--;
+                }
               }
               else if (forOrAgaisntArr[vote.billId] === 'against'){
                 if (vote.position === 'no') {voteScore++;}
+                else {
+                  voteScore--;
+                }
               }
             }
           });
@@ -154,25 +161,37 @@ const Member = db.define('members', {
           let inArr = [];
           inArr.push(issue[0].issue_cats.dataValues.plusOrMinus);
           inArr.push(member.getIssueScore(issue[0].issue_cats.dataValues.issueId, startYear, endYear));
+          // console.log(`${member.dataValues.lastName} has a score of ${inArr[1]}`);
           scoreArr.push(Promise.all(inArr));
         });
         return Promise.all(scoreArr);
       })
       .then(scores => {
+        console.log('all the different scores are', scores)
         let score = 0;
         let voteCount = 0;
         let memberScore = 0;
+        scores = scores[0];
         for (let i = 0; i < scores.length; i++){
-          if (scores[i][0] === '-'){
-            score += (scores[i][1][1] - scores[i][1][0]);
-            voteCount += scores[i][1][1];
-          }
-          else {
-            score += scores[i][1][0];
-            voteCount += scores[i][1][1];
-          }
+          // if (scores[i][1][0][0] === '-'){
+          //   score += (scores[i][1][1] - scores[i][1][0]);
+          //   voteCount += scores[i][1][1];
+          // }
+          // else {
+          //   score += scores[i][1][0];
+          //   voteCount += scores[i][1][1];
+          // }
         }
-        memberScore = (score / voteCount) * 100;
+        // memberScore = (score / voteCount) * 100;
+        
+        if (scores[1]){
+          
+          memberScore = (scores[1][0] / scores[1][1]) * 100;
+          console.log('calculated', memberScore)
+            // memberScore = 50;
+        } else {
+          memberScore = 0;
+        }
         return memberScore;
         // return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
 
@@ -180,8 +199,20 @@ const Member = db.define('members', {
       .catch(error => console.error(error));
     },
     getCatScore(catId, startYear, endYear) {
-      const memberScore = this.getMemberCatScore(catId, startYear, endYear);
-      return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
+      return this.getMemberCatScore(catId, startYear, endYear)
+       .then(memberScore => {
+         
+         // if (memberScore === undefined){
+         //   memberScore = 50;
+         // }
+         // console.log('member score is - ',memberScore)
+         // return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
+         // console.log([(1 - Math.abs((memberScore -(-100))/200)) * 100, (1 - Math.abs((memberScore - (-50))/200)) * 100, (1 - Math.abs((memberScore - 0)/200)) * 100, (1 - Math.abs((memberScore - 50)/200)) * 100, (1 - Math.abs((memberScore - 100)/200)) * 100])
+
+         return [(1 - Math.abs((memberScore -(-100))/200)) * 100, (1 - Math.abs((memberScore - (-50))/200)) * 100, (1 - Math.abs((memberScore - 0)/200)) * 100, (1 - Math.abs((memberScore - 50)/200)) * 100, (1 - Math.abs((memberScore - 100)/200)) * 100];
+       })
+       .catch(err => console('hi'));
+       // console.log('this is the memberScore: ', memberScore);
     }
   },
   getterMethods: {
