@@ -120,70 +120,70 @@ export const getScores = () => {
 		// let politicians = state.politicians.politicians;
 		let issues = state.issues.issues; //need this for categoryId
 		let politicianScore = state.issues.politicianScores;
-		
+
 		let politicianId = Object.keys(politicianScore)
 		for (let i = 0; i<politicianId.length; i++){
 			for (let keys in politicianScore[politicianId]){
 				if (politicianScore[politicianId][keys].length === 0){
-					//axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`) 
+					//axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)
 				}
 			}
 		}
-		
+
 
 	}
 }
 
-export const getScoreForPoliticians = () => {
-  return (dispatch, getState) => {
-    const state = getState()
-    let politiciansArray = state.politicians.politicians;
-    let issues = state.issues.issues
-    let politiciansWithScore;
-
-    return politiciansWithScore = politiciansArray.map(politician => {
-    	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
-    	// console.log('this is politician', politician)
-    	// const indIssue = state.issues.issues
-    	
-    	const polId = politician.ppid
-    	let totalScore = 0;
-    	let totalWeight = 0;
-    	for (let issue in issues) {
-    		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
-    		if (indIssue[issue].included === true) {
-    			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
-    			let rightScore;
-				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
-	    		.then(response => {
-	    			let arrayOfScore = response.data 
-	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
-	    			if (arrayOfScore[0] === null) {
-	    				rightScore = 50; // why does the array return null? 
-	    			}
-	    			else {
-						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
-		    			if (indIssue[issue].score === 25) rightScore = arrayOfScore[1];
-		    			if (indIssue[issue].score === 50) rightScore = arrayOfScore[2];
-		    			if (indIssue[issue].score === 75) rightScore = arrayOfScore[3];
-		    			if (indIssue[issue].score === 100) rightScore = arrayOfScore[4];
-		    			totalWeight += indIssue[issue].weight; // weight does not increase even if it is important to user
-		    			// console.log(totalWeight, 'this is totalWeight')
-	    			}
-	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
-	    			totalScore += rightScore * indIssue[issue].weight;
-	    			// console.log('this is totalScore', totalScore)
-	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
-            // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
-            // console.log('this is the final politician', politiciansArray)
-
-					return politician.totalAgreementScore = totalScore/totalWeight;
-					// console.log('this is the array', arrayOfScores)
-	    		})
-	    		.then(() => dispatch(getPoliticians(politiciansArray)))
-    		}
-    	}
-    })
+// export const getScoreForPoliticians = () => {
+//   return (dispatch, getState) => {
+//     const state = getState()
+//     let politiciansArray = state.politicians.politicians;
+//     let issues = state.issues.issues
+//     let politiciansWithScore;
+//
+//     return politiciansWithScore = politiciansArray.map(politician => {
+//     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
+//     	// console.log('this is politician', politician)
+//     	// const indIssue = state.issues.issues
+//
+//     	const polId = politician.ppid
+//     	let totalScore = 0;
+//     	let totalWeight = 0;
+//     	for (let issue in issues) {
+//     		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
+//     		if (indIssue[issue].included === true) {
+//     			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
+//     			let rightScore;
+// 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
+// 	    		.then(response => {
+// 	    			let arrayOfScore = response.data
+// 	    			// console.log('this is the catscore', response.data, politician.fullName, issue)
+// 	    			if (arrayOfScore[0] === null) {
+// 	    				rightScore = 50; // why does the array return null?
+// 	    			}
+// 	    			else {
+// 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
+// 		    			if (indIssue[issue].score === 25) rightScore = arrayOfScore[1];
+// 		    			if (indIssue[issue].score === 50) rightScore = arrayOfScore[2];
+// 		    			if (indIssue[issue].score === 75) rightScore = arrayOfScore[3];
+// 		    			if (indIssue[issue].score === 100) rightScore = arrayOfScore[4];
+// 		    			totalWeight += indIssue[issue].weight; // weight does not increase even if it is important to user
+// 		    			// console.log(totalWeight, 'this is totalWeight')
+// 	    			}
+// 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
+// 	    			totalScore += rightScore * indIssue[issue].weight;
+// 	    			// console.log('this is totalScore', totalScore)
+// 	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no
+//             // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
+//             // console.log('this is the final politician', politiciansArray)
+//
+// 					return politician.totalAgreementScore = totalScore/totalWeight;
+// 					// console.log('this is the array', arrayOfScores)
+// 	    		})
+// 	    		.then(() => dispatch(getPoliticians(politiciansArray)))
+//     		}
+//     	}
+//     })
 
     // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
     // do we keep the weight? because if it is important for our user, then it should also be important for the politician?
@@ -191,8 +191,8 @@ export const getScoreForPoliticians = () => {
     // if the politician score is not added, then one politician who agrees on all issues but one might be ranked higher than another politician
     // simply becasue he has no opinion on the issue. which does not necessarily make him in more agreement.
 
-  }
-}
+  // }
+// }
 
 
 export const getAllIssues = () => {
@@ -361,7 +361,7 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].weight = 4;
 					break;
 				}
-		 	} 
+		 	}
 		}
 		return newState;
 
@@ -382,7 +382,7 @@ const reducer = (state = initialState, action) => {
 		newState.politicianScores = Object.assign({}, newState.politicianScores, action.politicianObject);
 		return newState;
 
-		default: 
+		default:
 		return state
 	}
 }
