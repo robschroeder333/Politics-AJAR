@@ -7,10 +7,34 @@ const Vote = db.model('votes');
 const Bill = db.model('bills');
 const Cat = db.model('cats');
 var Promise = require('bluebird');
+const fs = require('fs');
+
 //Api data
 // const allData = require('../apiData');
-const allDataIssues = require('../apiData').getIssues();
-const allData = require('../backup');
+// const allDataIssues = require('../apiData').getIssues();
+const backup = require('../backup');
+const synced = db.sync({force: true});
+const allData = synced.then(() => backup);
+
+//formatting catcodes for 'issues' seeding
+const allDataIssues = new Promise((resolve, reject) => {
+  fs.readFile('catcodes.txt', 'utf-8', (err, data) => {
+    if (err) reject(err);
+    let catCodes = [];
+    let rows = data.split('\n');
+    const columns = rows.shift().split('\t');
+    for (let i = 0; i < rows.length; i++) {
+      const splitRow = rows[i].split('\t');
+      const codeObj = {};
+      for (let ii = 0; ii < splitRow.length; ii++) {
+        codeObj[columns[ii]] = splitRow[ii];
+      }
+      catCodes.push(codeObj);
+    }
+    catCodes.pop();
+    resolve(catCodes);
+  });
+});
 
 //Seed functions
 const seedIssues = (issues) => db.Promise.map(issues,
@@ -135,13 +159,19 @@ const seedMembersInfo = (members) => db.Promise.map(members,
 var data;
 var issuesData;
 
-const issuesSeeded = db.sync({force: true})
+const trace = tracer => pVal => {
+  console.log(typeof tracer === 'function' ? tracer(pVal) : tracer);
+  return pVal;
+};
+
+const issuesSeeded = synced
   .then(() => allDataIssues)
   .then((issues) => {
     issuesData = issues;
     return seedIssues(issues);
   })
-  .then(issues => console.log(`Seeded ${issues.length} issues OK`))
+  .then(trace(issues => `Seeded ${issues.length} issues OK`));
+
 
 // const seedIssuesUsingAsyncFn = async function () {
 //   await db.sync({force: true})
@@ -187,13 +217,14 @@ const billsSeeded = issuesAndMembersReady
 
 const categoriesSeeded = billsSeeded
   .then(() => seedCats(issuesData))
-  .then(cat => console.log(`Seeded ${cat.length} catagories OK`))
+  .then(cat => console.log(`Seeded ${cat.length} categories OK`))
 
 const associatingIssuesToCategories = categoriesSeeded
   .then(() => {
-    return Issue.findAll();
+    return issuesSeeded;
   })
   .then(fetchedIssues => {
+    let count = 0;
     const connectedIssuesWithCategories = fetchedIssues.map(issue => {
       const issueCatcode = issue.dataValues.catCode;
       let index = -1;
@@ -203,14 +234,16 @@ const associatingIssuesToCategories = categoriesSeeded
           break;
         }
       }
-      const fetchingCategory = Cat.findOne({where: {catOrder: issuesData[index].Catorder}});
-      Promise.all([fetchingCategory])
-      .then(([fetchedCategory]) => {
-        return issue.addIssue_cat(fetchedCategory, {plusOrMinus: '+'})
+      return Cat.findOne({where: {catOrder: issuesData[index].Catorder}})
+      .then((fetchedCategory) => {
+        count++;
+        if (count % 10 === 0) console.log(`Linked ${count} issues and categories`);
+        return issue.addIssue_cat(fetchedCategory, {plusOrMinus: '+'});
       });
     });
     return Promise.all(connectedIssuesWithCategories);
   })
+  .then(trace('Associated all issues and categories'));
 
 // const associatingIssuesToBills = associatingIssuesToCategories
 //   .then(() => {
@@ -259,26 +292,50 @@ const associatingIssuesToCategories = categoriesSeeded
 //     return Promise.all(completingMemberAssociations);
 //   })
 
+const issuesByCatCode = {};
+const memoizedFetchIssue = catCode => {
+  if (issuesByCatCode[catCode]) return issuesByCatCode[catCode];
+  const issuePromise = Issue.findOne({where: {catCode}})
+  issuePromise
+  .then(() => {
+    issuesByCatCode[catCode] = issuePromise;
+  });
+  return issuePromise;
+};
 
-
+const billsByToken = {};
+const memoizedFetchBill = (prefix, number, session) => {
+  const token = `p${prefix}_n${number}_s${session}`;
+  if (billsByToken[token]) return billsByToken[token];
+  const billPromise = Bill.findOne({where: {
+    prefix,
+    number,
+    session
+  }});
+  billPromise
+  .then(() => {
+    billsByToken[token] = billPromise;
+  });
+  return billPromise;
+};
 
 const associatingIssuesToBills = associatingIssuesToCategories
+  .then(trace('association issues to bills'))
   .then(() => {
-    const completingMemberAssociations = data.map(member => {
+    let billCount = 0;
+    const completingMemberAssociations = data.map((member, memberIdx) => {
       const arrayOfAssociationPromises = member.positions.map((bill) => {
       //  if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
-        let targetBill = Bill.findOne({where: {
-          prefix: bill.prefix,
-          number: bill.number,
-          session: bill.session
-        }})
+        let targetBill = memoizedFetchBill(bill.prefix, bill.number, bill.session);
+        if (!bill.orgs) console.log('bill has no orgs ', bill, member.last_name);
         const issuePromises = bill.orgs.map((org) => {
           // console.log(org);
-          return Issue.findOne({where: {catCode: org.organizationType}});
-        })
-        const fetchingIssues = Promise.all(issuePromises)
+          return memoizedFetchIssue(org.organizationType);
+        });
+        const fetchingIssues = Promise.all(issuePromises);
         return Promise.all([targetBill, fetchingIssues])
         .then(([fetchedBill, fetchedIssues]) => {
+          if (++billCount % 10 === 0) console.log(`fetched issues for ${billCount} bills`);
           // console.log(fetchedBill.dataValues);
           const notNullIssues = fetchedIssues.filter(issue => {
           //  console.log("issue id: ", issue.dataValues);
@@ -286,7 +343,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
           });
           // console.log('length is: ', notNullIssues.length);
           if (notNullIssues.length === 0 || fetchedBill === null){
-            return new Promise((resolve, reject) => resolve());
+            return;
           }
           const addedIssues = notNullIssues.map(issue => {
             let issuePosition = '';
@@ -302,18 +359,17 @@ const associatingIssuesToBills = associatingIssuesToCategories
             //add issuePosition as value passed into the options object
             return fetchedBill.addIssue_bills(issue, {forOrAgainst: issuePosition})
             .catch(() => {});
-          })
+          });
           return Promise.all(addedIssues);
-
-        })
-      // } else {
-      //   return new Promise((resolve, reject) => resolve());
-      // }
-    })
-      return Promise.all(arrayOfAssociationPromises);
+          // .then(trace(`added issues for member ${memberIdx}`));
+        });
+      });
+      return Promise.all(arrayOfAssociationPromises)
+      .then(trace(`all bills added for member ${memberIdx}`));
     });
-    return Promise.all(completingMemberAssociations);
-  })
+    return Promise.all(completingMemberAssociations)
+    .then(trace('all bills added for all members'));
+  });
 
 
 
@@ -328,11 +384,7 @@ const associatingIssuesToBills = associatingIssuesToCategories
 
       const arrayOfAssociationPromises = member.positions.map((bill) => {
         // if (bill !== undefined && bill.prefix !== undefined && isNaN(bill.number) === false) {
-          return Bill.findOne({where: {
-            prefix: bill.prefix,
-            number: bill.number,
-            session: bill.session
-          }});
+          return memoizedFetchBill(bill.prefix, bill.number, bill.session);
         // } else {
         //   return new Promise((resolve, reject) => resolve());
         // }
@@ -345,21 +397,26 @@ const associatingIssuesToBills = associatingIssuesToCategories
         const addedBills = fetchedBills.map((bill, i) => {
           // console.log(member.positions[i].position)
           // if (member.positions[i].position) {
-          return fetchedMember.addBill_vote(bill, {position: member.positions[i].position});
+          return fetchedMember.addBill_vote(bill, {position: member.positions[i].position})
+          .catch(() => {});
           // } else {
           //   return new Promise((resolve, reject) => resolve());
           // }
         });
         return Promise.all(addedBills);
-      })
+      });
 
     });
     return Promise.all(completingMemberAssociations);
-  })
+  });
 
 
   Promise.all([memberInfoSeeded, associatingMembersToBills])
-
+  .catch(error => console.error(error))
+  .finally(() => {
+    db.close();
+    return null;
+  });
 
   // .then(() => Issue.findById(1))
   // .then((issue) => issue.addIssue_bills([4, 5]))
@@ -429,6 +486,3 @@ const associatingIssuesToBills = associatingIssuesToCategories
 
   // // .then(seedWrongMembers)
   // // .then(members => console.log(`Seeded ${members.length} members OK`))
-
-  .catch(error => console.error(error))
-  // .then(() => db.close());
