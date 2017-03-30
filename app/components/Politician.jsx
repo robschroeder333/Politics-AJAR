@@ -31,7 +31,7 @@ const Politician = (props) => {
           className="img-fluid"
           onError={addDefaultSrc}
           src={`http://bioguide.congress.gov/bioguide/photo/${politician.ppid[0]}/${politician.ppid}.jpg`}
-          style={{maxWidth: '25%', float: 'left'}}
+          style={{maxWidth: '20%', float: 'left'}}
         />
       </div>
         <div style={{display: 'inline-block', paddingLeft: '2%'}}>
