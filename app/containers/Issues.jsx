@@ -138,8 +138,7 @@ class Issues extends Component {
         >
           <ContentAdd />
         </FloatingActionButton>
-
-
+        
         <div style={styles.block}>
           { this.renderIssues() }
         </div>

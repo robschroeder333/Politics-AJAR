@@ -184,7 +184,6 @@ export const getScores = () => {
 //     			let rightScore;
 // 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
 // 	    		.then(response => {
-
 // 	    			let arrayOfScore = response.data 
 // 	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
 // 	    			if (arrayOfScore[0] === null) {
@@ -375,7 +374,8 @@ const reducer = (state = initialState, action) => {
 		for (let issue in newState.issues) {
 			if (newState.issues[issue].id === action.issueId) {
 				if ( newState.issues[issue].included === false) {
-					newState.issues[issue].included = true;
+					newState.issues[issue].included = true
+
 				}
 				if (action.score === 25 || action.score === 75) {
 					newState.issues[issue].score = action.score;

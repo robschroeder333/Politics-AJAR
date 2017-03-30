@@ -10,6 +10,10 @@ const style = {
   height: '80%'
 };
 
+const fontStyle = {
+  fontFamily: 'Cormorant'
+}
+
 const addDefaultSrc = (evt) => {
   evt.target.src = 'http://cdn.blackenterprise.com/wp-content/blogs.dir/1/files/2010/05/Congressional-seal.png';
 }
@@ -31,7 +35,7 @@ const Politician = (props) => {
         />
       </div>
         <div style={{display: 'inline-block', paddingLeft: '2%'}}>
-          <h3>{politician.fullName}</h3>
+          <h3 style={fontStyle}>{politician.fullName}</h3>
           <h6>{politician.chamberName} | {politician.partyName}</h6>
           <h6>{politician.state}</h6>
           <h6>{politician.totalAgreementScore}</h6>
