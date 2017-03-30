@@ -193,12 +193,12 @@ const Member = db.define('members', {
     chamberName() {
       return (this.chamber === 'senate')
         ? 'Senate'
-        : 'House of Representatives';
+        : 'House of Reps.';
     },
     partyName() {
-      if (this.party === 'D') return '(D) Democrat'
-      if (this.party === 'R') return '(R) Republican'
-      if (this.party === 'I') return '(I) Independent'
+      if (this.party === 'D') return 'Democrat'
+      if (this.party === 'R') return 'Republican'
+      if (this.party === 'I') return 'Independent'
       else return 'No party listed'
     }
   },
@@ -209,5 +209,5 @@ const Member = db.define('members', {
       }
     }}
 });
- 
+
 module.exports = Member;

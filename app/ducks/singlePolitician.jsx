@@ -10,10 +10,20 @@ export const getSinglePolitician = (politician) => ({
   politician
 });
 
-export const getPoliticianInfo = (id) => ({
+export const getPoliticianInfo = (info) => ({
   type: GET_POLITICIAN_INFO,
-  id
+  info
 });
+
+export const fetchPoliticianInfo = (id) => {
+  return (dispatch, getState) => {
+    axios.get(`/api/politicians/${id}`)
+    .then(response => {
+      dispatch(getPoliticianInfo(response.data))
+    })
+    .catch(err => console.error(err))
+  }
+}
 
 /* -------------       REDUCER     ------------------- */
 
@@ -30,10 +40,7 @@ const reducer = (state = initialState, action) => {
       return newState;
 
     case GET_POLITICIAN_INFO:
-     axios.get(`/api/politicians/${action.id}`)
-     .then(member => {
-       newState.info = member.data;
-      });
+      newState.info = action.info;
       return newState;
 
     default:

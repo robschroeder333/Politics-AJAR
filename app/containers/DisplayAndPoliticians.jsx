@@ -117,7 +117,6 @@ class DisplayAndPoliticians extends Component {
 
 	render(){
 		let {politicians} = this.props
-		console.log('politicians', politicians)
 		let {selectedState, states} = this.props.issues
 		let {senateSelected, houseSelected} = this.state
 		let sidebarContent = (
@@ -145,11 +144,10 @@ class DisplayAndPoliticians extends Component {
 				/>
 			<hr />
 				<Issues />
-			<hr /> 
+			<hr />
 
 			</div>
 			</div>
-			
 		)
 
 		if (senateSelected && !houseSelected){
@@ -165,7 +163,6 @@ class DisplayAndPoliticians extends Component {
 			politicians = []
 		}
 
-		console.log(politicians)
 		return (
 			<div>
 				<Sidebar
@@ -216,8 +213,3 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(DisplayAndPoliticians)
-
-
-
-
-
