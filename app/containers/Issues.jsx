@@ -5,7 +5,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import { MdHighlightRemove } from 'react-icons/lib/md';
 
 import Issue from '../components/Issue.jsx';
-import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState, scorePoliticiansChange} from '../ducks/issues'
+import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState, scorePoliticiansChange, getScores} from '../ducks/issues'
 
 const styles = {
   delete: {
@@ -169,6 +169,7 @@ const mapDispatchToProps = (dispatch) => ({
   modifyIssue(issueId, linkId){
     dispatch(modifyIncludedIssue(issueId, linkId))
     dispatch(scorePoliticiansChange())
+    dispatch(getScores())    
   },
   scoreChange(index, value){
     dispatch(scoreChange(index, value))
@@ -179,6 +180,7 @@ const mapDispatchToProps = (dispatch) => ({
   stateChange(state) {
     dispatch(stateChange(state))
     dispatch(scorePoliticiansChange())
+    dispatch(getScores())    
   },
   hideState(){
     dispatch(hideState())

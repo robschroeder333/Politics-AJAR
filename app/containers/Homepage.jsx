@@ -16,7 +16,7 @@ const styles = {
   },
   homepage: {
     backgroundImage: 'url(' + imgUrl + ')',
-  	height: 600,
+  	height: 940,
   	backgroundSize: 'cover',
     overflow: 'hidden',
   },
