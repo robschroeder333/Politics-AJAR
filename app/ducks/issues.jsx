@@ -14,7 +14,7 @@ const STATE_CHANGE = 'STATE_CHANGE';
 const HIDE_STATE = 'HIDE_STATE';
 const GET_ISSUES = 'GET_ISSUES';
 const CREATE_POLITICIAN_SCORE = 'CREATE_POLITICIAN_SCORE';
-const GET_SCORES = 'GET_SCORES';
+// const GET_SCORES = 'GET_SCORES';
 
 
 /* ------------   ACTION CREATORS     ----------------- */
@@ -120,79 +120,110 @@ export const getScores = () => {
 		// let politicians = state.politicians.politicians;
 		let issues = state.issues.issues; //need this for categoryId
 		let politicianScore = state.issues.politicianScores;
-		
-		let politicianId = Object.keys(politicianScore)
-		for (let i = 0; i<politicianId.length; i++){
-			for (let keys in politicianScore[politicianId]){
-				if (politicianScore[politicianId][keys].length === 0){
-					//axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`) 
+
+		let politicianId = Object.keys(politicianScore);
+		let arrayOfPromises = [];
+		let promisesArrayIndexes = [];
+		let politicianObject = politicianScore;
+		console.log('politicianObject', politicianObject)
+
+		for (let i = 0; i < politicianId.length; i++){
+			for (let issueName in politicianScore[politicianId[i]]){
+				if (politicianScore[politicianId[i]][issueName].length === 0){
+					// console.log('politicianScore[politicianId[i]]', politicianScore[politicianId[i]]);
+					// console.log('politicianId[i] is', politicianId[i]);
+					// console.log('issues[issueName].categoryId', issues[issueName].categoryId);
+					arrayOfPromises.push(axios.get(`api/politicians/${politicianId[i]}/${issues[issueName].categoryId}`));
+					// arrayOfPromises.push(axios.get(`api/politicians/I000024/Q09`).catch(() => console.log('hey, this messed up')));
+					promisesArrayIndexes.push(issueName);
+					// politicianScore[politicianId][issueName] = ;
 				}
 			}
 		}
-		
+		// console.log('arrayOfPromises', arrayOfPromises);
+		// console.log('promisesArrayIndexes', promisesArrayIndexes);
+		return Promise.all(arrayOfPromises)
+		.then(promises => {
+			console.log('promises are', promises)
+			// return promises.map((promise, index) => {
+			// 	politicianScore[politicianId[index]][promisesArrayIndexes[index]] = promise.data;
+			// });
+			return promises.map((promise, index) => {
+				console.log('politicianId[index]', politicianId[index]);
+				console.log('[promisesArrayIndexes[index]]', [promisesArrayIndexes[index]]);
+				console.log('promise.data', promise.data);
+				politicianObject[politicianId[index]][promisesArrayIndexes[index]] = promise.data;
+			});
+		})
+		.then(result => {
+			console.log('this is inside the then from the axios', result);
+			dispatch(createPolitician(politicianObject))
+		})
+	};
+};
 
-	}
-}
+// export const getScoreForPoliticians = () => {
+//   return (dispatch, getState) => {
+//     const state = getState()
+//     let politiciansArray = state.politicians.politicians;
+//     let issues = state.issues.issues
+//     let politiciansWithScore;
 
-export const getScoreForPoliticians = () => {
-  return (dispatch, getState) => {
-    const state = getState()
-    let politiciansArray = state.politicians.politicians;
-    let issues = state.issues.issues
-    let politiciansWithScore;
+//     return politiciansWithScore = politiciansArray.map(politician => {
+//     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
+//     	// console.log('this is politician', politician)
+//     	// const indIssue = state.issues.issues
 
-    return politiciansWithScore = politiciansArray.map(politician => {
-    	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
-    	// console.log('this is politician', politician)
-    	// const indIssue = state.issues.issues
-    	
-    	const polId = politician.ppid
-    	let totalScore = 0;
-    	let totalWeight = 0;
-    	for (let issue in issues) {
-    		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
-    		if (indIssue[issue].included === true) {
-    			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
-    			let rightScore;
-				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
-	    		.then(response => {
-	    			let arrayOfScore = response.data 
-	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
-	    			if (arrayOfScore[0] === null) {
-	    				rightScore = 50; // why does the array return null? 
-	    			}
-	    			else {
-						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
-		    			if (indIssue[issue].score === 25) rightScore = arrayOfScore[1];
-		    			if (indIssue[issue].score === 50) rightScore = arrayOfScore[2];
-		    			if (indIssue[issue].score === 75) rightScore = arrayOfScore[3];
-		    			if (indIssue[issue].score === 100) rightScore = arrayOfScore[4];
-		    			totalWeight += indIssue[issue].weight; // weight does not increase even if it is important to user
-		    			// console.log(totalWeight, 'this is totalWeight')
-	    			}
-	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
-	    			totalScore += rightScore * indIssue[issue].weight;
-	    			// console.log('this is totalScore', totalScore)
-	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
-            // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
-            // console.log('this is the final politician', politiciansArray)
+//     	const polId = politician.ppid
+//     	let totalScore = 0;
+//     	let totalWeight = 0;
+//     	for (let issue in issues) {
+//     		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
+//     		if (indIssue[issue].included === true) {
+//     			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
+//     			let rightScore;
+// 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
+// 	    		.then(response => {
 
-					return politician.totalAgreementScore = totalScore/totalWeight;
-					// console.log('this is the array', arrayOfScores)
-	    		})
-	    		.then(() => dispatch(getPoliticians(politiciansArray)))
-    		}
-    	}
-    })
+// 	    			let arrayOfScore = response.data 
+// 	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
+// 	    			if (arrayOfScore[0] === null) {
+// 	    				rightScore = 50; // why does the array return null? 
+// 	    			}
+// 	    			else {
+// 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
+// 		    			if (indIssue[issue].score === 25) rightScore = arrayOfScore[1];
+// 		    			if (indIssue[issue].score === 50) rightScore = arrayOfScore[2];
+// 		    			if (indIssue[issue].score === 75) rightScore = arrayOfScore[3];
+// 		    			if (indIssue[issue].score === 100) rightScore = arrayOfScore[4];
+// 		    			totalWeight += indIssue[issue].weight; // weight does not increase even if it is important to user
+// 		    			// console.log(totalWeight, 'this is totalWeight')
+// 	    			}
+// 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
+// 	    			totalScore += rightScore * indIssue[issue].weight;
+// 	    			// console.log('this is totalScore', totalScore)
 
-    // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
-    // do we keep the weight? because if it is important for our user, then it should also be important for the politician?
-    // also, imagine that the user uses different issues to see agreement
-    // if the politician score is not added, then one politician who agrees on all issues but one might be ranked higher than another politician
-    // simply becasue he has no opinion on the issue. which does not necessarily make him in more agreement.
+// 	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
+//             // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
+//             // console.log('this is the final politician', politiciansArray)
 
-  }
-}
+// 					return politician.totalAgreementScore = totalScore/totalWeight;
+// 					// console.log('this is the array', arrayOfScores)
+// 	    		})
+// 	    		.then(() => dispatch(getPoliticians(politiciansArray)))
+//     		}
+//     	}
+//     })
+
+
+//     // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
+//     // do we keep the weight? because if it is important for our user, then it should also be important for the politician?
+//     // also, imagine that the user uses different issues to see agreement
+//     // if the politician score is not added, then one politician who agrees on all issues but one might be ranked higher than another politician
+//     // simply becasue he has no opinion on the issue. which does not necessarily make him in more agreement.
+
+//   }
+// }
 
 
 export const getAllIssues = () => {
@@ -344,7 +375,7 @@ const reducer = (state = initialState, action) => {
 		for (let issue in newState.issues) {
 			if (newState.issues[issue].id === action.issueId) {
 				if ( newState.issues[issue].included === false) {
-					newState.issues[issue].included === true
+					newState.issues[issue].included = true;
 				}
 				if (action.score === 25 || action.score === 75) {
 					newState.issues[issue].score = action.score;
@@ -361,7 +392,7 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].weight = 4;
 					break;
 				}
-		 	} 
+		 	}
 		}
 		return newState;
 
@@ -382,7 +413,7 @@ const reducer = (state = initialState, action) => {
 		newState.politicianScores = Object.assign({}, newState.politicianScores, action.politicianObject);
 		return newState;
 
-		default: 
+		default:
 		return state
 	}
 }

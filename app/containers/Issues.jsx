@@ -119,7 +119,6 @@ class Issues extends Component {
 
     return (
       <div style={styles.block}>
-      
         <FloatingActionButton
           mini={true}
           secondary={true}
@@ -127,12 +126,9 @@ class Issues extends Component {
         >
           <ContentAdd />
         </FloatingActionButton>
-
         <div>
           { this.renderIssues() }
         </div>
-
-
       </div>
     )
   }
@@ -173,7 +169,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   hideState(){
     dispatch(hideState())
-  }, 
+  },
   changeScore(itemValue, value) {
     dispatch(modifyScoreAndWeight(itemValue, value))
   }
