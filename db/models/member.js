@@ -85,8 +85,9 @@ const Member = db.define('members', {
       .then(issueBills => {
           const issueBillArr = [];
           issueBills.forEach(issueBill => {
-            issueBillArr.push(issueBill.billId);
-            forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;
+            if (issueBill !== null) {
+              issueBillArr.push(issueBill.billId);
+              forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;}
           });
           return issueBillArr;
         })
@@ -173,6 +174,9 @@ const Member = db.define('members', {
           }
         }
         memberScore = (score / voteCount) * 100;
+        if (memberScore === undefined){
+          memberScore = 50;
+        }
         return memberScore;
         // return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
 
@@ -180,8 +184,18 @@ const Member = db.define('members', {
       .catch(error => console.error(error));
     },
     getCatScore(catId, startYear, endYear) {
-      const memberScore = this.getMemberCatScore(catId, startYear, endYear);
-      return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
+      return this.getMemberCatScore(catId, startYear, endYear)
+      .then(memberScore => {
+        console.log('no, this is the memberScore: ', memberScore);
+        if (memberScore === undefined){
+          memberScore = 50;
+        }
+        return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
+      })
+      .catch(err => console('hi'));
+      // console.log('this is the memberScore: ', memberScore);
+
+      
     }
   },
   getterMethods: {
