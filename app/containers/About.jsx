@@ -32,13 +32,13 @@ class About extends Component {
 			<div>
 			<AppBar
 				title=""
-				style={{backgroundColor: '#596cff'}}
+				style={{backgroundColor: '#000b63'}}
 				onLeftIconButtonTouchTap={this.goToHome}
 		 	/>
 
 			<div >
-			<h2 style={{textAlign: 'center', color: '#596cff', fontFamily: 'Roboto', fontSize: 40, marginTop: 90}}> Knowledge is power </h2>
-			<h4 style={{textAlign: 'justify', fontFamily: 'Roboto', fontSize: 20, marginTop: 55, marginRight: 50, marginLeft: 50}}> 
+			<h2 style={{textAlign: 'center', color: '#000b63', fontFamily: 'Lato', fontSize: 40, marginTop: 90}}> Knowledge is power </h2>
+			<h4 style={{textAlign: 'justify', fontFamily: 'Lato', fontSize: 20, marginTop: 55, marginRight: 50, marginLeft: 50}}> 
 			Politics AJAR was born out of our common realization that there is no 
 			centralized space of information to look at the members of the Senate
 			and the house of Representatives and their different stance on the multitude of political issues in the United States.
@@ -54,7 +54,7 @@ class About extends Component {
 			In creating Politics AJAR, we are hoping to inspire others to help us inform the American public and create a better world. 
 			</h4>
 
-			<h2 style={{textAlign: 'center', color: '#596cff', fontFamily: 'Roboto', fontSize: 40, marginTop: 90}}> Team </h2>
+			<h2 style={{textAlign: 'center', color: '#000b63', fontFamily: 'Lato', fontSize: 40, marginTop: 90}}> Team </h2>
 			<div style={{width: '100%'}}>
 			<a href="https://github.com/avarona">
 		    <Paper 

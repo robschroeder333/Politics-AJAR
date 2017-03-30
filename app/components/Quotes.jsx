@@ -4,7 +4,7 @@ const styles = {
 	quote: {
 		textAlign: 'center',
 		color: 'black', 
-		fontFamily: 'Roboto' // font is not working so I think it is rendering Times New Roman
+		fontFamily: 'Lato' // font is not working so I think it is rendering Times New Roman
 	}
 }
 

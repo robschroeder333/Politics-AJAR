@@ -24,8 +24,13 @@ const styles = {
   	color: 'white',
   	fontSize: 75,
   	marginTop: 50,
-  	fontFamily: 'Roboto',
-  	fontWeight: 'bold'
+  	fontFamily: 'Lato',
+  },
+  title2: {
+    color: 'white',
+    marginTop: 20,
+    fontFamily: 'Cormorant',
+    fontWeight: 'bold'
   },
   buttonSlider: {
   	marginTop: 150
@@ -120,10 +125,11 @@ class Homepage extends Component {
       title = ""
       style={{backgroundColor: 'white'}}
       iconStyleLeft={{backgroundColor: 'white'}}
-      iconElementRight={<Link to="/about"><FlatButton label="About" style={{color:'#7f8eff', fontSize: 30, fontWeight: 'bold'}} /></Link>}
+      iconElementRight={<Link to="/about"><FlatButton label="About" style={{color:'#000b63', fontSize: 30, fontWeight: 'bold'}} /></Link>}
       />
 
       	<h1 style={styles.title}> POLITICS AJAR </h1> 
+        <h2 style={styles.title2} > A gateway into US Politics </h2> 
         <div style={styles.buttonSlider} >
           { this.renderIssues() }
         </div>
