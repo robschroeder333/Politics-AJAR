@@ -120,6 +120,7 @@ export const getScores = () => {
 		// let politicians = state.politicians.politicians;
 		let issues = state.issues.issues; //need this for categoryId
 		let politicianScore = state.issues.politicianScores;
+
 		let politicianId = Object.keys(politicianScore);
 		let arrayOfPromises = [];
 		let promisesArrayIndexes = [];
@@ -172,7 +173,7 @@ export const getScores = () => {
 //     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
 //     	// console.log('this is politician', politician)
 //     	// const indIssue = state.issues.issues
-    	
+
 //     	const polId = politician.ppid
 //     	let totalScore = 0;
 //     	let totalWeight = 0;
@@ -183,6 +184,7 @@ export const getScores = () => {
 //     			let rightScore;
 // 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
 // 	    		.then(response => {
+
 // 	    			let arrayOfScore = response.data 
 // 	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
 // 	    			if (arrayOfScore[0] === null) {
@@ -200,6 +202,7 @@ export const getScores = () => {
 // 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
 // 	    			totalScore += rightScore * indIssue[issue].weight;
 // 	    			// console.log('this is totalScore', totalScore)
+
 // 	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
 //             // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
 //             // console.log('this is the final politician', politiciansArray)
@@ -211,6 +214,7 @@ export const getScores = () => {
 //     		}
 //     	}
 //     })
+
 
 //     // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
 //     // do we keep the weight? because if it is important for our user, then it should also be important for the politician?
@@ -388,7 +392,7 @@ const reducer = (state = initialState, action) => {
 					newState.issues[issue].weight = 4;
 					break;
 				}
-		 	} 
+		 	}
 		}
 		return newState;
 
@@ -409,7 +413,7 @@ const reducer = (state = initialState, action) => {
 		newState.politicianScores = Object.assign({}, newState.politicianScores, action.politicianObject);
 		return newState;
 
-		default: 
+		default:
 		return state
 	}
 }

@@ -120,18 +120,17 @@ class Issues extends Component {
 
     return (
       <div style={styles.block}>
-
-        <div>
-          { this.renderIssues() }
-        </div>
-
         <FloatingActionButton
           mini={true}
           secondary={true}
           onClick={this.handleAddIssue}
-        >
-          <ContentAdd />
-        </FloatingActionButton>
+          >
+            <ContentAdd />
+          </FloatingActionButton>
+        <div>
+          { this.renderIssues() }
+        </div>
+
       </div>
     )
   }
@@ -172,7 +171,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   hideState(){
     dispatch(hideState())
-  }, 
+  },
   changeScore(itemValue, value) {
     dispatch(modifyScoreAndWeight(itemValue, value))
   }
