@@ -13,7 +13,7 @@ const styles = {
     overflowY: 'auto',
   },
   gridTile: {
-    margin: '2%',
+    margin: '1%',
   }
 }
 
@@ -30,13 +30,13 @@ class Politicians extends Component {
         <GridList
           style={styles.gridList}
           cellHeight={'auto'}
-          cols={2}
+          cols={3}
         >
           {
             politicians.map(politician => {
               return (
                 <GridTile
-                  style={styles.GridTile}
+                  style={styles.gridTile}
                   key={politician.id}
                 >
                   <Politician

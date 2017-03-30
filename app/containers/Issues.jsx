@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { DropDownMenu, MenuItem, FloatingActionButton } from 'material-ui';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { FaMinusCircle } from 'react-icons/lib/fa';
+import { MdHighlightRemove } from 'react-icons/lib/md';
 
 import Issue from '../components/Issue.jsx';
 import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState, scorePoliticiansChange} from '../ducks/issues'
@@ -10,14 +10,25 @@ import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreC
 const styles = {
   delete: {
     marginTop: 20,
-    color: 'red',
+    color: 'white',
     display: 'inline-block',
   },
   dropdown: {
     display: 'inline-block',
     float: 'left',
-    width: '80%'
+    width: '70%',
+    color: 'white',
+    marginLeft: '5%'
   },
+  block: {
+    marginTop: '10%'
+  },
+  statement: {
+    color: 'white',
+    marginTop: 10,
+    fontFamily: 'Cormorant:300i'
+
+  }
 }
 
 class Issues extends Component {
@@ -69,7 +80,7 @@ class Issues extends Component {
            autoWidth={true}
            onChange={(event, index, value) => this.handleIssueChange(i, value)}
            maxHeight={300}
-           labelStyle={{color: 'black', fontWeight: 'bold'}}
+           labelStyle={{color: 'white', fontWeight: 'bold'}}
            style={styles.dropdown}
          >
            <MenuItem
@@ -98,7 +109,7 @@ class Issues extends Component {
 
          </DropDownMenu>
 
-         <FaMinusCircle
+         <MdHighlightRemove
             style={styles.delete}
             value={issueValues[i].value}
             onClick={() => {this.handleDeleteIssue(i, issueValues[i].value)}}
@@ -123,10 +134,13 @@ class Issues extends Component {
           mini={true}
           secondary={true}
           onClick={this.handleAddIssue}
+          iconStyle={{backgroundColor: "#00b703" }}
         >
           <ContentAdd />
         </FloatingActionButton>
-        <div>
+
+
+        <div style={styles.block}>
           { this.renderIssues() }
         </div>
       </div>

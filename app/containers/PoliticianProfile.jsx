@@ -11,7 +11,7 @@ import Issues from './Issues.jsx';
 const buttonStyle = {
 	textAlign: 'center',
 	display: 'block',
-	paddingTop: 200
+	// paddingTop: 200
 }
 
 const navbarStyle = {
@@ -33,7 +33,7 @@ const navbarStyle = {
 	   WebkitTransition: '-webkit-transform .3s ease-out',
 	   willChange: 'transform',
 	   overflowY: 'auto',
-		//  backgroundColor: '#a52a2a',
+		 backgroundColor: '#820101',
 	 },
 	 content: {
 	   position: 'absolute',
@@ -113,7 +113,7 @@ class PoliticianProfile extends Component {
 
 		let sidebarContent = (
 			<div>
-				<div style={buttonStyle}>
+				{/* <div style={buttonStyle}>
 					<FlatButton
 						label="Senate"
 						onClick={() => this.onClick('senate')}
@@ -127,8 +127,8 @@ class PoliticianProfile extends Component {
 						labelStyle={this.state.houseText}
 					/>
 				<hr />
-				</div>
-				<div style={{display: 'block', textAlign: 'center'}}>
+				</div> */}
+				<div style={{display: 'block', textAlign: 'center', marginTop: '5%'}}>
 					<Issues />
 				</div>
 			</div>

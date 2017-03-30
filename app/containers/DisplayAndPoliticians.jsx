@@ -8,11 +8,14 @@ import Issues from './Issues';
 import { stateChange, scorePoliticiansChange, getScores } from '../ducks/issues';
 import { selectPoliticianByState } from '../ducks/reducers';
 
+const firstBlock = {
+
+}
 
 const buttonStyle = {
 	textAlign: 'center',
 	display: 'block',
-	paddingTop: 200
+	// paddingTop: 100
 }
 
 const navbarStyle = {
@@ -34,7 +37,7 @@ const navbarStyle = {
 	   WebkitTransition: '-webkit-transform .3s ease-out',
 	   willChange: 'transform',
 	   overflowY: 'auto',
-		//  backgroundColor: '#a52a2a',
+		 backgroundColor: '#820101',
 	 },
 	 content: {
 	   position: 'absolute',
@@ -116,37 +119,35 @@ class DisplayAndPoliticians extends Component {
 
 
 	render(){
-		let {politicians} = this.props
-		let {selectedState, states} = this.props.issues
-		let {senateSelected, houseSelected} = this.state
+		let {politicians} = this.props;
+		let {selectedState, states} = this.props.issues;
+		let {senateSelected, houseSelected} = this.state;
+
 		let sidebarContent = (
-			<div>
-
+			<div style={firstBlock}>
 				<div style={{textAlign: 'center'}}>
-			        <DropDownMenu value={selectedState} autoWidth={true} maxHeight={250} labelStyle={{color: 'black', fontWeight: 'bold', fontSize: '25px'}} onChange={(event, index, value) => this.handleStateChange(value)}  >
-			        <MenuItem value={'AA'} primaryText='Select your state' />
-			        {Object.keys(states).sort().map( (state) => <MenuItem value={state} primaryText={states[state]} key={state}  /> )}
-			        </DropDownMenu>
-		        </div>
-
-			<div style={buttonStyle}>
-				<FlatButton
-					label="Senate"
-					onClick={() => this.onClick('senate')}
-					backgroundColor={this.state.senateClickedColor}
-					labelStyle={this.state.senateText}
-				/>
-				<FlatButton
-					label="House"
-					onClick={() => this.onClick('house')}
-					backgroundColor={this.state.houseClickedColor}
-					labelStyle={this.state.houseText}
-				/>
-			<hr />
-				<Issues />
-			<hr />
-
-			</div>
+	        <DropDownMenu value={selectedState} autoWidth={true} maxHeight={250} labelStyle={{color: 'white', fontWeight: 'bold', fontSize: '25px'}} onChange={(event, index, value) => this.handleStateChange(value)}  >
+		        <MenuItem value={'AA'} primaryText='Select your state' />
+		        {Object.keys(states).sort().map( (state) => <MenuItem value={state} primaryText={states[state]} key={state}  /> )}
+	        </DropDownMenu>
+        </div>
+				<div style={buttonStyle}>
+					<FlatButton
+						label="Senate"
+						onClick={() => this.onClick('senate')}
+						backgroundColor={this.state.senateClickedColor}
+						labelStyle={this.state.senateText}
+					/>
+					<FlatButton
+						label="House"
+						onClick={() => this.onClick('house')}
+						backgroundColor={this.state.houseClickedColor}
+						labelStyle={this.state.houseText}
+					/>
+				<hr />
+					<Issues />
+				<hr />
+				</div>
 			</div>
 		)
 
@@ -173,7 +174,7 @@ class DisplayAndPoliticians extends Component {
 					styles={navbarStyle}
 				>
 					<AppBar
-						title="Render"
+						title="Politics AJAR"
 						onLeftIconButtonTouchTap={this.handleToggle}
 						iconElementRight={
 							<Link to="/about">
@@ -206,10 +207,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
 	  stateChange(state) {
-   		 dispatch(stateChange(state))
-   		 dispatch(scorePoliticiansChange())
-   		 dispatch(getScores())
-  	  }
+			dispatch(stateChange(state))
+			dispatch(scorePoliticiansChange())
+			dispatch(getScores())
+		}
 })
 
 

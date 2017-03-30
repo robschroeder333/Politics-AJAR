@@ -5,15 +5,17 @@ import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 
 const sliderStyle = {
   width: '70%',
-  margin: 'auto'
+  margin: 'auto',
+  paddingTop: '5%'
 }
 
 const muiTheme = getMuiTheme({
   slider: {
     // trackColor: 'white',
     // selectionColor: '#ffffff',
-    handleColorZero: '#00bcd4',
-    handleFillColor: '#00bcd4',
+    handleColorZero: '#00008b',
+    handleFillColor: '#00008b',
+    selectionColor: '#00008b',
   },
 });
 
