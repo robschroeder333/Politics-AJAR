@@ -18,6 +18,5 @@ keys.js
 
 # seed local
 backup.txt
-backup.json
 jsoncatcodes.txt
 seed copy.js
