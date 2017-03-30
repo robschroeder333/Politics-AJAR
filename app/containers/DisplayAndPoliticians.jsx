@@ -159,7 +159,7 @@ class DisplayAndPoliticians extends Component {
 			politicians = politicians.filter(politician => politician.chamber.match('house'))
 		}
 		else if (senateSelected && houseSelected){
-			politicians = politicians;
+			// politicians = politicians;
 		}
 		else {
 			politicians = []

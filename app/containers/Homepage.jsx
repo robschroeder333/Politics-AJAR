@@ -60,7 +60,7 @@ class Homepage extends Component {
 
   handleMenuChange(index, value) {
     this.props.issueChange(index, value)
-    this.props.includeOrNot(value)
+    this.props.includeOrNot(value, index)
   }
 
 
@@ -175,8 +175,8 @@ const mapStateToProps = ({issues, issueValues, issueNumber, states, selectedStat
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  includeOrNot(issueId){  
-    dispatch(modifyIncludedIssue(issueId)) 
+  includeOrNot(issueId, linkId){  
+    dispatch(modifyIncludedIssue(issueId, linkId)) 
   },
   changeScore(issueId, score){ 
     dispatch(modifyScoreAndWeight(issueId, score))
