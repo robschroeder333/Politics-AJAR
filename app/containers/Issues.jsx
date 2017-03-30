@@ -138,7 +138,10 @@ class Issues extends Component {
         >
           <ContentAdd />
         </FloatingActionButton>
-        
+        <div style={{color: 'white', fontSize: '12', margin: '0 35px', fontWeight: 'strong'}}>
+          <span style={{float: 'left'}}>Against</span>
+          <span style={{float: 'right'}}>For</span>
+        </div>
         <div style={styles.block}>
           { this.renderIssues() }
         </div>
