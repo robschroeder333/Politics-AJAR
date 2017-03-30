@@ -34,7 +34,11 @@ const styles = {
   },
   issue: {
     display: 'inline-block',
-  }
+  },
+  fontStyle : {
+  fontFamily: 'Cormorant'
+}
+
 }
 
 class Profile extends Component {
@@ -107,7 +111,7 @@ class Profile extends Component {
             style={styles.image}
           />
           <div style={styles.memberInfo}>
-            <h1>{politician.fullName}</h1>
+            <h1 style={styles.fontStyle}>{politician.fullName}</h1>
             <h2>{politician.chamberName} | {politician.partyName}</h2>
             <h2>{this.props.issues.states[politician.state]}</h2>
             <h2>{politician.totalAgreementScore}</h2>

@@ -126,6 +126,7 @@ class Issues extends Component {
         >
           <ContentAdd />
         </FloatingActionButton>
+
         <div>
           { this.renderIssues() }
         </div>

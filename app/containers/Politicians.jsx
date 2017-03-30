@@ -24,7 +24,7 @@ class Politicians extends Component {
 
   render() {
     const {politicians} = this.props
-    console.log(politicians, 'politicians array')
+    // console.log(politicians, 'politicians array')
     return (
       <div>
         <GridList
