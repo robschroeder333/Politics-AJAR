@@ -15,7 +15,7 @@ const fontStyle = {
 }
 
 const addDefaultSrc = (evt) => {
-  evt.target.src = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Seal_of_the_United_States_Congress.svg';
+  evt.target.src = 'http://cdn.blackenterprise.com/wp-content/blogs.dir/1/files/2010/05/Congressional-seal.png';
 }
 
 const Politician = (props) => {

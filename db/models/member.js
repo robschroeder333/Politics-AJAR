@@ -85,9 +85,10 @@ const Member = db.define('members', {
       .then(issueBills => {
           const issueBillArr = [];
           issueBills.forEach(issueBill => {
-          if (issueBill !== null) {
+            if (issueBill !== null) {
             issueBillArr.push(issueBill.billId);
             forOrAgaisntArr[issueBill.billId] = issueBill.forOrAgainst;}
+
           });
           return issueBillArr;
         })
@@ -192,6 +193,7 @@ const Member = db.define('members', {
         } else {
           memberScore = 0;
         }
+
         return memberScore;
         // return [Math.floor(memberScore - 0), Math.floor(Math.abs(memberScore - 25)), Math.floor(Math.abs(memberScore - 50)), Math.floor(Math.abs(memberScore - 75)), Math.floor(100 - memberScore)];
 
@@ -213,6 +215,7 @@ const Member = db.define('members', {
        })
        .catch(err => console('hi'));
        // console.log('this is the memberScore: ', memberScore);
+
     }
   },
   getterMethods: {

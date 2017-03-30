@@ -185,7 +185,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(modifyIncludedIssue(issueId, linkId)) 
     dispatch(scorePoliticiansChange())
     dispatch(getScores())
-
   },
   changeScore(issueId, score){ 
     dispatch(modifyScoreAndWeight(issueId, score))

@@ -16,8 +16,6 @@ const styles = {
   },
   image: {
     float: 'left',
-    width: '125px',
-    height: '125px',
   },
   address: {
     display: 'inline-block',
@@ -51,7 +49,7 @@ class Profile extends Component {
   }
 
   addDefaultSrc(evt){
-    evt.target.src = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Seal_of_the_United_States_Congress.svg'
+    evt.target.src = 'http://cdn.blackenterprise.com/wp-content/blogs.dir/1/files/2010/05/Congressional-seal.png'
   }
 
   handleIssues() {
@@ -66,8 +64,13 @@ class Profile extends Component {
     let scoreValue = [];
     issueArray.forEach(issue => {
       xAxis.push(issue[0])
-      // if (issue[1].score === 0)
-      scoreValue.push(issue[1].score)
+      const politicianScores = this.props.issues.politicianScores[this.props.singlePolitician.ppid][issue[0]]
+      if (!politicianScores.length) scoreValue.push(Math.random() * 100)
+      if (issue[1].score === 0) scoreValue.push(politicianScores[0])
+      if (issue[1].score === 25) scoreValue.push(politicianScores[1])
+      if (issue[1].score === 50) scoreValue.push(politicianScores[2])
+      if (issue[1].score === 75) scoreValue.push(politicianScores[3])
+      if (issue[1].score === 100) scoreValue.push(politicianScores[4])
     })
     return [xAxis, scoreValue];
   }
@@ -145,7 +148,7 @@ class Profile extends Component {
           </div>
         </div>
         <div style={styles.issues}>
-          <ZingChart id="chart" height="500" width="800" data={chartConfig} />
+          <ZingChart id="chart" height="400" width="600" data={chartConfig} />
         </div>
       </div>
     )
