@@ -171,6 +171,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
   hideState(){
     dispatch(hideState())
+  }, 
+  changeScore(itemValue, value) {
+    dispatch(modifyScoreAndWeight(itemValue, value))
   }
 })
 

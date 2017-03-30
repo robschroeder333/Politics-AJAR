@@ -308,6 +308,9 @@ const reducer = (state = initialState, action) => {
 		case CHANGE_SCORE_WEIGHT:
 		for (let issue in newState.issues) {
 			if (newState.issues[issue].id === action.issueId) {
+				if ( newState.issues[issue].included === false) {
+					newState.issues[issue].included === true
+				}
 				if (action.score === 25 || action.score === 75) {
 					newState.issues[issue].score = action.score;
 					newState.issues[issue].weight = 2;
