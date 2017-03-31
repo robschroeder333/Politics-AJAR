@@ -55,13 +55,11 @@ class Profile extends Component {
   handleIssues() {
     let issueArray = [];
     const issues = this.props.issues.issues;
-    console.log(issues)
     for (let prop in issues) {
       if (issues[prop].included && issues[prop].link) {
         issueArray[issues[prop].link - 1] = [prop, issues[prop]]
       }
     }
-    // console.log('issuesArray ', issueArray)
     let xAxis = [];
     let scoreValue = [];
     issueArray.forEach(issue => {

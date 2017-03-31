@@ -36,9 +36,13 @@ const Politician = (props) => {
       </div>
         <div style={{display: 'inline-block', paddingLeft: '2%'}}>
           <h3 style={fontStyle}>{politician.fullName}</h3>
-          <h6>{politician.chamberName} | {politician.partyName}</h6>
-          <h6>{politician.state}</h6>
-          <h6>{politician.totalAgreementScore}</h6>
+            <h6>{politician.chamberName} | {politician.partyName}</h6>
+            <div style={{display: 'inline-block'}}>
+            <h6>{politician.state}</h6>
+          </div>
+        </div>
+        <div style={{style: 'inline-block', float: 'right', fontWeight: 'strong', border: 'black solid 2px', padding: '2%', marginTop: '50px'}}>
+          <h6>{politician.totalAgreementScore + '%'}</h6>
         </div>
       </Paper>
     </Link>

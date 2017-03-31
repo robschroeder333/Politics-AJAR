@@ -122,7 +122,6 @@ class DisplayAndPoliticians extends Component {
 		let {politicians} = this.props;
 		let {selectedState, states} = this.props.issues;
 		let {senateSelected, houseSelected} = this.state;
-
 		let sidebarContent = (
 			<div style={firstBlock}>
 				<div style={{textAlign: 'center'}}>
