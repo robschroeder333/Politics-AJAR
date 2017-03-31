@@ -127,7 +127,7 @@ class DisplayAndPoliticians extends Component {
 			<div style={firstBlock}>
 				<div style={{textAlign: 'center'}}>
 	        <DropDownMenu value={selectedState} autoWidth={true} maxHeight={250} labelStyle={{color: 'white', fontWeight: 'bold', fontSize: '25px'}} onChange={(event, index, value) => this.handleStateChange(value)}  >
-		        <MenuItem value={'AA'} primaryText='Select your state' />
+		        <MenuItem value={'AA'} primaryText='Select State' />
 		        {Object.keys(states).sort().map( (state) => <MenuItem value={state} primaryText={states[state]} key={state}  /> )}
 	        </DropDownMenu>
         </div>

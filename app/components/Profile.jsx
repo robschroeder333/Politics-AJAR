@@ -27,15 +27,15 @@ const styles = {
     paddingLeft: '10px',
     hover: 'none',
   },
-  issues: {
+  chart: {
     display: 'inline-block',
     marginTop: '8%',
-    marginLeft: '20%',
+    // marginLeft: '20%',
   },
   issue: {
     display: 'inline-block',
   },
-  fontStyle : {
+  fontStyle: {
   fontFamily: 'Cormorant'
 }
 
@@ -55,11 +55,13 @@ class Profile extends Component {
   handleIssues() {
     let issueArray = [];
     const issues = this.props.issues.issues;
+    console.log(issues)
     for (let prop in issues) {
       if (issues[prop].included && issues[prop].link) {
         issueArray[issues[prop].link - 1] = [prop, issues[prop]]
       }
     }
+    // console.log('issuesArray ', issueArray)
     let xAxis = [];
     let scoreValue = [];
     issueArray.forEach(issue => {
@@ -67,12 +69,14 @@ class Profile extends Component {
       xAxis.push(issueName)
       const politicianScores = this.props.issues.politicianScores[this.props.singlePolitician.ppid][issue[0]]
       // if (!politicianScores.length) scoreValue.push(Math.random() * 100)
+      // console.log('scores here?', this.props.issues.politicianScores[this.props.singlePolitician.ppid])
       if (issue[1].score === 0) scoreValue.push(politicianScores[0])
       if (issue[1].score === 25) scoreValue.push(politicianScores[1])
       if (issue[1].score === 50) scoreValue.push(politicianScores[2])
       if (issue[1].score === 75) scoreValue.push(politicianScores[3])
       if (issue[1].score === 100) scoreValue.push(politicianScores[4])
     })
+    // console.log([xAxis, scoreValue])
     return [xAxis, scoreValue];
   }
 
@@ -89,13 +93,26 @@ class Profile extends Component {
         values: this.handleIssues()[0].reverse(),  // reverse order so issue adds to bottom
       },
       scaleY: {
-        labels: ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'],
+        label: {
+          text: 'Politician Agreement Score (%)',
+          backgroundColor: '#ffe6e6',
+          borderColor: 'red',
+          borderRadius: 3,
+          borderWidth: 1,
+          fontColor: 'red',
+          fontFamily: 'Georgia',
+          fontSize: 16,
+          fontStyle: 'normal',
+          fontWeight: 'normal',
+          padding: '5px 20px'
+        },
+        labels: ['0%', '25%', '50%', '75%', '100%'],
         step: 25,
         'min-value': 0,
         'max-value': 100
       },
       series: [
-        { // score values
+        {
           values: this.handleIssues()[1].reverse()  // reverse order so score matches the reversed issue
         }
       ]
@@ -148,8 +165,8 @@ class Profile extends Component {
             }
           </div>
         </div>
-        <div style={styles.issues}>
-          <ZingChart id="chart" height="400" width="600" data={chartConfig} />
+        <div style={styles.chart}>
+          <ZingChart id="chart" height="400" width="800" data={chartConfig} />
         </div>
       </div>
     )

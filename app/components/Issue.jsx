@@ -1,6 +1,5 @@
 import React from 'react';
 import { Slider } from 'material-ui';
-// import { Slider } from 'react-toolbox';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 
 const sliderStyle = {
@@ -10,8 +9,6 @@ const sliderStyle = {
 
 const muiTheme = getMuiTheme({
   slider: {
-    // trackColor: 'white',
-    // selectionColor: '#ffffff',
     handleColorZero: '#00008b',
     handleFillColor: '#00008b',
     selectionColor: '#00008b',
@@ -21,7 +18,7 @@ const muiTheme = getMuiTheme({
 const Issue = (props) => {
   return (
     <div>
-      <form>
+      <div>
         <MuiThemeProvider muiTheme={muiTheme}>
           <Slider
             step={25}
@@ -32,7 +29,7 @@ const Issue = (props) => {
             max={100}
           />
         </MuiThemeProvider>
-      </form>
+      </div>
     </div>
   )
 }
