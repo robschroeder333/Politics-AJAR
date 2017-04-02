@@ -4,6 +4,7 @@ import {getScoreForPoliticians, addScoreToPoliticians} from './issues'
 
 /* -----------------    ACTIONS     ------------------ */
 const GET_POLITICIANS = 'GET_POLITICIANS'
+// const ADD_TOTAL_SCORE = 'ADD_TOTAL_SCORE'
 
 /* ------------   ACTION CREATORS     ----------------- */
 export const getPoliticians = (politicians) => ({

@@ -20,6 +20,7 @@ const addDefaultSrc = (evt) => {
 
 const Politician = (props) => {
   const politician = props.politician;
+  // console.log(politician);
   return (
     <Link to={`/politicians/${politician.ppid}`}>
       <Paper
