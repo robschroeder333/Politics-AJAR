@@ -188,15 +188,19 @@ const mapDispatchToProps = (dispatch) => ({
   },
   changeScore(issueId, score){ 
     dispatch(modifyScoreAndWeight(issueId, score))
+    dispatch(getScores())
   },
   addIssue(){
   	dispatch(addIssue())
+    dispatch(getScores())
   },
   issueChange(index, value){
   	dispatch(issueChange(index, value))
+    dispatch(getScores())
   },
   scoreChange(index, newValue){
   	dispatch(scoreChange(index, newValue))
+    dispatch(getScores())
   },
   stateChange(state) {
     dispatch(stateChange(state))
