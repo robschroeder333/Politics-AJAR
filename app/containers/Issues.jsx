@@ -165,9 +165,11 @@ const mapStateToProps = ({issues, issueValues, issueNumber, states, selectedStat
 const mapDispatchToProps = (dispatch) => ({
   addIssue(){
     dispatch(addIssue())
+    dispatch(getScores())  
   },
   issueChange(index, value){
     dispatch(issueChange(index, value))
+    dispatch(getScores())  
   },
   modifyIssue(issueId, linkId){
     dispatch(modifyIncludedIssue(issueId, linkId))
@@ -176,9 +178,11 @@ const mapDispatchToProps = (dispatch) => ({
   },
   scoreChange(index, value){
     dispatch(scoreChange(index, value))
+    dispatch(getScores())  
   },
   removeIssue(issueId, linkId) {
     dispatch(deleteIssue(issueId, linkId))
+    dispatch(getScores())  
   },
   stateChange(state) {
     dispatch(stateChange(state))
@@ -187,9 +191,11 @@ const mapDispatchToProps = (dispatch) => ({
   },
   hideState(){
     dispatch(hideState())
+    dispatch(getScores())  
   },
   changeScore(itemValue, value) {
     dispatch(modifyScoreAndWeight(itemValue, value))
+    dispatch(getScores())  
   }
 })
 

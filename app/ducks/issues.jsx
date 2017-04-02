@@ -187,6 +187,7 @@ export const getScores = () => {
 					for (let issueNames in issues){
 						if (issueValues[sliderValues].value === issues[issueNames].id){
 							console.log('politicianObject[politicianId[i]][issueNames] is', politicianObject[politicianId[i]][issueNames]);
+							console.log(issues[issueNames].weight, politicianObject[politicianId[i]][issueNames], politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
 							numerator += (issues[issueNames].weight * politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
 							denominator += issues[issueNames].weight;
 						}
