@@ -84,16 +84,15 @@ export const scorePoliticiansChange = () => {
 		let statePoliticians = politicians.filter(politician => politician.state.match(selectedState))
 		// console.log('filtered politicians are', statePoliticians)
 		let includedIssues = Object.keys(issues).filter(issue => issues[issue].included)   //.map(issue => {if (issues[issue].included === true){return issue}})
-		console.log('included issues are', includedIssues)
 		let politicianObject = politicianScore;
 		for (let i = 0; i < statePoliticians.length; i++) {
 			for (let j = 0; j < includedIssues.length; j++) {
 				if (politicianScore[statePoliticians[i].ppid] && politicianScore[statePoliticians[i].ppid][includedIssues[j]]) {
-					console.log('true')
+					// console.log('true')
 					//skip in this case
 				}
 				else {
-					console.log('statePoliticians[i]', statePoliticians[i]);
+					// console.log('statePoliticians[i]', statePoliticians[i]);
 					if (!politicianScore[statePoliticians[i].ppid]){
 						politicianObject[statePoliticians[i].ppid] = {};
 						politicianObject[statePoliticians[i].ppid][includedIssues[j]] = [];
@@ -113,19 +112,41 @@ export const scorePoliticiansChange = () => {
 	}
 }
 
+// export const getTotalScores = () => {
+// 	console.log('and we also get here');
+// 	return (dispatch, getState) => {
+// 		console.log('but I do not think we are here');
+// 		let state = getState();
+// 		// let issues = state.issues.issues; //need this for categoryId
+// 		let politicianScore = state.issues.politicianScores;
+
+// 		let politicianId = Object.keys(politicianScore);
+// 		let politicianObject = politicianScore;
+
+// 		for (let i = 0; i < politicianId.length; i++){
+// 			politicianObject.politicianId[i].totalAgreementScore = 50;
+// 		}
+// 		console.log('politicianObject is', politicianObject);
+// 		dispatch(createPolitician(politicianObject));
+	
+// 	};
+// };
+
 export const getScores = () => {
 	return (dispatch, getState) => {
 
 		let state = getState();
 		// let politicians = state.politicians.politicians;
 		let issues = state.issues.issues; //need this for categoryId
+		let issueValues = state.issues.issueValues;
 		let politicianScore = state.issues.politicianScores;
 
 		let politicianId = Object.keys(politicianScore);
 		let arrayOfPromises = [];
 		let promisesArrayIndexes = [];
 		let politicianObject = politicianScore;
-		console.log('politicianObject', politicianObject)
+
+		// console.log('politicianId.length is first', politicianId.length);
 
 		for (let i = 0; i < politicianId.length; i++){
 			for (let issueName in politicianScore[politicianId[i]]){
@@ -144,86 +165,45 @@ export const getScores = () => {
 		// console.log('promisesArrayIndexes', promisesArrayIndexes);
 		return Promise.all(arrayOfPromises)
 		.then(promises => {
-			console.log('promises are', promises)
+			// console.log('promises are', promises)
 			// return promises.map((promise, index) => {
 			// 	politicianScore[politicianId[index]][promisesArrayIndexes[index]] = promise.data;
 			// });
 			return promises.map((promise, index) => {
-				console.log('politicianId[index]', politicianId[index]);
-				console.log('[promisesArrayIndexes[index]]', [promisesArrayIndexes[index]]);
-				console.log('promise.data', promise.data);
+				// console.log('politicianId[index]', politicianId[index]);
+				// console.log('[promisesArrayIndexes[index]]', [promisesArrayIndexes[index]]);
+				// console.log('promise.data', promise.data);
 				politicianObject[politicianId[index]][promisesArrayIndexes[index]] = promise.data;
 			});
 		})
-		.then(result => {
-			console.log('this is inside the then from the axios', result);
-			dispatch(createPolitician(politicianObject))
+		.then(() => {
+			// console.log('politicianObject is', politicianObject)
+			// console.log('slider values can be found on', issueValues);
+			console.log('issue ids can be found on', issues);
+			for (let i = 0; i < politicianId.length; i++){
+				let denominator = 0;
+				let numerator = 0;
+				for (let sliderValues in issueValues){
+					for (let issueNames in issues){
+						if (issueValues[sliderValues].value === issues[issueNames].id){
+							console.log('politicianObject[politicianId[i]][issueNames] is', politicianObject[politicianId[i]][issueNames]);
+							numerator += (issues[issueNames].weight * politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
+							denominator += issues[issueNames].weight;
+						}
+					}
+
+				}
+				console.log('numerator is', numerator);
+				console.log('denominator is', denominator);
+				politicianObject[politicianId[i]].totalAgreementScore = numerator / denominator;
+			}
+			// console.log('politicianObject is', politicianObject)
 		})
+		.then(() => {
+			dispatch(createPolitician(politicianObject));
+		});
 	};
 };
-
-// export const getScoreForPoliticians = () => {
-//   return (dispatch, getState) => {
-//     const state = getState()
-//     let politiciansArray = state.politicians.politicians;
-//     let issues = state.issues.issues
-//     let politiciansWithScore;
-
-//     return politiciansWithScore = politiciansArray.map(politician => {
-//     	// if (politician.ppid === "B000944") { // only loop for one politician. I got to make sure that it works right for each issue
-//     	// console.log('this is politician', politician)
-//     	// const indIssue = state.issues.issues
-
-//     	const polId = politician.ppid
-//     	let totalScore = 0;
-//     	let totalWeight = 0;
-//     	for (let issue in issues) {
-//     		// console.log('this is the issue', indIssue[issue].categoryId, 'and', indIssue[issue].included)
-//     		if (indIssue[issue].included === true) {
-//     			// console.log('this is issue', indIssue[issue], indIssue[issue].included)
-//     			let rightScore;
-// 				axios.get(`api/politicians/${polId}/${indIssue[issue].categoryId}`)  //
-// 	    		.then(response => {
-// 	    			let arrayOfScore = response.data 
-// 	    			// console.log('this is the catscore', response.data, politician.fullName, issue)  
-// 	    			if (arrayOfScore[0] === null) {
-// 	    				rightScore = 50; // why does the array return null? 
-// 	    			}
-// 	    			else {
-// 						if (indIssue[issue].score === 0) rightScore = arrayOfScore[0];
-// 		    			if (indIssue[issue].score === 25) rightScore = arrayOfScore[1];
-// 		    			if (indIssue[issue].score === 50) rightScore = arrayOfScore[2];
-// 		    			if (indIssue[issue].score === 75) rightScore = arrayOfScore[3];
-// 		    			if (indIssue[issue].score === 100) rightScore = arrayOfScore[4];
-// 		    			totalWeight += indIssue[issue].weight; // weight does not increase even if it is important to user
-// 		    			// console.log(totalWeight, 'this is totalWeight')
-// 	    			}
-// 	    			// console.log('the right score is', rightScore, indIssue[issue].weight);
-// 	    			totalScore += rightScore * indIssue[issue].weight;
-// 	    			// console.log('this is totalScore', totalScore)
-
-// 	    			// totalAgreementScore += Number(totalScore / totalWeight) === totalScore/totalWeight ? (totalScore/totalWeight) : 0 ;  // what to put if the politician has no 
-//             // console.log('this is TS and weight', totalScore/totalWeight, politician.fullName)
-//             // console.log('this is the final politician', politiciansArray)
-
-// 					return politician.totalAgreementScore = totalScore/totalWeight;
-// 					// console.log('this is the array', arrayOfScores)
-// 	    		})
-// 	    		.then(() => dispatch(getPoliticians(politiciansArray)))
-//     		}
-//     	}
-//     })
-
-
-//     // around line 70, why does the catScore sometimes respond with null. How to deal with that? Do we assign a score of 0 becasue the politican did not vote?
-//     // do we keep the weight? because if it is important for our user, then it should also be important for the politician?
-//     // also, imagine that the user uses different issues to see agreement
-//     // if the politician score is not added, then one politician who agrees on all issues but one might be ranked higher than another politician
-//     // simply becasue he has no opinion on the issue. which does not necessarily make him in more agreement.
-
-//   }
-// }
-
 
 export const getAllIssues = () => {
 	return (dispatch, getState) => {
@@ -239,15 +219,15 @@ export const getAllIssues = () => {
 					included: false,
 					categoryId: issue[1],
 					link: null
-				}
-			})
+				};
+			});
 			  return issues;
 		})
 		.then(finalIssues => {
-			dispatch(getIssues(finalIssues))
-		})
-	}
-}
+			dispatch(getIssues(finalIssues));
+		});
+	};
+};
 
 /* -------------       REDUCER     ------------------- */
 
@@ -312,18 +292,18 @@ const initialState = {
 	politicianScores: {
 		// ppid : { Environment: 60, Taxes: 88}}
 	}
-}
+};
 
 
 const reducer = (state = initialState, action) => {
 
-	const newState = Object.assign({}, state)
+	const newState = Object.assign({}, state);
 
 	switch (action.type){
 
 		case ADD_ISSUE:
 			newState.issueNumber = newState.issueNumber + 1;
-			newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50}
+			newState.issueValues[newState.issueNumber] = {value: 1, slidebar: 50};
 			return newState;
 
 		case ISSUE_CHANGE:
@@ -409,7 +389,7 @@ const reducer = (state = initialState, action) => {
 		return newState;
 
 		case CREATE_POLITICIAN_SCORE:
-		console.log('in reducer', action.politicianObject);
+		// console.log('in reducer', action.politicianObject);
 		newState.politicianScores = Object.assign({}, newState.politicianScores, action.politicianObject);
 		return newState;
 
