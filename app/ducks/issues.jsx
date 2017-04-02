@@ -196,7 +196,7 @@ export const getScores = () => {
 				}
 				console.log('numerator is', numerator);
 				console.log('denominator is', denominator);
-				politicianObject[politicianId[i]].totalAgreementScore = numerator / denominator;
+				politicianObject[politicianId[i]].totalAgreementScore = (numerator / denominator).toFixed(2);
 			}
 			// console.log('politicianObject is', politicianObject)
 		})

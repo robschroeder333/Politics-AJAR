@@ -43,7 +43,7 @@ const Politician = (props) => {
           </div>
         </div>
         <div style={{style: 'inline-block', float: 'right', fontWeight: 'strong', border: 'black solid 2px', padding: '2%', marginTop: '50px'}}>
-          <h6>{politician.totalAgreementScore + '%'}</h6>
+          <h6>{((politician.totalAgreementScore && !isNaN(politician.totalAgreementScore)) ? politician.totalAgreementScore : '00.00') + '%'}</h6>
         </div>
       </Paper>
     </Link>
