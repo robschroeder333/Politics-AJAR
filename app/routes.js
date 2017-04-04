@@ -8,15 +8,17 @@ import Homepage from './containers/Homepage'
 import About from './containers/About'
 
 let indexRedirectTarget = '/home';
+let homeTarget = Homepage;
 if (sessionStorage.state){
   indexRedirectTarget = '/politicians';
+  homeTarget = DisplayAndPoliticians;
 }
 
 export default () => (
   <Router history={browserHistory}>
     <Route path="/" component={App}>
       <IndexRedirect to={indexRedirectTarget} />
-      <Route path="/home" component={Homepage} />
+      <Route path="/home" component={homeTarget} />
       <Route path="/politicians" component={DisplayAndPoliticians} />
       <Route path="/politicians/:id" component={PoliticianProfile} />
       <Route path="/about" component={About} />
