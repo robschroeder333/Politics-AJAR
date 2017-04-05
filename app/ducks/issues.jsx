@@ -152,8 +152,9 @@ export const getScores = () => {
 			for (let issueName in politicianScore[politicianId[i]]){
 				if (politicianScore[politicianId[i]][issueName].length === 0){
 					// console.log('politicianScore[politicianId[i]]', politicianScore[politicianId[i]]);
-					// console.log('politicianId[i] is', politicianId[i]);
-					// console.log('issues[issueName].categoryId', issues[issueName].categoryId);
+					console.log('politicianId[i] is', politicianId[i]);
+					console.log('issues[issueName].categoryId', issues[issueName].categoryId);
+					console.log(`api/politicians/${politicianId[i]}/${issues[issueName].categoryId}`);
 					arrayOfPromises.push(axios.get(`api/politicians/${politicianId[i]}/${issues[issueName].categoryId}`));
 					// arrayOfPromises.push(axios.get(`api/politicians/I000024/Q09`).catch(() => console.log('hey, this messed up')));
 					promisesArrayIndexes.push(issueName);
@@ -179,15 +180,15 @@ export const getScores = () => {
 		.then(() => {
 			// console.log('politicianObject is', politicianObject)
 			// console.log('slider values can be found on', issueValues);
-			console.log('issue ids can be found on', issues);
+			// console.log('issue ids can be found on', issues);
 			for (let i = 0; i < politicianId.length; i++){
 				let denominator = 0;
 				let numerator = 0;
 				for (let sliderValues in issueValues){
 					for (let issueNames in issues){
 						if (issueValues[sliderValues].value === issues[issueNames].id){
-							console.log('politicianObject[politicianId[i]][issueNames] is', politicianObject[politicianId[i]][issueNames]);
-							console.log(issues[issueNames].weight, politicianObject[politicianId[i]][issueNames], politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
+							// console.log('politicianObject[politicianId[i]][issueNames] is', politicianObject[politicianId[i]][issueNames]);
+							// console.log(issues[issueNames].weight, politicianObject[politicianId[i]][issueNames], politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
 							numerator += (issues[issueNames].weight * politicianObject[politicianId[i]][issueNames][issues[issueNames].score / 25]);
 							denominator += issues[issueNames].weight;
 						}

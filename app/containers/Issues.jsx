@@ -6,6 +6,7 @@ import { MdHighlightRemove } from 'react-icons/lib/md';
 
 import Issue from '../components/Issue.jsx';
 import {modifyIncludedIssue, modifyScoreAndWeight, addIssue, issueChange, scoreChange, deleteIssue, stateChange, hideState, scorePoliticiansChange, getScores} from '../ducks/issues'
+import SidebarComponent from './Sidebar.jsx'
 
 const styles = {
   delete: {
@@ -143,7 +144,9 @@ class Issues extends Component {
           <span style={{float: 'right'}}>For</span>
         </div>
         <div style={styles.block}>
-          { this.renderIssues() }
+          { this.renderIssues() 
+            // <SidebarComponent />
+          }
         </div>
       </div>
     )

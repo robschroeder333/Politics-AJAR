@@ -69,13 +69,13 @@ class PoliticianProfile extends Component {
 		this.state = {
 			sidebarOpen: false,
 			sidebarDocked: true,
-			search: '',
-			senateSelected: true,
-			houseSelected: true,
-			senateClickedColor: '#00008b',
-			houseClickedColor: '#00008b',
-			senateText: {color: 'white'},
-			houseText: {color: 'white'}
+			// search: '',
+			// senateSelected: true,
+			// houseSelected: true,
+			// senateClickedColor: '#00008b',
+			// houseClickedColor: '#00008b',
+			// senateText: {color: 'white'},
+			// houseText: {color: 'white'}
 		}
 		this.handleToggle = this.handleToggle.bind(this)
 		this.handleChange = this.handleChange.bind(this);
@@ -88,21 +88,21 @@ class PoliticianProfile extends Component {
 		this.setState({sidebarDocked: !this.state.sidebarDocked})
 	}
 
-	onClick(filter){
-		this.setState({search: filter})
-		if (filter === 'senate' && this.state.senateSelected === true){
-			this.setState({senateClickedColor: '#ffffff', senateSelected: false, senateText: {color: '#00008b'}})
-		}
-		if (filter === 'house' && this.state.houseSelected === true) {
-			this.setState({ houseClickedColor: '#ffffff', houseSelected: false, houseText: {color: '#00008b'} })
-		}
-		if (filter === 'senate' && this.state.senateSelected === false){
-			this.setState({senateClickedColor: '#00008b', senateSelected: true, senateText: {color: 'white'} })
-		}
-		if (filter === 'house' && this.state.houseSelected === false) {
-			this.setState({houseClickedColor: '#00008b', houseSelected: true, houseText: {color: 'white'} })
-		}
-	}
+	// onClick(filter){
+	// 	this.setState({search: filter})
+	// 	// if (filter === 'senate' && this.state.senateSelected === true){
+	// 	// 	this.setState({senateClickedColor: '#ffffff', senateSelected: false, senateText: {color: '#00008b'}})
+	// 	// }
+	// 	// if (filter === 'house' && this.state.houseSelected === true) {
+	// 	// 	this.setState({ houseClickedColor: '#ffffff', houseSelected: false, houseText: {color: '#00008b'} })
+	// 	// }
+	// 	// if (filter === 'senate' && this.state.senateSelected === false){
+	// 	// 	this.setState({senateClickedColor: '#00008b', senateSelected: true, senateText: {color: 'white'} })
+	// 	// }
+	// 	// if (filter === 'house' && this.state.houseSelected === false) {
+	// 	// 	this.setState({houseClickedColor: '#00008b', houseSelected: true, houseText: {color: 'white'} })
+	// 	// }
+	// }
 
 	handleChange(politician, id) {
 		this.props.setPolitician(politician, id)
