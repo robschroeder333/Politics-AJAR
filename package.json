@@ -4,7 +4,7 @@
   "description": "basic template with react, redux, and react-router",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "mocha ./tests/**/*.js --compilers js:babel-register",
+    "test": "mocha ./tests/dataT.js",
     "start": "webpack -w --progress & nodemon app.js",
     "build-css": "node-sass -w public/sass/layout.scss -o public/style",
     "seed": "node ./db/seed.js",
