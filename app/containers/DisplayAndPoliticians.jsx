@@ -121,8 +121,9 @@ class DisplayAndPoliticians extends Component {
 	render(){
 		let {politicians} = this.props;
 		let {selectedState, states} = this.props.issues;
+		let politicianIds = Object.keys(this.props.issues.politicianScores);
+		// console.log('this.props.issues is', this.props.issues);
 		let {senateSelected, houseSelected} = this.state;
-
 		let sidebarContent = (
 			<div style={firstBlock}>
 				<div style={{textAlign: 'center'}}>
@@ -163,6 +164,14 @@ class DisplayAndPoliticians extends Component {
 		else {
 			politicians = []
 		}
+		politicians.forEach(politician => {
+			for (let i = 0; i < politicianIds.length; i++){
+				if (politician.ppid === politicianIds[i]){
+					politician.totalAgreementScore = this.props.issues.politicianScores[politicianIds[i]].totalAgreementScore;
+				}
+			}
+      		return politician;
+    	});
 
 		return (
 			<div>

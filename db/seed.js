@@ -12,7 +12,7 @@ const fs = require('fs');
 //Api data
 // const allData = require('../apiData');
 // const allDataIssues = require('../apiData').getIssues();
-const backup = require('../backup');
+const backup = require('../backup.json');
 const synced = db.sync({force: true});
 const allData = synced.then(() => backup);
 
@@ -163,6 +163,13 @@ const trace = tracer => pVal => {
   console.log(typeof tracer === 'function' ? tracer(pVal) : tracer);
   return pVal;
 };
+
+
+
+/////////////////////////////////
+//////SEEDIN BEGINS HERE/////////
+/////////////////////////////////
+
 
 const issuesSeeded = synced
   .then(() => allDataIssues)

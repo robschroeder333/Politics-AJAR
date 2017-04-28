@@ -7,7 +7,6 @@ import { getSinglePolitician, getPoliticianInfo, fetchPoliticianInfo  } from '..
 import Profile from '../components/Profile.jsx';
 import Issues from './Issues.jsx';
 
-
 const buttonStyle = {
 	textAlign: 'center',
 	display: 'block',
