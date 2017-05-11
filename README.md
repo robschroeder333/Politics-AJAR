@@ -4,4 +4,7 @@ Currently uses a slice of recent votes for currently sitting representives of bo
 
 # Steps for use
 1. Clone repo
-2. etc
+2. initialize postresql database named 'politicsAJAR'
+3. 'npm run seed'
+4. 'npm start'
+5. load browser at address 'localhost:3000' to use application
