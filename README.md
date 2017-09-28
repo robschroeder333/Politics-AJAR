@@ -4,7 +4,7 @@ Currently uses a slice of recent votes (snapshot taken March 2017) for currently
 
 # Live version
 Can be found at politics-ajar.herokuapp.com 
-Note: This is running on a free dyno, so if it does not load the first time, refresh. 
+Note: This is running on a free dyno, so if it does not load the first time, refresh or close tab and reload. 
 
 # Steps for use
 1. Clone repo
